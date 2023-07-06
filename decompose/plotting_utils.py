@@ -15,6 +15,8 @@ import matplotlib
 from sklearn.metrics import zero_one_loss, mean_squared_error
 
 from decompose import BVDExperiment
+from utils import CustomMetric
+
 
 def _create_decomp_style_dict():
     """
@@ -39,8 +41,8 @@ def _create_decomp_style_dict():
                                       "color": "tab:orange"}
 
     style_dict["ensemble_bias"] = {"linestyle": "--",
-                                      "linewidth": 4,
-                                      "color": "cornflowerblue"}
+                                   "linewidth": 4,
+                                   "color": "cornflowerblue"}
 
     style_dict["ensemble_variance"] = {"linestyle": ":",
                                        "linewidth": 4,
@@ -49,15 +51,23 @@ def _create_decomp_style_dict():
     style_dict["diversity"] = {"linestyle": "-",
                                "linewidth": 4,
                                "color": "tab:green"}
+    style_dict[CustomMetric.MEMBER_DEVIATION] = {"linestyle": "dotted",
+                                                  "linewidth": 4,
+                                                  "color": "tab:green"}
+
+    style_dict[CustomMetric.EXP_MEMBER_LOSS] = {"linestyle": "dotted",
+                                                 "linewidth": 2,
+                                                 "color": "tab:red"}
 
     style_dict["ensemble_risk"] = {"linestyle": "solid",
-                                  "linewidth": 4,
-                                  "color": "indianred"}
+                                   "linewidth": 4,
+                                   "color": "indianred"}
 
     style_dict["expected_member_loss"] = {"linestyle": "-.",
-                                  "linewidth": 4,
-                                  "color": "indianred"}
+                                          "linewidth": 4,
+                                          "color": "indianred"}
     return style_dict
+
 
 def _create_error_style_dict():
     """
@@ -70,20 +80,20 @@ def _create_error_style_dict():
     """
     style_dict = {}
     style_dict["test_error"] = {"linestyle": "-",
-                                 "linewidth": 1,
-                                 "color": "blue"}
+                                "linewidth": 1,
+                                "color": "blue"}
 
     style_dict["train_error"] = {"linestyle": "-.",
-                                "linewidth": 1,
-                                "color": "dimgrey"}
+                                 "linewidth": 1,
+                                 "color": "dimgrey"}
 
     style_dict["member_test_error"] = {"linestyle": "--",
                                        "linewidth": 1,
                                        "color": "midnightblue"}
 
     style_dict["member_train_error"] = {"linestyle": ":",
-                                       "linewidth": 1,
-                                       "color": "black"}
+                                        "linewidth": 1,
+                                        "color": "black"}
     return style_dict
 
 
@@ -109,7 +119,9 @@ def plot_bvd(results,
              test_split=0,
              y_lims=None,
              integer_x=False,
-             xvalues=None):
+             xvalues=None,
+             custom_metrics=set()
+             ):
     """
     Plots biases, variances and diversity all on the same plot directly from the results object.
 
@@ -173,6 +185,8 @@ def plot_bvd(results,
         The axes on which the lines are plotted
     """
 
+    if custom_metrics is None:
+        custom_metrics = {}
     if isinstance(results, BVDExperiment):
         results = results.results_object
 
@@ -214,7 +228,8 @@ def plot_bvd(results,
 
     if variance:
         # If average variance does't exist, we assume its an effect decompose and try to get the average variance-effect
-        average_variance = results.average_variance if hasattr(results, "average_variance") else results.average_variance_effect
+        average_variance = results.average_variance if hasattr(results,
+                                                               "average_variance") else results.average_variance_effect
         legend_string = "average variance" if hasattr(results, "average_variance") else "average variance-effect"
         ax.plot(xvalues, average_variance[:, test_split], **style_dict["average_variance"],
                 label=legend_string)
@@ -229,7 +244,8 @@ def plot_bvd(results,
 
     if ensemble_variance:
         # If ensemble_variance does't exist, we assume its an effect decompose and try to get the ensemble variance-effect
-        ensemble_variance = results.ensemble_variance if hasattr(results, "ensemble_variance") else results.ensemble_variance_effect
+        ensemble_variance = results.ensemble_variance if hasattr(results,
+                                                                 "ensemble_variance") else results.ensemble_variance_effect
         legend_string = "ensemble variance" if hasattr(results, "ensemble_variance") else "ensemble variance-effect"
         ax.plot(xvalues, ensemble_variance[:, test_split], **style_dict["ensemble_variance"], label=legend_string)
         legend_strings.append(legend_string)
@@ -240,6 +256,17 @@ def plot_bvd(results,
         legend_string = "diversity" if hasattr(results, "diversity") else "diversity-effect"
         ax.plot(xvalues, diversity[:, test_split], **style_dict["diversity"], label=legend_string)
         legend_strings.append(legend_string)
+
+    def _plot_cmetric(cmetric):
+        if not hasattr(results, cmetric):
+                print("metric requested but not computed")
+                return
+        values = getattr(results, cmetric)
+        ax.plot(xvalues, values[:, test_split], **style_dict[cmetric], label=cmetric)
+        legend_strings.append(cmetric)
+
+    for cmetric in custom_metrics:
+        _plot_cmetric(cmetric)
 
     label_size = label_size if label_size is not None else "medium"
 
@@ -267,6 +294,7 @@ def plot_bvd(results,
         else:
             ax.set_ylim(y_lims)
     return ax
+
 
 def plot_bv(results,
             bias=True,
@@ -503,17 +531,17 @@ def _project_onto_simplex(points):
         x = x - (1.0 / np.sqrt(3)) * p1 * np.cos(np.pi / 6)
         y = y - (1.0 / np.sqrt(3)) * p1 * np.sin(np.pi / 6)
         # Vector 2 - bisect out of lower right vertex  
-        p2 = points[idx, 1]  
+        p2 = points[idx, 1]
         x = x + (1.0 / np.sqrt(3)) * p2 * np.cos(np.pi / 6)
-        y = y - (1.0 / np.sqrt(3)) * p2 * np.sin(np.pi / 6)        
+        y = y - (1.0 / np.sqrt(3)) * p2 * np.sin(np.pi / 6)
         # Vector 3 - bisect out of top vertex
         p3 = points[idx, 2]
         y = y + (1.0 / np.sqrt(3) * p3)
-      
-        tripts[idx,:] = (x,y)
+
+        tripts[idx, :] = (x, y)
 
     return tripts
- 
+
 
 def plot_simplex_3d(points, centroid, ax=None, target=None):
     """
@@ -536,32 +564,35 @@ def plot_simplex_3d(points, centroid, ax=None, target=None):
     if ax is None:
         fig, ax = plt.subplot()
 
-    vtx = np.array([[1,0,0], [0,1,0],[0,0,1]])
+    vtx = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     tri = a3.art3d.Poly3DCollection([vtx], zorder=-1)
     # tri.set_color(colors.rgb2hex((0, 0.3, .8)))
-    tri.set_color(colors.rgb2hex((54/255., 192/255., 16/255., 0.5)))
+    tri.set_color(colors.rgb2hex((54 / 255., 192 / 255., 16 / 255., 0.5)))
     tri.set_edgecolor("darkslategray")
     tri.set_facecolor((0, 0.8, 0.1, 0.5))
-    line = a3.art3d.Line3D([0.5, 1/3.], [0.5, 1/3.], [0, 1/3.], linestyle=":", c="g")
+    line = a3.art3d.Line3D([0.5, 1 / 3.], [0.5, 1 / 3.], [0, 1 / 3.], linestyle=":", c="g")
     ax.add_line(line)
-    line = a3.art3d.Line3D([0.5, 1/3.], [0, 1/3.], [0.5, 1/3.], linestyle=":", c="g")
+    line = a3.art3d.Line3D([0.5, 1 / 3.], [0, 1 / 3.], [0.5, 1 / 3.], linestyle=":", c="g")
     ax.add_line(line)
-    line = a3.art3d.Line3D([0, 1/3.], [0.5, 1/3.], [.5, 1/3.], linestyle=":", c="g")
+    line = a3.art3d.Line3D([0, 1 / 3.], [0.5, 1 / 3.], [.5, 1 / 3.], linestyle=":", c="g")
     ax.add_line(line)
     ax.add_collection3d(tri)
-    
+
     ax.scatter(points[:, 0], points[:, 1], points[:, 2], color="deepskyblue", alpha=1., zorder=1)
-    ax.scatter(centroid[0], centroid[1], centroid[2], marker="*", color="blue", edgecolors="black", s=200, alpha=1., zorder=1000)
+    ax.scatter(centroid[0], centroid[1], centroid[2], marker="*", color="blue", edgecolors="black", s=200, alpha=1.,
+               zorder=1000)
     if target is not None:
-        ax.scatter(target[0], target[1], target[2], marker="*", color="gold", edgecolors="black", s=200, alpha=1., zorder=1000)
+        ax.scatter(target[0], target[1], target[2], marker="*", color="gold", edgecolors="black", s=200, alpha=1.,
+                   zorder=1000)
     ax.view_init(elev=16., azim=13.)
-    
+
     # Add text
     ax.text(0.1, 0.9, -0.05, "class 2")
     ax.text(1.1, 0.1, -0.05, "class 1")
     ax.text(0., 0., 1.05, "class 3")
     return ax
-    
+
+
 def plot_simplex_2d(points,
                     centroid,
                     axes=None,
@@ -601,34 +632,35 @@ def plot_simplex_2d(points,
 
     if axes is None:
         fig, axes = plt.subplots()
-       
+
     # The easiest part is plotting the points, so we get that out of the way first, 
     # then worry about making it look pretty. 
     points = _project_onto_simplex(points)
     centroid = _project_onto_simplex(centroid)
 
     # default point style dict
-    point_style = {"color" : "royalblue", "alpha" : .75, "zorder" : 3, "s": 10 }
+    point_style = {"color": "royalblue", "alpha": .75, "zorder": 3, "s": 10}
     # Merge default and passed dictionaries
     point_style = {**point_style, **point_kwargs}
     axes.scatter(points[:, 0], points[:, 1], **point_style)
-    axes.scatter(centroid[:, 0], centroid[:, 1], marker="*", color="deepskyblue", edgecolors="black", s=400, alpha=1., zorder=10)
+    axes.scatter(centroid[:, 0], centroid[:, 1], marker="*", color="deepskyblue", edgecolors="black", s=400, alpha=1.,
+                 zorder=10)
     if target is not None:
         target = _project_onto_simplex(target)
         # axes.scatter(target[:, 0], target[:, 1], marker="o", color=(177/255., 247/255., 158/255., 0.5), edgecolors="black", s=200, zorder=10)
-        axes.scatter(target[:, 0], target[:, 1], marker="o", color="gold", edgecolors="black", s=120, alpha=1., zorder=5)
-
+        axes.scatter(target[:, 0], target[:, 1], marker="o", color="gold", edgecolors="black", s=120, alpha=1.,
+                     zorder=5)
 
     # Class borders
-    axes.add_line(lines.Line2D([.25, 0.5], [np.sqrt(3)/4., 1 / (2 * np.sqrt(3))], linestyle=":", c="g", zorder=2))
-    axes.add_line(lines.Line2D([.75, 0.5], [np.sqrt(3)/4., 1 / (2 * np.sqrt(3))], linestyle=":", c="g", zorder=2))
+    axes.add_line(lines.Line2D([.25, 0.5], [np.sqrt(3) / 4., 1 / (2 * np.sqrt(3))], linestyle=":", c="g", zorder=2))
+    axes.add_line(lines.Line2D([.75, 0.5], [np.sqrt(3) / 4., 1 / (2 * np.sqrt(3))], linestyle=":", c="g", zorder=2))
     axes.add_line(lines.Line2D([0.5, 0.5], [0, 1 / (2 * np.sqrt(3))], linestyle=":", c="g", zorder=2))
 
-    triangle = patches.Polygon(np.array([[0., 0], [0.5, np.sqrt(3)/2], [1, 0]]),
+    triangle = patches.Polygon(np.array([[0., 0], [0.5, np.sqrt(3) / 2], [1, 0]]),
                                ec="b", linewidth=5.)
     triangle_collection = PatchCollection([triangle])
     # triangle_collection.set_color((0, 0.8, 0.1, 0.5))
-    triangle_collection.set_color((177/255., 247/255., 158/255., 0.5))
+    triangle_collection.set_color((177 / 255., 247 / 255., 158 / 255., 0.5))
     # opaque version of same color
     #
     triangle_collection.set_color("#d8fbce")
@@ -645,48 +677,58 @@ def plot_simplex_2d(points,
     if show_text:
         axes.text(-.05, -.15, "class 1")
         axes.text(.7, -.15, "class 2")
-        axes.text(.4, np.sqrt(3)/2 + .05, "class 3")
-    
+        axes.text(.4, np.sqrt(3) / 2 + .05, "class 3")
+
     if faux_3d:
-        #origin lines
-        axes.add_line(lines.Line2D([0.5, 0.5], [np.sqrt(3)/2, 1.5], linestyle="-", c="black", zorder=-1))
-        axes.add_line(lines.Line2D([1, 1.4], [0, .4 * (-1/np.sqrt(3))], linestyle="-", c="black", zorder=-1))
-        axes.add_line(lines.Line2D([0, -1.4], [0, -1.4 * (1/np.sqrt(3))], linestyle="-", c="black", zorder=-1))
+        # origin lines
+        axes.add_line(lines.Line2D([0.5, 0.5], [np.sqrt(3) / 2, 1.5], linestyle="-", c="black", zorder=-1))
+        axes.add_line(lines.Line2D([1, 1.4], [0, .4 * (-1 / np.sqrt(3))], linestyle="-", c="black", zorder=-1))
+        axes.add_line(lines.Line2D([0, -1.4], [0, -1.4 * (1 / np.sqrt(3))], linestyle="-", c="black", zorder=-1))
         # Corners to centre
         axes.add_line(lines.Line2D([0, 0.5], [0, 1 / (2 * np.sqrt(3))], linestyle="-", c="black", alpha=.1, zorder=1))
         axes.add_line(lines.Line2D([1, 0.5], [0, 1 / (2 * np.sqrt(3))], linestyle="-", c="black", alpha=.1, zorder=1))
-        axes.add_line(lines.Line2D([0.5, 0.5], [np.sqrt(3)/2, 1 / (2 * np.sqrt(3))], linestyle="-", c="black", alpha=.1, zorder=1))
- 
-        
+        axes.add_line(
+            lines.Line2D([0.5, 0.5], [np.sqrt(3) / 2, 1 / (2 * np.sqrt(3))], linestyle="-", c="black", alpha=.1,
+                         zorder=1))
+
         # Grid lines
         for x in np.arange(-.2, 1.3, 0.1):
             if x < 0.5:
                 y_min = x / (np.sqrt(3))
             else:
                 y_min = -x / (np.sqrt(3)) + 1 / (np.sqrt(3))
-            
+
             # add vertical lines
             axes.add_line(lines.Line2D([x, x], [y_min, 1.4], linestyle="-", c="lightgray", zorder=-10))
             # sloping down lines
             if x < 0.5:
-                axes.add_line(lines.Line2D([x, x + 1.4], [y_min, y_min + 1.4 * (-1/np.sqrt(3))], linestyle="-", c="lightgray", zorder=-10))
+                axes.add_line(
+                    lines.Line2D([x, x + 1.4], [y_min, y_min + 1.4 * (-1 / np.sqrt(3))], linestyle="-", c="lightgray",
+                                 zorder=-10))
             # sloping up lines
             if x > 0.5:
-                axes.add_line(lines.Line2D([x, x - 1.4], [y_min, y_min - 1.4 * (1/np.sqrt(3))], linestyle="-", c="lightgray", zorder=-10))
-        
-        for y in np.arange(1/(2*np.sqrt(3)), 1.6, .2 / ( np.sqrt(3))):
-            axes.add_line(lines.Line2D([0.5, 0.5 + 1.4], [y, y + 1.4 * (-1/np.sqrt(3))], linestyle="-", c="lightgray", zorder=-10))
-            axes.add_line(lines.Line2D([0.5, 0.5 - 1.4], [y, y - 1.4 * (1/np.sqrt(3))], linestyle="-", c="lightgray", zorder=-10))
-        
+                axes.add_line(
+                    lines.Line2D([x, x - 1.4], [y_min, y_min - 1.4 * (1 / np.sqrt(3))], linestyle="-", c="lightgray",
+                                 zorder=-10))
+
+        for y in np.arange(1 / (2 * np.sqrt(3)), 1.6, .2 / (np.sqrt(3))):
+            axes.add_line(lines.Line2D([0.5, 0.5 + 1.4], [y, y + 1.4 * (-1 / np.sqrt(3))], linestyle="-", c="lightgray",
+                                       zorder=-10))
+            axes.add_line(lines.Line2D([0.5, 0.5 - 1.4], [y, y - 1.4 * (1 / np.sqrt(3))], linestyle="-", c="lightgray",
+                                       zorder=-10))
+
     axes.set_xticks([])
     axes.set_yticks([])
     if legend:
-        legend_elements = [lines.Line2D([0], [0], marker="*", markersize=15, color="w", markerfacecolor='blue', markeredgecolor="black", label='centroid')]
+        legend_elements = [lines.Line2D([0], [0], marker="*", markersize=15, color="w", markerfacecolor='blue',
+                                        markeredgecolor="black", label='centroid')]
         if target is not None:
-            legend_elements.append(lines.Line2D([0], [0], marker="*", markersize=15, color="w", markerfacecolor='gold', markeredgecolor="black", label='target'))
-        axes.legend(handles=legend_elements, loc="upper left", prop={'size':7})
+            legend_elements.append(lines.Line2D([0], [0], marker="*", markersize=15, color="w", markerfacecolor='gold',
+                                                markeredgecolor="black", label='target'))
+        axes.legend(handles=legend_elements, loc="upper left", prop={'size': 7})
     return axes
-    
+
+
 def plot_2d_and_3d_simplex(points, centroid, faux_3d=False, target=None,
                            legend=False):
     """
@@ -699,7 +741,8 @@ def plot_2d_and_3d_simplex(points, centroid, faux_3d=False, target=None,
     ax2 = fig.add_subplot(122, aspect="equal")
     plot_simplex_3d(points, centroid, ax1, target=target)
     plot_simplex_2d(points, centroid, ax2, faux_3d=faux_3d, target=target, legend=legend)
- 
+
+
 def plot_dartboard(points, axes=None, legend=True):
     """
     Plots collection of points and their mean on a dartboard figure.
@@ -726,7 +769,8 @@ def plot_dartboard(points, axes=None, legend=True):
     # then worry about making it look pretty.
 
     axes.scatter(points[:, 0], points[:, 1], color="royalblue", alpha=1., zorder=5, s=10)
-    axes.scatter(centroid[0], centroid[1], marker="*", color="deepskyblue", edgecolors="black", s=200, alpha=1., zorder=10)
+    axes.scatter(centroid[0], centroid[1], marker="*", color="deepskyblue", edgecolors="black", s=200, alpha=1.,
+                 zorder=10)
     # axes.scatter(0, 0, marker="o", color="gold", edgecolors="black", s=400, alpha=.8, zorder=2, linewidth=2)
     # axes.scatter(0, 0, marker="$\\bigotimes$", color="black", edgecolors="black", s=150, zorder=3, linewidth=.4)
     axes.scatter(0, 0, marker="o", color="gold", edgecolors="black", s=200, zorder=2, linewidth=1)
@@ -737,15 +781,14 @@ def plot_dartboard(points, axes=None, legend=True):
     # axes.add_line(lines.Line2D([0.5, 0.5], [0, 1 / (2 * np.sqrt(3))], linestyle=":", c="g", zorder=1))
 
     circle = patches.Circle(np.array([0., 0]), 1,
-                               ec="b", linewidth=5., zorder=-1)
+                            ec="b", linewidth=5., zorder=-1)
     circle_collection = PatchCollection([circle])
-    circle_collection.set_color((177/255., 247/255., 158/255., 0.4))
+    circle_collection.set_color((177 / 255., 247 / 255., 158 / 255., 0.4))
     circle_collection.set_edgecolor((0, 0, 0, 1.))
     axes.add_collection(circle_collection)
 
-
     circle2 = patches.Circle(np.array([0., 0]), 0.5,
-                               ec="b", linewidth=5., zorder=0)
+                             ec="b", linewidth=5., zorder=0)
     circle_collection = PatchCollection([circle2])
     circle_collection.set_color((0, 0., 0, 0.))
     circle_collection.set_edgecolor((0, 0, 0, 1.))

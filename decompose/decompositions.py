@@ -15,9 +15,12 @@ likewise a random variable). A star, e.g., :math:`\\bar{q}^*` denotes
 a central model with respect to training data. :math:`B(\\cdot, \\cdot)`
 denotes the Bregman divergence. This notation is taken from (https://arxiv.org/abs/2301.03962v1) .
 """
-
+import numpy
 import numpy as np
 from cached_property import cached_property
+
+import utils
+
 
 class BregmanDecomposition(object):
     """
@@ -51,10 +54,11 @@ class BregmanDecomposition(object):
     PoissonLoss
 
     """
+
     def __init__(self, pred, labels):
         if pred.shape[2] != labels.shape[0]:
             raise ValueError('Third dimension of model predictions should match '
-            'first dimension of labels (# test data points)')
+                             'first dimension of labels (# test data points)')
 
         self.pred = pred
         self.labels = labels
@@ -84,7 +88,6 @@ class BregmanDecomposition(object):
         )
         return self._bregman_divergence(centroid, individuals).mean(axis=axes3).squeeze()
 
-
     def _error_function(self, axes1=(), axes2=()):
         # For each of the expected error/bias terms in the double decomposition_class we:
         # 1) Average the outputs over one or more axes;
@@ -99,6 +102,18 @@ class BregmanDecomposition(object):
 
         error = self._compute_error(x, self.labels)
         return np.mean(error, axis=axes2).squeeze()
+
+
+    @cached_property
+    def member_covariance(self):
+        # individuals = self.aggregator(self.pred, axis=(0)).squeeze()  # aggregate over trials
+        # TODO is this correct? copied from below
+        individuals = self._inverse_generator_gradient(
+            self.etas.mean(axis=(), keepdims=True)
+        )
+        individuals = np.average(individuals, axis=0)
+        return np.corrcoef(individuals, rowvar=True)
+
 
     @cached_property
     def expected_ensemble_loss(self):
@@ -127,7 +142,6 @@ class BregmanDecomposition(object):
 
         """
         return self._error_function(axes2=(0, 1))
-
 
     @cached_property
     def ensemble_bias(self):
@@ -199,7 +213,7 @@ class BregmanDecomposition(object):
             A (N,)-shape array with one value per test data point
 
         """
-        return self._bregman_expectation((0,1), 0, (1))
+        return self._bregman_expectation((0, 1), 0, (1))
 
     @cached_property
     def diversity(self):
@@ -212,7 +226,7 @@ class BregmanDecomposition(object):
         array_like
             A (N,)-shape array with one value per test data point
         """
-        return self._bregman_expectation(1, (), (0,1))
+        return self._bregman_expectation(1, (), (0, 1))
 
     def _non_centroid_error_function(self, combination_func, axes1=(), axes2=()):
 
@@ -252,7 +266,7 @@ class BregmanDecomposition(object):
         return self.general_target_dependent_term(combination_func, 1, 0)
 
     def diversity_like(self, combination_func):
-        return self._non_centroid_bregman_expectation(combination_func, 1, (), (0,1))
+        return self._non_centroid_bregman_expectation(combination_func, 1, (), (0, 1))
 
     def non_centroid_expected_ensemble_risk(self, combination_func):
         return self._non_centroid_error_function(combination_func, 1, 0)
@@ -294,6 +308,7 @@ class MarginDecomposition(BregmanDecomposition):
         error = self._compute_error(x, self.labels)
         return np.mean(error, axis=axes2).squeeze()
 
+
 class EffectDecomposition(object):
     """
     Variation of the bias-variance-diversity decompose object using the effect decompose of James & Hastie.
@@ -317,27 +332,40 @@ class EffectDecomposition(object):
             x = self.aggregator(self.pred, axis=axes1, weights=self.weights)
         else:
             x = self.pred
-        error = self._compute_error(x, self.labels)
+        error = self._compute_error(x, self.labels)  # exp. ens. loss: disagreement vector (for each trial?)
         if self.weights is not None:
             weights = np.mean(self.weights / self.weights.mean(axis=1, keepdims=True), axis=axes1, keepdims=True)
             assert weights.shape == error.shape
             error = weights * error
-        return error.mean(axis=axes2).squeeze()
+        r = error.mean(
+            axis=axes2).squeeze()  # exp. ens. loss: mean over trials -- now one value for each test data point (I think)
+        return r
 
     def _central_model_difference(self, axes1=(), axes2=(), axes3=()):
         """
         Function to compute effect decomposition terms. The three axes parameters dictate which dimensions different
         aggregation operations occur.
 
-        As an example, consider the weighted average variance-effect (Theorem 22 in
-        the first ArXiV version of the paper). This quantity is made up of two terms $\frac{1}{M}\sum_i \mathbb{E}_D[a_i L(y, q_i)]$ and
-        $\frac{1}{M} \sum_i L(Y, q_i^*)$. axes1 tells us the aggregation operation used in the central predictions
-        (in this case the $q_i^*$). Since we are aggregating across trials (to get from individual $q_i$ to their centroid
-        $q_i^*$) we set axes1=(0), since the 0th axes of self.pred is the one indexing trials. axes2 tells us what aggregation
-        operation, if any needs to be performed to get the individual models in the first term. For the average variance
-        effect, none is needed since individual models $q_i$ appear in the first term, so axes2=().
+        As an example, consider the weighted average variance-effect (Theorem 22 in the first ArXiV version of the paper).
+
+        This quantity is made up of two terms:
+        $\frac{1}{M}\sum_i \mathbb{E}_D[a_i L(y, q_i)]$
+        and
+        $\frac{1}{M} \sum_i L(Y, q_i^*)$.
+
+        axes1 tells us the aggregation operation used in the central predictions (in this case the $q_i^*$).
+        Since we are aggregating across trials (to get from individual $q_i$ to their centroid
+        $q_i^*$) we set axes1=(0), since the 0th axes of self.pred is the one indexing trials.
+        ## for diversity-effect, axes1=1 -> mode/maj-vote aggregation across ensemble (axis 1)
+        ## also want axes1=1 for d(Qbar, Q_i) then I suppose
+
+        axes2 tells us what aggregation operation, if any, needs to be performed to get the individual models in the first term.
+        For the average variance effect, none is needed since individual models $q_i$ appear in the first term, so axes2=().
+        ## also want to do this for d(Qbar, Q_i)
+
         Finally, we note that both terms are averaged over trials and ensemble members, this is dealt with by axes3. Setting
         axes3=(0, 1) averages over the dimensions corresponding to trials (giving $\mathbb{E}_D$) and ensemble members (giving $\frac{1}{M} \sum_i$)
+        ## also want to do this for d(Qbar, Q_i)
 
         Parameters
         ----------
@@ -354,20 +382,67 @@ class EffectDecomposition(object):
             The difference in loss when going from the individual models to the central model
 
         """
-        central_prediction = self.aggregator(self.pred, axis=axes1, weights=self.weights)
+
+        # for diversity-effect:
+        # axes1 = 1
+        # axes2 = ()
+        # axes3 = (0,1)
+
+        ## pred : ndarray of shape (n_trials, ensemble_size, n_examples)
+        central_prediction = self.aggregator(self.pred, axis=axes1,
+                                             weights=self.weights)  # for 01-decomp: majority vote (mode)
         individuals = self.aggregator(self.pred, axis=axes2)
 
-        first_term =  self._compute_error(self.labels, individuals)
-        second_term = self._compute_error(self.labels, central_prediction)
+        first_term = self._compute_error(self.labels, individuals)
+        second_term = self._compute_error(self.labels, central_prediction)  # L(Y, Qbar)
         if self.weights is not None:
-            weights_for_first_term = np.mean(self.weights / self.weights.mean(axis=1, keepdims=True), axis=axes2, keepdims=True)
-            weights_for_second_term = np.mean(self.weights / self.weights.mean(axis=1, keepdims=True), axis=axes1, keepdims=True)
+            weights_for_first_term = np.mean(self.weights / self.weights.mean(axis=1, keepdims=True), axis=axes2,
+                                             keepdims=True)
+            weights_for_second_term = np.mean(self.weights / self.weights.mean(axis=1, keepdims=True), axis=axes1,
+                                              keepdims=True)
             assert first_term.shape == weights_for_first_term.shape
             assert second_term.shape == weights_for_second_term.shape
             first_term = weights_for_first_term * first_term
             second_term = weights_for_second_term * second_term
         difference = first_term - second_term
         return difference.mean(axis=axes3)
+
+    def member_pairwise_matrix(self, fun):
+        axes2 = ()  # no aggregation over ensemble members/individuals
+        ## pred : ndarray of shape (n_trials, ensemble_size, n_examples)
+        # individuals = self.aggregator(self.pred, axis=axes2)
+
+        # maj vote over ensemble members (and trials)
+
+        members = self.aggregator(self.pred, axis=(0)).squeeze()  # aggregate over trials
+        individuals = members
+        ground_truth = self.labels
+        individuals = np.insert(individuals, 0, ground_truth, axis=0)  # prepend column
+        central_prediction = self.aggregator(self.pred, axis=(0, 1),
+                                             weights=self.weights).squeeze()  # for 01-decomp: majority vote (mode)
+        individuals = np.insert(individuals, 0, central_prediction, axis=0)  # prepend column
+        # shape (n_trials, ensemble_size, n_examples)
+        return utils.pairwise_matrix(individuals, fun)
+
+    @cached_property
+    def member_deviation(self):
+        """
+        E[ 1/M \sum_i 1/n L_01(\bar{Q}, Q_i) ] --- I hope
+        This is an upper-bound to diversity-effect (using that E_X[L_01] is (normalised) symmetric difference, which is a metric)
+        Returns
+        -------
+
+        """
+        axes1 = 1
+        axes2 = ()
+        axes3 = (0, 1)
+        ## pred : ndarray of shape (n_trials, ensemble_size, n_examples)
+        central_prediction = self.aggregator(self.pred, axis=axes1,
+                                             weights=self.weights)  # for 01-decomp: majority vote (mode)
+        individuals = self.aggregator(self.pred, axis=axes2)
+        fooscore = self._compute_error(individuals, central_prediction)
+        r = fooscore.mean(axis=axes3)
+        return r  # shape (n_examples)
 
     @cached_property
     def expected_ensemble_loss(self):

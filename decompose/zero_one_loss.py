@@ -125,7 +125,7 @@ class ZeroOneLoss(EffectDecomposition):
         Returns
         -------
         error : ndarray
-           array of same size as pred, with entries as 1. when prediction and ground truth agree and 0. otherwise.
+           array of same size as pred, with entries as 1. when prediction and ground truth disagree and 0. otherwise.
 
         """
         return 1. * (pred != labels)

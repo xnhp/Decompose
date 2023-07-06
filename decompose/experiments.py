@@ -10,6 +10,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.utils import shuffle
 from tqdm import tqdm
 from tqdm import trange
+
+import distances
+import utils
 from decompose import LogisticMarginLoss, ExponentialMarginLoss
 from decompose import ZeroOneLoss
 from decompose import SquaredLoss, CrossEntropy, PoissonLoss
@@ -97,6 +100,7 @@ class BVDExperiment(object):
         List containing the object returned by run_experiment, and a ZeroOneResultsObject instance if `compute_zero_one_decomp` is True
 
     """
+
     def __init__(self,
                  model,
                  loss,
@@ -149,7 +153,7 @@ class BVDExperiment(object):
                        train_sample_weight=None,
                        test_sample_weight=None,
                        n_trials=50,
-                       n_test_splits=1):
+                       n_test_splits=1, custom_metrics=set()):
         """
         Performs experiments required to calculate BVD decomposition_class and stores the results.
 
@@ -197,8 +201,8 @@ class BVDExperiment(object):
             test_labels = label_encoder.transform(test_labels)
             if self.decomposition_class in [LogisticMarginLoss, ExponentialMarginLoss]:
                 # Margin losses expect labels in {-1, 1}
-                train_labels += -1 * (train_labels == 0 )
-                test_labels += -1 * (test_labels == 0 )
+                train_labels += -1 * (train_labels == 0)
+                test_labels += -1 * (test_labels == 0)
 
         if n_test_splits > 1:
             if test_sample_weight is None:
@@ -216,10 +220,12 @@ class BVDExperiment(object):
 
         if self.decomposition_class is not ZeroOneLoss:
             self.results_object = ResultsObject(self.parameter_name, self.parameter_values, self.decomposition_class,
-                                                n_test_splits=n_test_splits, save_decompositions=self.save_decompositions,
+                                                n_test_splits=n_test_splits,
+                                                save_decompositions=self.save_decompositions,
                                                 decompositions_prefix=self.decompositions_prefix)
         else:
-            self.results_object = ZeroOneResultsObject(self.parameter_name, self.parameter_values, self.decomposition_class,
+            self.results_object = ZeroOneResultsObject(self.parameter_name, self.parameter_values,
+                                                       self.decomposition_class,
                                                        n_test_splits=n_test_splits)
 
         self.all_results = [self.results_object]
@@ -236,7 +242,6 @@ class BVDExperiment(object):
                                                          self.decomposition_class,
                                                          n_test_splits=n_test_splits)
             self.all_results.append(self.zero_one_results)
-
 
         # Generate indices for training dataset for each bootstrap
         all_trial_indices = self._generate_bootstraps(train_data,
@@ -395,17 +400,17 @@ class BVDExperiment(object):
                 decomp = self.decomposition_class(split_output[s_idx], split_test_labels[s_idx])
 
                 self.results_object.update_results(decomp, param_idx, errors, split_idx=s_idx,
-                                                   sample_weight=split_test_weights[s_idx])
+                                                   sample_weight=split_test_weights[s_idx], custom_metrics=custom_metrics)
                 if self.non_centroid_combiner is not None:
                     self.non_centroid_results_object.update_results(decomp, param_idx, errors, split_idx=s_idx,
-                                                                    sample_weight=split_test_weights[s_idx])
+                                                                    sample_weight=split_test_weights[s_idx],
+                                                                    custom_metrics=custom_metrics)
                 if self.compute_zero_one_decomp:
                     zero_one_decomp = ZeroOneLoss(split_np_class_pred[s_idx], split_test_labels[s_idx])
                     self.zero_one_results.update_results(zero_one_decomp, param_idx, errors, split_idx=s_idx,
-                                                         sample_weight=split_test_weights[s_idx])
+                                                         sample_weight=split_test_weights[s_idx], custom_metrics=custom_metrics)
 
         return self.results_object
-
 
     def _get_individual_errors(self,
                                cur_model,
@@ -481,7 +486,6 @@ class BVDExperiment(object):
             return avg_member_train_loss, avg_member_test_loss
         else:
             return member_train_losses, member_test_losses
-
 
     def _fit_model(self, cur_model, train_data, train_labels, sample_weight=None):
         """
@@ -589,7 +593,7 @@ class BVDExperiment(object):
                         param_set = True
                     # Deal with renaming base_estimator -> estimator
                     elif hasattr(cur_model, "estimator") \
-                         and hasattr(cur_model.estimator, self.parameter_name):
+                            and hasattr(cur_model.estimator, self.parameter_name):
                         for member in cur_model.estimators_:
                             member.set_params(**{self.parameter_name: param_update})
                         if param_set:
@@ -601,13 +605,13 @@ class BVDExperiment(object):
                     param_set = True
                 # Unclear whether we want to use hasatttr or `in cur_model.get_params()` here
                 elif hasattr(cur_model, "base_estimator") \
-                         and hasattr(cur_model.base_estimator, self.parameter_name):
+                        and hasattr(cur_model.base_estimator, self.parameter_name):
                     cur_model.base_estimator.set_params(**{self.parameter_name: param_update})
                     if param_set:
                         logger.warning("WARNING: Setting parameter in ensemble AND in base models")
                     param_set = True
                 elif hasattr(cur_model, "estimator") \
-                         and hasattr(cur_model.estimator, self.parameter_name):
+                        and hasattr(cur_model.estimator, self.parameter_name):
                     cur_model.estimator.set_params(**{self.parameter_name: param_update})
                     if param_set:
                         logger.warning("WARNING: Setting parameter in ensemble AND in base models")
@@ -619,7 +623,7 @@ class BVDExperiment(object):
             if hasattr(cur_model, self.parameter_name):
                 setattr(cur_model, self.parameter_name, param_update)
                 param_set = True
-            if self.is_ensemble and hasattr(cur_model, "base_estimator") and\
+            if self.is_ensemble and hasattr(cur_model, "base_estimator") and \
                     hasattr(cur_model.base_estimator, self.parameter_name):
                 if self.warm_start and param_idx > 0:
                     for member in cur_model.estimators_:
@@ -630,7 +634,7 @@ class BVDExperiment(object):
                 if param_set:
                     logger.warning("WARNING: Setting parameter in ensemble AND in base models")
                 param_set = True
-            elif self.is_ensemble and hasattr(cur_model, "estimator") and\
+            elif self.is_ensemble and hasattr(cur_model, "estimator") and \
                     hasattr(cur_model.estimator, self.parameter_name):
                 if self.warm_start and param_idx > 0:
                     for member in cur_model.estimators_:
@@ -692,7 +696,7 @@ class BVDExperiment(object):
             decomp = lookup[decomp]
 
         if decomp in (CrossEntropy, ExponentialMarginLoss,
-                             ZeroOneLoss, LogisticMarginLoss):
+                      ZeroOneLoss, LogisticMarginLoss):
             loss_func = zero_one_loss
         elif decomp == SquaredLoss:
             loss_func = mean_squared_error
@@ -701,7 +705,6 @@ class BVDExperiment(object):
         else:
             print(f"Decomposition {decomp} not known")
         return decomp, loss_func
-
 
     def _get_pred(self, model, data):
         """
@@ -730,7 +733,6 @@ class BVDExperiment(object):
         else:
             pred = model.predict(data)
         return pred
-
 
     def _generate_bootstraps(self, train_data, replace=True, max_samples=1.0):
         """
@@ -776,7 +778,6 @@ class BVDExperiment(object):
             all_bootstrap_indices.append(sample_indices)
         return all_bootstrap_indices
 
-
     def _manage_warm_starts(self, warm_start, ensemble_warm_start):
         """
         If warm_start and ensemble_warm_start are set as function arguments, they are always deferred to, otherwise
@@ -803,7 +804,8 @@ class BVDExperiment(object):
             inferred_warm_start = self.model.base_estimator.warm_start
         elif hasattr(self.model, "estimator") and hasattr(self.model.estimator, "warm_start"):
             inferred_warm_start = self.model.estimator.warm_start
-        elif not hasattr(self.model, "base_estimator") and not hasattr(self.model, "estimator") and hasattr(self.model, "warm_start"):
+        elif not hasattr(self.model, "base_estimator") and not hasattr(self.model, "estimator") and hasattr(self.model,
+                                                                                                            "warm_start"):
             inferred_warm_start = self.model.warm_start
         else:
             inferred_warm_start = None
@@ -883,7 +885,34 @@ def load_results(file_name):
     return results
 
 
-class ResultsObject(object):
+class AbstractResultsObject(object):
+
+    def save_results(self, file_name):
+        """
+        Saves results object to pickle file for later use
+
+        Parameters
+        ----------
+        file_name : str
+            name of file (including directory) in which results are to be stored
+
+        Returns
+        -------
+        None
+
+        """
+        with open(file_name, "wb+") as file_:
+            # create parents if not exists
+            from pathlib import Path
+            import os
+            Path(os.path.dirname(file_name)).mkdir(parents=True, exist_ok=True)
+            # dump this object
+            pickle.dump(self, file_)
+            logger.debug(f"Writing results to {file_name}")
+
+
+
+class ResultsObject(AbstractResultsObject):
     """
     Results from BVDExperiment are stored in ResultsObject instances.
 
@@ -949,13 +978,14 @@ class ResultsObject(object):
         self.train_error = np.zeros((n_parameter_values))
         self.member_test_error = np.zeros((n_parameter_values, n_test_splits))
         self.member_train_error = np.zeros((n_parameter_values))
+        setattr(self, utils.CustomMetric.COVMAT, dict())
 
         self.save_decompositions = save_decompositions
         self.decomposition_prefix = decompositions_prefix
         if save_decompositions:
             self.decomposition_object_names = [[] for _ in range(n_test_splits)]
 
-    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None):
+    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set()):
         """
         Function used to update ResultsObject for a new parameter using Decomposition object and list of train/test errors
 
@@ -994,12 +1024,11 @@ class ResultsObject(object):
             # This also doesn't feel great, is it already filled?
             self.per_trial_test_errors[param_idx, :, split_idx] = errors[-1][:, split_idx]
 
-
         self.ensemble_bias[param_idx, split_idx] = np.average(decomp.ensemble_bias,
                                                               weights=sample_weight)
 
         self.ensemble_variance[param_idx, split_idx] = np.average(decomp.ensemble_variance,
-                                                                                  weights=sample_weight)
+                                                                  weights=sample_weight)
 
         self.average_bias[param_idx, split_idx] = np.average(decomp.average_bias,
                                                              weights=sample_weight)
@@ -1011,6 +1040,10 @@ class ResultsObject(object):
 
         self.ensemble_risk[param_idx, split_idx] = np.average(decomp.expected_ensemble_loss,
                                                               weights=sample_weight)
+
+        if utils.CustomMetric.COVMAT in custom_metrics:
+            self[utils.CustomMetric.COVMAT][(param_idx, split_idx)] = decomp.member_covariance
+
         logger.debug(f"Update Summary {param_idx},{split_idx}--"
                      f"ensemble bias: {self.ensemble_bias[param_idx, split_idx]},"
                      f" ensemble variance: {self.ensemble_variance[param_idx, split_idx]},"
@@ -1032,6 +1065,10 @@ class ResultsObject(object):
                 with open(decomposition_filename, "wb") as file_:
                     pickle.dump(decomp, file_)
                     logger.debug(f"writing decompose object to {decomposition_filename}")
+
+
+    def __getitem__(self, item):
+        return getattr(self, item)
 
     def print_summary(self, splits=[0]):
         """
@@ -1169,23 +1206,23 @@ class ResultsObject(object):
             new_decomp_object = DecompClass(decomp_object.pred, decomp_object.labels)
             return new_decomp_object
 
-    def save_results(self, file_name):
-        """
-        Saves results object to pickle file for later use
-
-        Parameters
-        ----------
-        file_name : str
-            name of file (inlcuding directory) in which results are toe be stored
-
-        Returns
-        -------
-        None
-
-        """
-        with open(file_name, "wb+") as file_:
-            pickle.dump(self, file_)
-            logger.debug(f"Writing results to {file_name}")
+    # def save_results(self, file_name):
+    #     """
+    #     Saves results object to pickle file for later use
+    #
+    #     Parameters
+    #     ----------
+    #     file_name : str
+    #         name of file (inlcuding directory) in which results are toe be stored
+    #
+    #     Returns
+    #     -------
+    #     None
+    #
+    #     """
+    #     with open(file_name, "wb+") as file_:
+    #         pickle.dump(self, file_)
+    #         logger.debug(f"Writing results to {file_name}")
 
 
 class NonCentroidCombinerResults(object):
@@ -1214,7 +1251,7 @@ class NonCentroidCombinerResults(object):
         self.member_test_error = np.zeros((n_parameter_values, n_test_splits))
         self.member_train_error = np.zeros((n_parameter_values))
 
-    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None):
+    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set()):
         """
 
         Parameters
@@ -1256,14 +1293,16 @@ class NonCentroidCombinerResults(object):
         self.diversity_like[param_idx, split_idx] = np.average(decomp.diversity_like(self.non_centroid_combiner),
                                                                weights=sample_weight)
 
-        self.target_dependent_term[param_idx, split_idx] = np.average(decomp.target_dependent_term(self.non_centroid_combiner),
-                                                                      weights=sample_weight)
+        self.target_dependent_term[param_idx, split_idx] = np.average(
+            decomp.target_dependent_term(self.non_centroid_combiner),
+            weights=sample_weight)
 
-        self.ensemble_risk[param_idx, split_idx] = np.average(decomp.non_centroid_expected_ensemble_risk(self.non_centroid_combiner),
-                                                              weights=sample_weight)
+        self.ensemble_risk[param_idx, split_idx] = np.average(
+            decomp.non_centroid_expected_ensemble_risk(self.non_centroid_combiner),
+            weights=sample_weight)
 
 
-class ZeroOneResultsObject(object):
+class ZeroOneResultsObject(AbstractResultsObject):
     """
     Results object for the results of experiments examining the effect decompose and the 0-1 loss
 
@@ -1326,12 +1365,20 @@ class ZeroOneResultsObject(object):
         self.train_error = np.zeros((n_parameter_values))
         self.member_test_error = np.zeros((n_parameter_values, n_test_splits))
         self.member_train_error = np.zeros((n_parameter_values))
+        setattr(self, utils.CustomMetric.EXP_MEMBER_LOSS, np.zeros((n_parameter_values, n_test_splits)))
+        setattr(self, utils.CustomMetric.MEMBER_DEVIATION, np.zeros((n_parameter_values, n_test_splits)))
+        setattr(self, utils.CustomMetric.DISTMAT_DHAT, dict())
+        setattr(self, utils.CustomMetric.DISTMAT_DISAGREEMENT, dict())
 
-    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None):
+    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set()):
         """
+
+        Save the results of the current split given by `decomp` into this results object.
+        Happens once for each parameter value and each split (commonly have only 1 split)
 
         Parameters
         ----------
+        custom_metrics: Custom metrics added by me to compute
         decomp : Decomposition
             Decomposition object for the experiment
         param_idx : int
@@ -1341,7 +1388,7 @@ class ZeroOneResultsObject(object):
             Test error averaged over all runs of the experiment
             (optional)
             Average member train error
-            Average member test error
+            Average member test error[
 
         Returns
         -------
@@ -1371,6 +1418,53 @@ class ZeroOneResultsObject(object):
 
         self.diversity_effect[param_idx, split_idx] = np.average(decomp.diversity_effect, weights=sample_weight)
 
+        # TODO make other computations optional aswell
+        from utils import CustomMetric
+
+        if CustomMetric.MEMBER_DEVIATION in custom_metrics:
+            self[CustomMetric.MEMBER_DEVIATION][param_idx, split_idx] = np.average(decomp.member_deviation, weights=sample_weight)  # average over all test examples
+
+        if CustomMetric.EXP_MEMBER_LOSS in custom_metrics:
+            v = np.average(decomp.expected_member_loss, weights=sample_weight)
+            self[CustomMetric.EXP_MEMBER_LOSS][(param_idx, split_idx)] = v
+
+        if CustomMetric.DISTMAT_DHAT in custom_metrics:
+            self[CustomMetric.DISTMAT_DHAT][(param_idx, split_idx)] = decomp.member_pairwise_matrix(
+                distances.dhat_distance)
+
+        if CustomMetric.DISTMAT_DISAGREEMENT in custom_metrics:
+            self[CustomMetric.DISTMAT_DISAGREEMENT][(param_idx, split_idx)] = decomp.member_pairwise_matrix(
+                distances.disagreement_distance)
+
+
+
+
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+
+    def print_summary(self, splits=[0]):
+        """
+        Copied from ResultsObject#print_summary
+        Prints summary of available statistics regarding the decomposition_class, as inferred from experimental results.
+
+        Parameters
+        ----------
+        splits : int or list of ints
+            List of test splits for which statistics are to be printed
+
+        """
+        print("Average bias-effect:")
+        print(self.average_bias_effect[:, splits])
+        print("\nAverage variance-effect:")
+        print(self.average_variance_effect[:, splits])
+        print("\nDiversity-effect:")
+        print(self.diversity_effect[:, splits])
+        # print("\nMember deviation, i.e. L(Qbar, Q_i), should upper-bound diversity-effect:")
+        # print(self.member_deviation[:, splits])
+        print("\nEnsemble risk:")
+        print(self.ensemble_risk[:, splits])
 
 
 def _add_model_smoothing(pred, epsilon=1e-9):
