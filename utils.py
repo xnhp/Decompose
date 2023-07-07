@@ -37,3 +37,4 @@ class CustomMetric(StrEnum):
 
 class DatasetId(StrEnum):
     MNIST = "mnist"
+    WINE = "wine"

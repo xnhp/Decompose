@@ -55,38 +55,48 @@ class MyExperiment(object):
         plt.savefig(fname)
         plt.show()
         return ax
-
-    def plot_mat_mds(self, cmetric, title):
+    
+    def _plot_mat_mds(self, distmat, cmetric, param_idx, title):
         # to overlay multiple MDS plots, see https://scikit-learn.org/stable/auto_examples/manifold/plot_mds.html
-        distmat = self.get_results[cmetric][(0, 0)]
         mds = manifold.MDS(
-            n_components=2,
-            max_iter=3000,
-            eps=1e-9,
-            random_state=0,
-            dissimilarity="precomputed",
-            n_jobs=4,
-            n_init=4
+                n_components=2,
+                max_iter=3000,
+                eps=1e-9,
+                random_state=0,
+                dissimilarity="precomputed",
+                n_jobs=4,
+                n_init=4
         )
         mds_fit = mds.fit(distmat)
         pos = mds_fit.embedding_
 
         print(f"stress: {mds_fit.stress_}, n_iter_: {mds_fit}")
 
-        plt.title(f"MDS embedding of {title} pairw. distances ")
+        parameter_name = self.experiment.parameter_name
+        parameter_value = self.experiment.parameter_values[param_idx]
+        plt.title(f"MDS embedding of {title} pairw. distances at {parameter_name} {parameter_value}  ")
         # color names: https://www.w3schools.com/cssref/css_colors.php
         plt.scatter(pos[0, 0], pos[0, 1], color="CornflowerBlue", s=100, label="ground-truth")  # ground-truth
         plt.scatter(pos[1, 0], pos[1, 1], color="Brown", s=100, label="majority vote")  # central prediction (maj vote)
         plt.scatter(pos[2:, 0], pos[2:, 1], color="ForestGreen", s=100, lw=0, label="members")
         plt.legend()  # according to label params
-        self._savefig(f"distmat_mds_{cmetric}")
+        self._savefig(f"distmat_mds-{cmetric}-{parameter_name}-{parameter_value}")
+
+    def plot_mat_mds(self, cmetric, title):
+        for param_idx, split_idx in self.get_results[cmetric]:
+            self._plot_mat_mds(self.get_results[cmetric][(param_idx, split_idx)], cmetric, param_idx, title)
+        
+        
 
     def plot_mat_heat(self, cmetric):
-        mat = self.get_results[cmetric][(0, 0)]
-        cax = plt.matshow(mat)
-        plt.colorbar(cax)
-        plt.title(cmetric)
-        self._savefig(f"distmat_heat_{cmetric}")
+        for param_idx, split_idx in self.get_results[cmetric]:
+            parameter_name = self.experiment.parameter_name
+            parameter_value = self.experiment.parameter_values[param_idx]
+            mat = self.get_results[cmetric][(param_idx, split_idx)]
+            cax = plt.matshow(mat)
+            plt.colorbar(cax)
+            plt.title(cmetric)
+            self._savefig(f"distmat_heat-{cmetric}-{parameter_name}-{parameter_value}")
 
     def _savefig(self, fname):
         savepath = os.path.join(os.path.dirname(__file__), "experiments", self.identifier, fname + ".png")
