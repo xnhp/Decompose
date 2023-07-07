@@ -33,7 +33,18 @@ class CustomMetric(StrEnum):
     INDIV_ERRORS = auto()
     EXP_MEMBER_LOSS = auto()
     COVMAT = auto()
+    ENSEMBLE_BIAS = auto()
+    ENSEMBLE_VARIANCE = auto()
 
+def metric_display_name(cmetric: CustomMetric):
+    names = {
+        CustomMetric.MEMBER_DEVIATION: "member deviation",
+    }
+    if cmetric in names:
+        return names[cmetric]
+    else:
+        print("no display name assigned for " + cmetric)
+        return cmetric
 
 class DatasetId(StrEnum):
     MNIST = "mnist"

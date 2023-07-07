@@ -52,12 +52,12 @@ def _create_decomp_style_dict():
                                "linewidth": 4,
                                "color": "tab:green"}
     style_dict[CustomMetric.MEMBER_DEVIATION] = {"linestyle": "dotted",
-                                                  "linewidth": 4,
-                                                  "color": "tab:green"}
+                                                 "linewidth": 4,
+                                                 "color": "tab:green"}
 
     style_dict[CustomMetric.EXP_MEMBER_LOSS] = {"linestyle": "dotted",
-                                                 "linewidth": 2,
-                                                 "color": "tab:red"}
+                                                "linewidth": 2,
+                                                "color": "tab:red"}
 
     style_dict["ensemble_risk"] = {"linestyle": "solid",
                                    "linewidth": 4,
@@ -259,8 +259,9 @@ def plot_bvd(results,
 
     def _plot_cmetric(cmetric):
         if not hasattr(results, cmetric):
-                print("metric requested but not computed")
-                return
+            print(f"metric requested but not computed {cmetric}")
+            # okay for ENSEMBLE_BIAS and ENSEMBLE_VARIANCE
+            return
         values = getattr(results, cmetric)
         ax.plot(xvalues, values[:, test_split], **style_dict[cmetric], label=cmetric)
         legend_strings.append(cmetric)

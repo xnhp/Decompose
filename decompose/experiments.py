@@ -112,7 +112,8 @@ class BVDExperiment(object):
                  non_centroid_combiner=None,
                  ensemble_warm_start=None,
                  compute_zero_one_decomp=False,
-                 save_decompositions=False,
+                 # TODO remove from other run files aswell
+                 save_decompositions=True,
                  decompositions_prefix="decomposition_objects/",
                  trials_progress_bar=False,
                  smoothing_factor=1e-9,

@@ -7,7 +7,7 @@ from utils import CustomMetric
 
 identifier = "covariance"
 exp = MyExperiment(
-    identifier,
+    __file__,
     load_standard_dataset("california", frac_training=0.5, normalize_data=True),
     BVDExperiment(
         RandomForestRegressor(),
@@ -15,7 +15,6 @@ exp = MyExperiment(
         parameter_name="n_estimators",
         parameter_values=[15],
         save_decompositions=True,
-        decompositions_prefix=identifier,
     ),
     n_trials=3,
     custom_metrics={

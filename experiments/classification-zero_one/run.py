@@ -7,25 +7,22 @@ from utils import CustomMetric, DatasetId
 
 custom_metrics = {
     CustomMetric.MEMBER_DEVIATION,
-    CustomMetric.EXP_MEMBER_LOSS
+    CustomMetric.EXP_MEMBER_LOSS,
+    CustomMetric.ENSEMBLE_VARIANCE,
+    CustomMetric.ENSEMBLE_BIAS
 }
 
-exp_name = "classification-zero_one"
+dataset = load_standard_dataset(DatasetId.MNIST, frac_training=0.5, label_noise=0.3)
 
 exp = MyExperiment(
-    exp_name,
-    load_standard_dataset(
-        DatasetId.MNIST,
-        frac_training=0.5,
-        label_noise=0.3
-    ),
+    __file__,
+    dataset,
     BVDExperiment(
         RandomForestClassifier(n_estimators=5),
         loss="zero_one",
         parameter_name="n_estimators",
         parameter_values=range(1, 20, 2),
         save_decompositions=True,
-        decompositions_prefix=exp_name + "_decomp"
     ),
     n_trials=3,
     custom_metrics=custom_metrics

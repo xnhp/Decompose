@@ -14,12 +14,13 @@ StandardDataset = Tuple
 
 class MyExperiment(object):
 
-    def __init__(self, identifier: str, dataset: StandardDataset, experiment: BVDExperiment, n_trials=1, debug=False,
+    def __init__(self, file:str, dataset: StandardDataset, experiment: BVDExperiment, n_trials=1, debug=False,
                  custom_metrics=None):
         if custom_metrics is None:
             custom_metrics = set()
         self.debug = debug
-        self.identifier = identifier
+        self.path = os.path.dirname(file)  # directory where results of this experiment are expected
+        self.identifier = os.path.basename(os.path.dirname(file))
         self.results_filename = "results.pkl"
         self.experiment = experiment
         self.dataset = dataset
@@ -31,8 +32,7 @@ class MyExperiment(object):
 
         print("accessing cached property")
 
-        results_filepath = os.path.join(os.path.dirname(__file__), "experiments", self.identifier,
-                                        self.results_filename)
+        results_filepath = os.path.join(self.path, self.results_filename)
 
         if os.path.exists(results_filepath) and not self.debug:
             print("Saved results present, using these (possibly out of sync, check git status)")
@@ -50,22 +50,29 @@ class MyExperiment(object):
         return results
 
     def plot(self, x_label=None, custom_metrics={}):
-        ax = plotting_utils.plot_bvd(self.get_results, x_label=x_label, integer_x=True, custom_metrics=custom_metrics)
-        fname = os.path.join(os.path.dirname(__file__), "experiments", self.identifier, "line-plot")
+        ax = plotting_utils.plot_bvd(
+            self.get_results,
+            x_label=x_label,
+            integer_x=True,
+            custom_metrics=custom_metrics,
+            ensemble_bias=CustomMetric.ENSEMBLE_BIAS in custom_metrics,
+            ensemble_variance=CustomMetric.ENSEMBLE_VARIANCE in custom_metrics
+        )
+        fname = os.path.join(self.path, "line-plot")
         plt.savefig(fname)
         plt.show()
         return ax
-    
+
     def _plot_mat_mds(self, distmat, cmetric, param_idx, title):
         # to overlay multiple MDS plots, see https://scikit-learn.org/stable/auto_examples/manifold/plot_mds.html
         mds = manifold.MDS(
-                n_components=2,
-                max_iter=3000,
-                eps=1e-9,
-                random_state=0,
-                dissimilarity="precomputed",
-                n_jobs=4,
-                n_init=4
+            n_components=2,
+            max_iter=3000,
+            eps=1e-9,
+            random_state=0,
+            dissimilarity="precomputed",
+            n_jobs=4,
+            n_init=4
         )
         mds_fit = mds.fit(distmat)
         pos = mds_fit.embedding_
@@ -85,8 +92,6 @@ class MyExperiment(object):
     def plot_mat_mds(self, cmetric, title):
         for param_idx, split_idx in self.get_results[cmetric]:
             self._plot_mat_mds(self.get_results[cmetric][(param_idx, split_idx)], cmetric, param_idx, title)
-        
-        
 
     def plot_mat_heat(self, cmetric):
         for param_idx, split_idx in self.get_results[cmetric]:
@@ -99,6 +104,6 @@ class MyExperiment(object):
             self._savefig(f"distmat_heat-{cmetric}-{parameter_name}-{parameter_value}")
 
     def _savefig(self, fname):
-        savepath = os.path.join(os.path.dirname(__file__), "experiments", self.identifier, fname + ".png")
+        savepath = os.path.join(self.path, fname + ".png")
         plt.savefig(savepath)
         plt.close()

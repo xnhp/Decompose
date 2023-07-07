@@ -1,3 +1,7 @@
+---
+alias: zero-one max depth experiments
+---
+
 ![Plot](line-plot.png)
 
 # 2023-07-07

@@ -7,17 +7,14 @@ from utils import CustomMetric, DatasetId
 
 # Classification / Discrete
 
-identifier = "distance_matrices-zero_one-max_depth"
 exp = MyExperiment(
-    identifier,
-    load_standard_dataset(DatasetId.WINE, frac_training=0.5, label_noise=0.3),
+    __file__,
     BVDExperiment(
         RandomForestClassifier(),
         loss="zero_one",
         parameter_name="max_depth",
         parameter_values=range(1, 32, 4),
         save_decompositions=True,
-        decompositions_prefix=identifier + "-decomp",
     ),
     n_trials=3,
     custom_metrics={
