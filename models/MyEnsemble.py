@@ -6,32 +6,10 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from models.util import _validate_labels_plus_minus_one, _validate_labels_zero_one
 
 
-class AdaBoost(object):
+class MyEnsemble(object):
     """
-    This implementation of AdaBoost was used to perform the experiments in the paper for which this library was written.
-    Unless specifically wishing to measure bias, variance and diversity of the ensemble, it is recommended to use
-    sklearn's AdaBoostClassifier instead
-
-    Parameters
-    ----------
-    base_estimator : sklearn classifier (default=DecisionTreeClassifier(max_depth=1))
-        The base estimator to be used in the AdaBoost ensemble
-    n_estimators : int (default=5)
-        Number of base estimators of which the ensemble is to be comprised
-    normalise_estimator_weights : boolean (default=False)
-        Whether the estimators weights are to be normalised to sum to one
-    warm_start : boolean (default=False)
-        If warm_start is True, fit adds new estimators to the ensemble up to n_estimators but keeps existing ones. If
-        false, old models are overwritten and n_estimators new models are trained
-    half_factor : boolean (default=True)
-        There are two formulations of AdaBoost, with the weights assigned to new models differing by a factor of a half
-         between the two. This parameter determines whether the factor of a half should be included or not.
-    shrinkage : float (default=None)
-        If this value is not None, shrinkage is applied to the ensemble members, with this value determining the size
-        of shrinkage to be used
-    shrinkage_first_estimator (default=False)
-        If shrinkage is applied, this value determines whether the first model in the ensemble should have the shrinkage
-        factor applied
+    Customization of Adaboost (adaboost.py).
+    No changes yet.
     """
 
     def __init__(self, base_estimator=DecisionTreeClassifier(max_depth=1), n_estimators=5,
