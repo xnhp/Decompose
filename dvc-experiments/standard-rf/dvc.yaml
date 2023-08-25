@@ -3,12 +3,8 @@ stages:
     cmd: python run.py
     deps:
     - run.py
-    - ../../decompose
-    - ../../datasets
     params:
-      - bvd_config
-      - run_experiment_config
-      - data
+    - params.yaml:
     outs:
-    - decomposition_objects
+    - .\decomposition_objects\
     - results.pkl

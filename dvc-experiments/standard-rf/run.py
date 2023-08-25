@@ -12,7 +12,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 def main():
     yaml = YAML(typ="safe")
-    params = yaml.load(open("params.yaml", encoding="utf-8"))  # use the params show thing instead
+    params = yaml.load(open("../params.yaml", encoding="utf-8"))
     model = StandardRFRegressor()
     bvd_exp = BVDExperiment(model, **params['bvd_config'])
     dataset = load_standard_dataset(params['data']['dataset_name'], frac_training=params['data']['frac_training'])

@@ -1,0 +1,43 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python run.py
+    deps:
+    - path: ../../datasets
+      hash: md5
+      md5: 3ffed57520c782d5cdf43406180a8406.dir
+      size: 54952136
+      nfiles: 6
+    - path: ../../decompose
+      hash: md5
+      md5: 791292e06116100da4ee3b0be3aa73b0.dir
+      size: 403249
+      nfiles: 34
+    - path: run.py
+      hash: md5
+      md5: fd7ca8cb84bc570d821e8d8563ea67c4
+      size: 1000
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          dataset_name: california
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 1
+    outs:
+    - path: decomposition_objects
+      hash: md5
+      md5: 9c8561a16408ce45a31def2a4e179f14.dir
+      size: 12673716
+      nfiles: 1
+    - path: results.pkl
+      hash: md5
+      md5: b732b604a48095a08dfc685ddca7d717
+      size: 6193110
