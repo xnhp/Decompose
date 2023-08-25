@@ -1,6 +1,8 @@
+import logging
 import os
 from typing import Tuple
 
+import numpy as np
 from cached_property import cached_property
 from matplotlib import pyplot as plt
 from sklearn import manifold
@@ -49,7 +51,7 @@ class MyExperiment(object):
 
         return results
 
-    def plot(self, x_label=None, custom_metrics={}):
+    def plot(self, x_label=None, custom_metrics={}, show=False):
         ax = plotting_utils.plot_bvd(
             self.get_results,
             x_label=x_label,
@@ -60,7 +62,8 @@ class MyExperiment(object):
         )
         fname = os.path.join(self.path, "line-plot")
         plt.savefig(fname)
-        plt.show()
+        if show:
+            plt.show()
         return ax
 
     def _plot_mat_mds(self, distmat, cmetric, param_idx, title):
@@ -107,3 +110,27 @@ class MyExperiment(object):
         savepath = os.path.join(self.path, fname + ".png")
         plt.savefig(savepath)
         plt.close()
+
+
+def plot_staged_errors(experiments, attr_getter, title=None, start_at=0):
+    colors = ["green", "orange", "blue", "red", "yellow", "brown"]
+    for exp_idx, exp in enumerate(experiments):
+        errs = attr_getter(exp)
+        error_rates = np.mean(errs, axis=2)
+        for trial_idx in range(error_rates.shape[0]):
+            # means, mins, maxs = self._aggregate_trials(error_rates[trial_idx])
+            rates = error_rates[trial_idx][start_at:]
+            if np.max(rates) > 1:
+                logging.warning("y values greater than 1, clipping")
+                # clipping has no effect otherwise
+            ys = np.clip(rates, 0, 1)
+            plt.plot(ys, label=exp.identifier, color=colors[exp_idx])
+            # https://stackoverflow.com/a/43069856/156884 but does not really make sense here
+            # plt.fill_between(xs, mins, maxs, alpha=0.3, facecolor="green")
+    plt.legend()
+    # TODO always show first x-axis tick to make clear that we don't necessary start at zero
+    plt.xlabel("Number of trees")
+    plt.ylabel("Ensemble Risk")
+    plt.title(title)
+    plt.show()
+

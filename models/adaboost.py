@@ -81,7 +81,7 @@ class AdaBoost(object):
         while len(self.estimators_) < self.n_estimators:
             new_estimator = copy.deepcopy(self.base_estimator)
             new_estimator.fit(data, labels, self.sample_weight)
-            new_estimator = AdaBoostModelWrapper(new_estimator)
+            new_estimator = ModelWrapper(new_estimator)
             estimator_error = 1. - new_estimator.score(data, labels, sample_weight=self.sample_weight)
             # new_estimator_weight = np.log((1 - estimator_error) / estimator_error)
             # Some papers use half the new_estimator weight, though this means our model no longer matches
@@ -199,7 +199,7 @@ class AdaBoost(object):
             yield np.sign(f_ens)
 
 
-class AdaBoostModelWrapper(object):
+class ModelWrapper(object):
     """
     A wrapper for the base_estimator used in AdaBoost, standardises predict, decision_function etc for use with
     BVDExperiment class
@@ -287,6 +287,11 @@ class AdaBoostModelWrapper(object):
         """
         self.model.set_params(**params)
         return self
+
+    # def fit(self, data, truth, weights):
+    #     mdl = self.model
+    #     mdl.fit(self=mdl, X=data, y=truth)
+    #     # self.model.fit(data, truth)
 
 class LogitBoost(object):
     """

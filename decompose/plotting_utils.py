@@ -236,7 +236,7 @@ def plot_bvd(results,
         legend_strings.append(legend_string)
 
     if ensemble_bias:
-        # If ensemble_bias does't exist, we assume its an effect decompose and try to get the ensemble bias-effect
+        # If ensemble_bias doesn't exist, we assume it's an effect decompose and try to get the ensemble bias-effect
         ensemble_bias = results.ensemble_bias if hasattr(results, "ensemble_bias") else results.ensemble_bias_effect
         legend_string = "ensemble bias" if hasattr(results, "ensemble_bias") else "ensemble bias-effect"
         ax.plot(xvalues, ensemble_bias[:, test_split], **style_dict["ensemble_bias"], label=legend_string)

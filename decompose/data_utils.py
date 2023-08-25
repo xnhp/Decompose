@@ -261,15 +261,23 @@ def load_data(dataset_name, **params):
         labels = dataset["target"].to_numpy()
 
     elif dataset_name == "mnist":
-
         train_data = np.load(data_dir + "mnist_train_data.npy")
         test_data = np.load(data_dir + "mnist_test_data.npy")
         train_labels = np.load(data_dir + "mnist_train_labels.npy")
         test_labels = np.load(data_dir + "mnist_test_labels.npy")
         train_data = train_data.reshape((-1, 784))/255
         test_data = test_data.reshape((-1, 784))/255
-
         return train_data, train_labels, test_data, test_labels
+
+    elif dataset_name == "mnist_subset":
+        n_points = 6000
+        train_data = np.load(data_dir + "mnist_train_data.npy")
+        test_data = np.load(data_dir + "mnist_test_data.npy")
+        train_labels = np.load(data_dir + "mnist_train_labels.npy")
+        test_labels = np.load(data_dir + "mnist_test_labels.npy")
+        train_data = train_data.reshape((-1, 784))/255
+        test_data = test_data.reshape((-1, 784))/255
+        return train_data[:n_points], train_labels[:n_points], test_data[:n_points], test_labels[:n_points]
 
     elif dataset_name in ["german_credit", "south_german_credit"]:
         data_file = data_dir + "credit/SouthGermanCredit.asc"

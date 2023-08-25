@@ -248,6 +248,13 @@ class BVDExperiment(object):
         all_trial_indices = self._generate_bootstraps(train_data,
                                                       replace=self.bootstrap,
                                                       max_samples=self.max_samples)
+        # use as, where t_idx is trial index
+        # my_train_data = train_data[all_trial_indices[t_idx], :]
+        # my_train_labels = train_labels[all_trial_indices[t_idx]]
+        # if train_sample_weight is not None:
+        #     my_train_sample_weight = train_sample_weight[all_trial_indices[t_idx]]
+        # else:
+        #     my_train_sample_weight = None
 
         logger.debug("Now training: " + str(self.model.__class__.__name__) + ", varying " + str(self.parameter_name))
         logger.debug(f"Model info: {self.model}")
@@ -287,11 +294,16 @@ class BVDExperiment(object):
                 np_output = np.zeros([n_trials, n_estimators, n_test, self.n_classes])
             elif self.decomposition_class == ZeroOneLoss:
                 np_output = np.zeros([n_trials, n_estimators, n_test], dtype=int)
+                # np_output_train = np.zeros([n_trials, n_estimators, n_train], dtype=int)
             else:
                 np_output = np.zeros([n_trials, n_estimators, n_test])
 
             if self.compute_zero_one_decomp:
                 np_class_pred = np.zeros([n_trials, n_estimators, n_test], dtype=int)
+                # np_class_pred_train = np.zeros([n_trials, n_estimators, n_train], dtype=int)
+
+            np_output_train = []
+            _train_labels = []
 
             # Run each trial of the experiment
             range_func = range if not self.trials_progress_bar else trange
@@ -328,12 +340,19 @@ class BVDExperiment(object):
                     print(f"Should be {n_estimators} models, are actually {len(cur_model.estimators_)}")
                     logger.warning(f"Should be {n_estimators} models, are actually {len(cur_model.estimators_)}")
 
+
+                # np_output_train = np.zeros([n_trials, n_estimators, n_train], dtype=int)
+                train_out = np.zeros([n_estimators, my_train_data.shape[0]])
                 if hasattr(cur_model, "estimators_"):
                     for est_idx, member in enumerate(cur_model.estimators_):
                         np_output[t_idx, est_idx, ...] = self._get_pred(member, test_data)
+                        train_preds = self._get_pred(member, my_train_data)
+                        train_out[est_idx, ...] = train_preds
                         if self.compute_zero_one_decomp:
                             np_class_pred[t_idx, est_idx, ...] = cur_model.estimators_[est_idx].predict(test_data)
-
+                            # np_class_pred_train[t_idx, est_idx, ...] = cur_model.estimators_[est_idx].predict(my_train_data)
+                    np_output_train.append(train_out)
+                    _train_labels.append(my_train_labels)
                 else:
                     assert n_estimators == 1, f"n_estimators should be 1 for single model, not {n_estimators}"
                     np_output[t_idx, 0, ...] = self._get_pred(cur_model, test_data)
@@ -350,42 +369,44 @@ class BVDExperiment(object):
                     split_np_class_pred = np.array_split(np_class_pred, n_test_splits, axis=2)
 
                 this_param_train_error += (1 / n_trials) * loss_func(my_train_labels, train_preds,
-                                                                   sample_weight=my_train_sample_weight)
+                                                                     sample_weight=my_train_sample_weight)
                 for s_idx in range(n_test_splits):
                     this_test_error = loss_func(split_test_labels[s_idx],
-                                           split_test_preds[s_idx],
-                                           sample_weight=split_test_weights[s_idx])
+                                                split_test_preds[s_idx],
+                                                sample_weight=split_test_weights[s_idx])
                     this_param_test_error[s_idx] += (1 / n_trials) * this_test_error
                     if self.per_trial_test_error:
                         per_trial_test_errors[t_idx, s_idx] = this_test_error
 
                 if hasattr(cur_model, "estimators_") and \
                         (self.parameter_name != "n_estimators" or not self.ensemble_warm_start):
-                    avg_member_train_loss, avg_member_test_loss = self._get_individual_errors(cur_model, my_train_data,
-                                                                                              my_train_labels, test_data,
-                                                                                              test_labels, n_test_splits,
-                                                                                              loss_func, train_sample_weight,
-                                                                                              test_sample_weight)
-                    this_param_member_train_error += (1 / n_trials) * avg_member_train_loss
-                    for split_idx in range(n_test_splits):
-                        this_param_member_test_error[split_idx] += (1 / n_trials) * avg_member_test_loss[split_idx]
+                    # TODO can we just comment this out to avoid predicting al of it twice?
+                    # avg_member_train_loss, avg_member_test_loss = self._get_individual_errors(cur_model, my_train_data,
+                    #                                                                           my_train_labels, test_data,
+                    #                                                                           test_labels, n_test_splits,
+                    #                                                                           loss_func, train_sample_weight,
+                    #                                                                           test_sample_weight)
+                    # this_param_member_train_error += (1 / n_trials) * avg_member_train_loss
+                    # for split_idx in range(n_test_splits):
+                    #     this_param_member_test_error[split_idx] += (1 / n_trials) * avg_member_test_loss[split_idx]
+                    pass
 
                 # If we are varying ensemble size, we save evaluating individual models until the last (largest)
                 # parameter value and enter them all into the results_object in a single pass
-                if param_idx + 1 == len(self.parameter_values) \
-                        and self.parameter_name == "n_estimators" \
-                        and self.ensemble_warm_start:
-                    logger.debug("Evaluating all member training and test losses at end of run")
-                    member_train_losses, member_test_losses = self._get_individual_errors(cur_model, my_train_data,
-                                                                                          my_train_labels, test_data,
-                                                                                          test_labels,
-                                                                                          n_test_splits, loss_func,
-                                                                                          return_mean=False)
-                    # Fill in the results_object
-                    for param_idx2, param_val2 in enumerate(self.parameter_values):
-                        for results_object in self.all_results:
-                            results_object.member_test_error[param_idx2, :] += (1. / self.n_trials) * member_test_losses[:param_val2,:].mean(axis=0)
-                            results_object.member_train_error[param_idx2] += (1. / self.n_trials) * member_train_losses[:param_val2].mean()
+                # if param_idx + 1 == len(self.parameter_values) \
+                #         and self.parameter_name == "n_estimators" \
+                #         and self.ensemble_warm_start:
+                #     logger.debug("Evaluating all member training and test losses at end of run")
+                #     member_train_losses, member_test_losses = self._get_individual_errors(cur_model, my_train_data,
+                #                                                                           my_train_labels, test_data,
+                #                                                                           test_labels,
+                #                                                                           n_test_splits, loss_func,
+                #                                                                           return_mean=False)
+                #     # Fill in the results_object
+                #     for param_idx2, param_val2 in enumerate(self.parameter_values):
+                #         for results_object in self.all_results:
+                #             results_object.member_test_error[param_idx2, :] += (1. / self.n_trials) * member_test_losses[:param_val2,:].mean(axis=0)
+                #             results_object.member_train_error[param_idx2] += (1. / self.n_trials) * member_train_losses[:param_val2].mean()
 
             errors = [this_param_train_error, this_param_test_error]
             if self.parameter_name != "n_estimators" or not self.ensemble_warm_start:
@@ -401,7 +422,7 @@ class BVDExperiment(object):
                 decomp = self.decomposition_class(split_output[s_idx], split_test_labels[s_idx])
 
                 self.results_object.update_results(decomp, param_idx, errors, split_idx=s_idx,
-                                                   sample_weight=split_test_weights[s_idx], custom_metrics=custom_metrics)
+                                                   sample_weight=split_test_weights[s_idx], custom_metrics=custom_metrics, np_output_train=np_output_train, train_labels=_train_labels)
                 if self.non_centroid_combiner is not None:
                     self.non_centroid_results_object.update_results(decomp, param_idx, errors, split_idx=s_idx,
                                                                     sample_weight=split_test_weights[s_idx],
@@ -409,7 +430,8 @@ class BVDExperiment(object):
                 if self.compute_zero_one_decomp:
                     zero_one_decomp = ZeroOneLoss(split_np_class_pred[s_idx], split_test_labels[s_idx])
                     self.zero_one_results.update_results(zero_one_decomp, param_idx, errors, split_idx=s_idx,
-                                                         sample_weight=split_test_weights[s_idx], custom_metrics=custom_metrics)
+                                                         sample_weight=split_test_weights[s_idx], custom_metrics=custom_metrics,
+                                                         np_output_train=np_output_train)
 
         return self.results_object
 
@@ -479,8 +501,8 @@ class BVDExperiment(object):
             member_train_losses[est_idx] += loss_func(my_train_labels, train_preds, sample_weight=train_sample_weight)
             for s_idx in range(n_test_splits):
                 member_test_losses[est_idx, s_idx] += loss_func(split_test_labels[s_idx],
-                                                          split_test_preds[s_idx],
-                                                          sample_weight=split_test_weights[s_idx])
+                                                                split_test_preds[s_idx],
+                                                                sample_weight=split_test_weights[s_idx])
         if return_mean:
             avg_member_train_loss = member_train_losses.mean()
             avg_member_test_loss = member_test_losses.mean(axis=0)
@@ -912,7 +934,6 @@ class AbstractResultsObject(object):
             logger.debug(f"Writing results to {file_name}")
 
 
-
 class ResultsObject(AbstractResultsObject):
     """
     Results from BVDExperiment are stored in ResultsObject instances.
@@ -986,7 +1007,8 @@ class ResultsObject(AbstractResultsObject):
         if save_decompositions:
             self.decomposition_object_names = [[] for _ in range(n_test_splits)]
 
-    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set()):
+    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set(),
+                       np_output_train=None, train_labels=None):
         """
         Function used to update ResultsObject for a new parameter using Decomposition object and list of train/test errors
 
@@ -1025,6 +1047,7 @@ class ResultsObject(AbstractResultsObject):
             # This also doesn't feel great, is it already filled?
             self.per_trial_test_errors[param_idx, :, split_idx] = errors[-1][:, split_idx]
 
+        # average over evaluated test points (expectation over X)
         self.ensemble_bias[param_idx, split_idx] = np.average(decomp.ensemble_bias,
                                                               weights=sample_weight)
 
@@ -1041,6 +1064,10 @@ class ResultsObject(AbstractResultsObject):
 
         self.ensemble_risk[param_idx, split_idx] = np.average(decomp.expected_ensemble_loss,
                                                               weights=sample_weight)
+
+        self.staged_errors = decomp.staged_errors_regr()
+
+        # self.staged_errors_train = decomp.staged_errors_train(np.array(np_output_train), np.array(train_labels))
 
         if utils.CustomMetric.COVMAT in custom_metrics:
             self[utils.CustomMetric.COVMAT][(param_idx, split_idx)] = decomp.member_covariance
@@ -1066,7 +1093,6 @@ class ResultsObject(AbstractResultsObject):
                 with open(decomposition_filename, "wb") as file_:
                     pickle.dump(decomp, file_)
                     logger.debug(f"writing decompose object to {decomposition_filename}")
-
 
     def __getitem__(self, item):
         return getattr(self, item)
@@ -1370,8 +1396,11 @@ class ZeroOneResultsObject(AbstractResultsObject):
         setattr(self, utils.CustomMetric.MEMBER_DEVIATION, np.zeros((n_parameter_values, n_test_splits)))
         setattr(self, utils.CustomMetric.DISTMAT_DHAT, dict())
         setattr(self, utils.CustomMetric.DISTMAT_DISAGREEMENT, dict())
+        self.staged_errors = None
 
-    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set()):
+    def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set(),
+                       np_output_train=None, train_labels=None
+        ):
         """
 
         Save the results of the current split given by `decomp` into this results object.
@@ -1379,6 +1408,9 @@ class ZeroOneResultsObject(AbstractResultsObject):
 
         Parameters
         ----------
+        train_data
+        train_labels
+        train_weights
         custom_metrics: Custom metrics added by me to compute
         decomp : Decomposition
             Decomposition object for the experiment
@@ -1419,11 +1451,16 @@ class ZeroOneResultsObject(AbstractResultsObject):
 
         self.diversity_effect[param_idx, split_idx] = np.average(decomp.diversity_effect, weights=sample_weight)
 
+        self.staged_errors = decomp.staged_errors()
+
+        self.staged_errors_train = decomp.staged_errors_train(np.array(np_output_train), np.array(train_labels))
+
         # TODO make other computations optional aswell
         from utils import CustomMetric
 
         if CustomMetric.MEMBER_DEVIATION in custom_metrics:
-            self[CustomMetric.MEMBER_DEVIATION][param_idx, split_idx] = np.average(decomp.member_deviation, weights=sample_weight)  # average over all test examples
+            self[CustomMetric.MEMBER_DEVIATION][param_idx, split_idx] = np.average(decomp.member_deviation,
+                                                                                   weights=sample_weight)  # average over all test examples
 
         if CustomMetric.EXP_MEMBER_LOSS in custom_metrics:
             v = np.average(decomp.expected_member_loss, weights=sample_weight)
@@ -1437,13 +1474,8 @@ class ZeroOneResultsObject(AbstractResultsObject):
             self[CustomMetric.DISTMAT_DISAGREEMENT][(param_idx, split_idx)] = decomp.member_pairwise_matrix(
                 distances.disagreement_distance)
 
-
-
-
-
     def __getitem__(self, item):
         return getattr(self, item)
-
 
     def print_summary(self, splits=[0]):
         """
@@ -1494,6 +1526,7 @@ def _add_model_smoothing(pred, epsilon=1e-9):
         if epsilon < 0 or epsilon > 1.:
             raise ValueError("Value between 0 and 1 expected for smoothing factor")
         return (1 - epsilon) * pred + epsilon * (np.ones_like(pred)) * (1. / pred.shape[1])
+
 
 def _log_git_info():
     """

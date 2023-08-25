@@ -20,6 +20,7 @@ import numpy as np
 from cached_property import cached_property
 
 import utils
+from models import util
 
 
 class BregmanDecomposition(object):
@@ -74,8 +75,10 @@ class BregmanDecomposition(object):
         if len(p.shape) != len(q.shape):
             raise ValueError(f"p and q should be the same shape, are {p.shape} and {q.shape}")
         if len(p.shape) == 3:
-            grad_term = self._generator_gradient(q) * (p - q)
+            grad_term = self._generator_gradient(q) * (p - q)  # case of scalars?
         else:
+            # cf obsidian://open?vault=Uni%20Vault&file=numpy%20einsum
+            # TODO what is l dimension?
             grad_term = np.einsum("ijkl,ijkl->ijk", self._generator_gradient(q), p - q)
         return self.bregman_generator(p) - self.bregman_generator(q) - grad_term
 
@@ -89,6 +92,12 @@ class BregmanDecomposition(object):
         return self._bregman_divergence(centroid, individuals).mean(axis=axes3).squeeze()
 
     def _error_function(self, axes1=(), axes2=()):
+        # axes1 combines etas
+        # axes2 combines means of errors
+        # axes1=1, axes2=0 for \\mathbb{E}_D[ B (y, \\bar{q})]
+        #   axes1=1 combines member etas
+        #   axes2=0 combines errors over trials
+        # axes2=(0,1) for \\mathbb{E}_D[ \\frac{1}{M} \\sum_{i=1}^M B(y, q_i)]`.
         # For each of the expected error/bias terms in the double decomposition_class we:
         # 1) Average the outputs over one or more axes;
         # 2) Apply the gradient function for the generator ;
@@ -103,17 +112,14 @@ class BregmanDecomposition(object):
         error = self._compute_error(x, self.labels)
         return np.mean(error, axis=axes2).squeeze()
 
-
     @cached_property
     def member_covariance(self):
-        # individuals = self.aggregator(self.pred, axis=(0)).squeeze()  # aggregate over trials
         # TODO is this correct? copied from below
         individuals = self._inverse_generator_gradient(
             self.etas.mean(axis=(), keepdims=True)
         )
         individuals = np.average(individuals, axis=0)
         return np.corrcoef(individuals, rowvar=True)
-
 
     @cached_property
     def expected_ensemble_loss(self):
@@ -271,6 +277,13 @@ class BregmanDecomposition(object):
     def non_centroid_expected_ensemble_risk(self, combination_func):
         return self._non_centroid_error_function(combination_func, 1, 0)
 
+    def staged_errors_regr(self):
+        return util.staged_errors_regr(self)
+
+    def staged_errors_train(self, preds, labels):
+        raise NotImplementedError
+        # return util.staged_errors_train(self, preds, labels)
+
 
 class MarginDecomposition(BregmanDecomposition):
     """
@@ -329,17 +342,28 @@ class EffectDecomposition(object):
 
     def error_function(self, axes1=(), axes2=()):
         if axes1 != ():
+            # axes1=1: aggregate over individual ensemble members (i.e. apply combiner)
             x = self.aggregator(self.pred, axis=axes1, weights=self.weights)
         else:
             x = self.pred
         error = self._compute_error(x, self.labels)  # exp. ens. loss: disagreement vector (for each trial?)
-        if self.weights is not None:
-            weights = np.mean(self.weights / self.weights.mean(axis=1, keepdims=True), axis=axes1, keepdims=True)
+        if self.weights is not None:  # apply weights
+            weights = np.mean(
+                self.weights / self.weights.mean(axis=1, keepdims=True),
+                axis=axes1,
+                keepdims=True
+            )
             assert weights.shape == error.shape
             error = weights * error
         r = error.mean(
             axis=axes2).squeeze()  # exp. ens. loss: mean over trials -- now one value for each test data point (I think)
         return r
+
+    def staged_errors(self):
+        return util.staged_errors(self)
+
+    def staged_errors_train(self, preds, labels):
+        return util.staged_errors_train(self, preds, labels)
 
     def _central_model_difference(self, axes1=(), axes2=(), axes3=()):
         """
@@ -378,7 +402,7 @@ class EffectDecomposition(object):
 
         Returns
         -------
-        different : ndarray
+        difference : ndarray
             The difference in loss when going from the individual models to the central model
 
         """
@@ -427,9 +451,7 @@ class EffectDecomposition(object):
     @cached_property
     def member_deviation(self):
         """
-        E[ 1/M \sum_i 1/n L_01(\bar{Q}, Q_i) ] --- I hope
-        This is an upper-bound to diversity-effect (using that E_X[L_01] is (normalised) symmetric difference, which is a metric)
-        Returns
+        see Obsidian
         -------
 
         """
