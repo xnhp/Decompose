@@ -1,0 +1,14 @@
+stages:
+  train:
+    cmd: python run.py
+    deps:
+    - run.py
+    - ../../decompose
+    - ../../datasets
+    params:
+      - bvd_config
+      - run_experiment_config
+      - data
+    outs:
+    - decomposition_objects
+    - results.pkl
