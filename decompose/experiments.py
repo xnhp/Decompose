@@ -1,5 +1,6 @@
 import copy
 import numbers
+import os
 import pickle
 
 import numpy as np
@@ -11,8 +12,8 @@ from sklearn.utils import shuffle
 from tqdm import tqdm
 from tqdm import trange
 
-import distances
-import utils
+from decompose import distances
+from decompose import utils
 from decompose import LogisticMarginLoss, ExponentialMarginLoss
 from decompose import ZeroOneLoss
 from decompose import SquaredLoss, CrossEntropy, PoissonLoss
@@ -1089,6 +1090,8 @@ class ResultsObject(AbstractResultsObject):
                 # When updating the ensemble size, we don't need to save for every parameter index, since
                 # we can cheaply reconstruct smaller ensembles from the largest one
                 decomposition_filename = f"{self.decomposition_prefix}_{param_idx}_{split_idx}.pkl"
+                from pathlib import Path
+                Path(os.path.dirname(decomposition_filename)).mkdir(parents=True, exist_ok=True)
                 self.decomposition_object_names[split_idx].append(decomposition_filename)
                 with open(decomposition_filename, "wb") as file_:
                     pickle.dump(decomp, file_)

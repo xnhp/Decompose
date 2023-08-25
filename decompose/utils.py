@@ -3,6 +3,14 @@ from enum import auto
 import numpy as np
 from strenum import StrEnum
 
+from decompose.regressors import StandardRFRegressor
+
+
+def get_model(identifier: str):
+    models = {
+        'standard-rf-regressor': StandardRFRegressor()
+    }
+    return models[identifier]
 
 def pairwise_matrix(data, fun):
     """

@@ -5,8 +5,9 @@ import scipy
 from scipy.optimize._linesearch import line_search
 from sklearn.tree import DecisionTreeRegressor
 
-from models.BaseHorizontalEnsemble import BaseHorizontalEnsemble
-from models.util import deep_tree_params
+
+from decompose.BaseHorizontalEnsemble import BaseHorizontalEnsemble
+from decompose.util import deep_tree_params  # TODO make these DVC params?
 
 
 # noinspection PyMethodMayBeStatic

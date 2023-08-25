@@ -15,7 +15,7 @@ import matplotlib
 from sklearn.metrics import zero_one_loss, mean_squared_error
 
 from decompose import BVDExperiment
-from utils import CustomMetric
+from decompose.utils import CustomMetric
 
 
 def _create_decomp_style_dict():

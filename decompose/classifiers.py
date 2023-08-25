@@ -4,8 +4,8 @@ import numpy as np
 import scipy
 from sklearn.tree import DecisionTreeClassifier
 
-from models.BaseHorizontalEnsemble import BaseHorizontalEnsemble
-from models.util import deep_tree_params
+from decompose.BaseHorizontalEnsemble import BaseHorizontalEnsemble
+from decompose.util import deep_tree_params
 
 
 class StandardRFClassifier(BaseHorizontalEnsemble):

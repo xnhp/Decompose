@@ -1,10 +1,10 @@
 stages:
   train:
-    cmd: python run.py
+    cmd: python ../run_bvd.py
     deps:
-    - run.py
+    - ../run_bvd.py
     params:
     - params.yaml:
     outs:
-    - .\decomposition_objects\
+    - decomposition_objects
     - results.pkl

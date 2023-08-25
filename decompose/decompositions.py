@@ -19,8 +19,8 @@ import numpy
 import numpy as np
 from cached_property import cached_property
 
-import utils
-from models import util
+from decompose import util
+from decompose import utils
 
 
 class BregmanDecomposition(object):

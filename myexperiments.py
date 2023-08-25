@@ -9,7 +9,7 @@ from sklearn import manifold
 
 from decompose import BVDExperiment, plotting_utils
 from decompose.experiments import load_results, AbstractResultsObject
-from utils import CustomMetric
+from decompose.utils import CustomMetric
 
 StandardDataset = Tuple
 

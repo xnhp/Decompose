@@ -3,8 +3,8 @@ import copy
 from scipy.special import expit
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
-from models.util import _validate_labels_plus_minus_one, _validate_labels_zero_one
 
+from decompose import util
 
 class AdaBoost(object):
     """
@@ -65,7 +65,7 @@ class AdaBoost(object):
 
         """
         # start with uniform weights over training data
-        labels = _validate_labels_plus_minus_one(labels)
+        labels = util._validate_labels_plus_minus_one(labels)
         if not hasattr(self, "sample_weight"):
             self.sample_weight = np.ones(data.shape[0]) / data.shape[0]
         if self.warm_start:
@@ -176,7 +176,7 @@ class AdaBoost(object):
             The 0-1 loss of the ensemble
 
         """
-        labels = _validate_labels_plus_minus_one(labels)
+        labels = util._validate_labels_plus_minus_one(labels)
         return ((self.predict(data) * labels) > 0).mean()
 
     def staged_predict(self, data):
@@ -339,7 +339,7 @@ class LogitBoost(object):
         Fits the LogitBoost ensemble to the training data (data, labels)
 
         Parameters
-        ----------
+
         data : ndarray of shape (n_examples, n_features)
         labels : ndarray of shape (n_examples)
 
@@ -355,7 +355,7 @@ class LogitBoost(object):
             else:
                 if (self.data != data).all() or (self.labels != labels).all():
                     ValueError("LogitBoost must receive same data on each iteration")
-        labels = _validate_labels_zero_one(labels)
+        labels = util._validate_labels_zero_one(labels)
         if not hasattr(self, "estimators_"):
             self.sample_weight = np.ones(data.shape[0]) / data.shape[0]
             self.sample_probabilities = np.ones(data.shape[0]) * 0.5
@@ -504,7 +504,7 @@ class LogitBoost(object):
             The score of the ensemble of size n_estimators on the given data
 
         """
-        labels = _validate_labels_plus_minus_one(labels)
+        labels = util._validate_labels_plus_minus_one(labels)
         f_ens = np.zeros(data.shape[0])
         for est_idx in range(num_estimators):
             f_ens += self.estimators_[est_idx].decision_function(data)
@@ -524,7 +524,7 @@ class LogitBoost(object):
             The 0-1 loss of the ensemble on the given data
 
         """
-        labels = _validate_labels_plus_minus_one(labels)
+        labels = util._validate_labels_plus_minus_one(labels)
         if not np.isin(labels, [-1, 1]).all():
             raise ValueError
         return ((self.decision_function(data) * labels) > 0).mean()
@@ -544,7 +544,7 @@ class LogitBoost(object):
             The 0-1 loss of the ensemble on the given data
 
         """
-        labels = _validate_labels_plus_minus_one(labels)
+        labels = util._validate_labels_plus_minus_one(labels)
         for pred in self.staged_decision_function(data):
             yield ((pred * labels) > 0).mean()
 

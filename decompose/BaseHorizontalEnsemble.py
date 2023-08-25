@@ -5,8 +5,8 @@ from functools import cache
 import numpy as np
 import numpy.random
 
-from models.adaboost import ModelWrapper
-from models.caching import HashingWrapper
+from decompose.adaboost import ModelWrapper
+from decompose.caching import HashingWrapper
 
 
 # noinspection PyAttributeOutsideInit,DuplicatedCode,PyMethodMayBeStatic
