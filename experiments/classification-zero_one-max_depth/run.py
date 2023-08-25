@@ -6,7 +6,7 @@ from myexperiments import MyExperiment
 from utils import CustomMetric, DatasetId
 
 custom_metrics = {
-    CustomMetric.MEMBER_DEVIATION,
+    # CustomMetric.MEMBER_DEVIATION,
     CustomMetric.EXP_MEMBER_LOSS
 }
 
@@ -17,10 +17,10 @@ exp = MyExperiment(
     __file__,
     dataset,
     BVDExperiment(
-        RandomForestClassifier(n_estimators=5),
+        RandomForestClassifier(n_estimators=16),
         loss="zero_one",
         parameter_name="max_depth",
-        parameter_values=range(1, 68, 4),
+        parameter_values=range(1, 40, 4),
         save_decompositions=True
     ),
     n_trials=3,
