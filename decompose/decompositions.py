@@ -19,7 +19,7 @@ import numpy
 import numpy as np
 from cached_property import cached_property
 
-import utils
+# import utils
 from models import util
 
 
@@ -446,7 +446,8 @@ class EffectDecomposition(object):
                                              weights=self.weights).squeeze()  # for 01-decomp: majority vote (mode)
         individuals = np.insert(individuals, 0, central_prediction, axis=0)  # prepend column
         # shape (n_trials, ensemble_size, n_examples)
-        return utils.pairwise_matrix(individuals, fun)
+        return None
+        # return utils.pairwise_matrix(individuals, fun)
 
     @cached_property
     def member_deviation(self):
