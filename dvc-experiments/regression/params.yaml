@@ -1,15 +1,12 @@
-model: standard-rf-regressor
-
 bvd_config:
   loss: squared
   parameter_name: n_estimators
   parameter_values: [150]
-  save_decompositions: true
+  save_decompositions: false
   trials_progress_bar: true
 
 run_experiment_config:
-  n_trials: 1
+  n_trials: 3
 
 data:
-  dataset_name: "california"
   frac_training: 0.75

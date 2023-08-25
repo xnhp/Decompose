@@ -1,0 +1,67 @@
+vars:
+  - models:
+      - standard-rf-regressor
+      - sqerr-gradient-rf-regressor
+  - datasets:
+      - california
+      - friedman
+      - mease
+
+stages:
+
+  train:
+    matrix:
+      model: ${models}
+      dataset: ${datasets}
+    cmd: python ../run_bvd.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - ../run_bvd.py
+    params:
+      - params.yaml:
+    outs:
+      - results/${item.dataset}/${item.model}.pkl
+
+#  get_staged_errors:
+#    matrix:
+#      model: ${models}
+#      dataset: ${datasets}
+#    cmd: python ../get_staged_errors.py --model ${item.model} --dataset ${item.dataset}
+#    deps:
+#      - ../get_staged_errors.py
+#      - results/${item.dataset}/${item.model}.pkl
+#    outs:
+#      - staged_errors/${item.dataset}/${item.model}.json
+
+  plot_staged_errors:
+    cmd: python ../plot_staged_errors.py
+    deps:
+      - results
+      - ../plot_staged_errors.py
+    outs:
+      - plots/staged_errors/
+
+#  combine_metrics:
+#    foreach: ${datasets}
+#    do:
+#      cmd: python ../combine_metrics.py --dataset ${item}
+#      deps:
+#        - ../combine_metrics.py
+#        - staged_errors/${item}
+#      outs:
+#        - staged_errors/${item}-combined.json
+##      plots:
+##        - staged_errors/california-combined.json
+
+#plots:
+#  - staged_errors/california-combined.json:
+#      template: staged_errors_template2.json
+#      x: member_idx
+#      y: error
+#  - staged_errors/friedman-combined.json:
+#      template: ../staged_errors_template.json
+#      x: member_idx
+#      y: error
+#  - staged_errors/mease-combined.json:
+#      template: ../staged_errors_template.json
+#      x: member_idx
+#      y: error

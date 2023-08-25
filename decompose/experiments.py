@@ -20,6 +20,8 @@ from decompose import SquaredLoss, CrossEntropy, PoissonLoss
 
 import logging
 
+from decompose.utils import CustomMetric
+
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.DEBUG)
 
@@ -1008,6 +1010,9 @@ class ResultsObject(AbstractResultsObject):
         if save_decompositions:
             self.decomposition_object_names = [[] for _ in range(n_test_splits)]
 
+    def save_results(self, file_name):
+        super().save_results(file_name)
+
     def update_results(self, decomp, param_idx, errors, split_idx=0, sample_weight=None, custom_metrics=set(),
                        np_output_train=None, train_labels=None):
         """
@@ -1459,7 +1464,6 @@ class ZeroOneResultsObject(AbstractResultsObject):
         self.staged_errors_train = decomp.staged_errors_train(np.array(np_output_train), np.array(train_labels))
 
         # TODO make other computations optional aswell
-        from utils import CustomMetric
 
         if CustomMetric.MEMBER_DEVIATION in custom_metrics:
             self[CustomMetric.MEMBER_DEVIATION][param_idx, split_idx] = np.average(decomp.member_deviation,

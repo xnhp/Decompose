@@ -1,0 +1,9 @@
+/california-combined.json
+/friedman-combined.json
+/mease-combined.json
+/california/*.json
+/friedman/*.json
+/mease/*.json
+california
+mease
+friedman

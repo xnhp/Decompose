@@ -1,0 +1,421 @@
+schema: '2.0'
+stages:
+  train@standard-rf-regressor:
+    cmd: python ../run_bvd.py --model standard-rf-regressor
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: a23f6e7a6fa16f1feee43d73b9b1a6a7
+      size: 978
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          dataset_name: california
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/standard-rf-regressor.pkl
+      hash: md5
+      md5: 093253897bd4cca8b7846af9421442b0
+      size: 18577048
+  train@sqerr-gradient-rf-regressor:
+    cmd: python ../run_bvd.py --model sqerr-gradient-rf-regressor
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: a23f6e7a6fa16f1feee43d73b9b1a6a7
+      size: 978
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          dataset_name: california
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: e360e117af205960dd4f5c303d85e717
+      size: 18577054
+  get_staged_errors@standard-rf-regressor:
+    cmd: python get_staged_errors.py --model standard-rf-regressor
+    deps:
+    - path: get_staged_errors.py
+      hash: md5
+      md5: ee07007ecb94cfb1ffcc4237ed5d57c5
+      size: 1230
+    - path: results/standard-rf-regressor.pkl
+      hash: md5
+      md5: 093253897bd4cca8b7846af9421442b0
+      size: 18577048
+    outs:
+    - path: staged_errors/standard-rf-regressor.json
+      hash: md5
+      md5: 9f75c9c2d959302b32d3a6be1773748f
+      size: 29541
+  get_staged_errors@sqerr-gradient-rf-regressor:
+    cmd: python get_staged_errors.py --model sqerr-gradient-rf-regressor
+    deps:
+    - path: get_staged_errors.py
+      hash: md5
+      md5: ee07007ecb94cfb1ffcc4237ed5d57c5
+      size: 1230
+    - path: results/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: e360e117af205960dd4f5c303d85e717
+      size: 18577054
+    outs:
+    - path: staged_errors/sqerr-gradient-rf-regressor.json
+      hash: md5
+      md5: 4ffa9d02afd0188189693c05165332d6
+      size: 29658
+  combine_metrics:
+    cmd: python combine_metrics.py
+    deps:
+    - path: combine_metrics.py
+      hash: md5
+      md5: 57ecc70a230b4a52c8c0ad6182528a07
+      size: 670
+    - path: staged_errors
+      hash: md5
+      md5: 1a5f1bd9d3ccfe2f2602f849e37a1b94.dir
+      size: 59263
+      nfiles: 3
+    outs:
+    - path: combined_metrics.json
+      hash: md5
+      md5: ab3ee96dbb3705a49f6e64dd60d9657b
+      size: 92499
+  train@standard-rf-regressor-california:
+    cmd: python ../run_bvd.py --model standard-rf-regressor --dataset california
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: 32ffe38f3c63e2a6bed34bffe77cf083
+      size: 1390
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/california/standard-rf-regressor.pkl
+      hash: md5
+      md5: e135c4d0c93a66d51c18ca4da74eb481
+      size: 18577048
+  train@standard-rf-regressor-friedman:
+    cmd: python ../run_bvd.py --model standard-rf-regressor --dataset friedman
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: 32ffe38f3c63e2a6bed34bffe77cf083
+      size: 1390
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/friedman/standard-rf-regressor.pkl
+      hash: md5
+      md5: 696dee91d9e4b6900d52550a710f2d1c
+      size: 901047
+  train@standard-rf-regressor-mease:
+    cmd: python ../run_bvd.py --model standard-rf-regressor --dataset mease
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: 32ffe38f3c63e2a6bed34bffe77cf083
+      size: 1390
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/mease/standard-rf-regressor.pkl
+      hash: md5
+      md5: 1dd2d04370f8f9f3720414473a4d2b57
+      size: 1081048
+  train@sqerr-gradient-rf-regressor-california:
+    cmd: python ../run_bvd.py --model sqerr-gradient-rf-regressor --dataset california
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: 32ffe38f3c63e2a6bed34bffe77cf083
+      size: 1390
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/california/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: dd63a38b29f36b4e2d6ca1b06f76b3e3
+      size: 18577054
+  train@sqerr-gradient-rf-regressor-friedman:
+    cmd: python ../run_bvd.py --model sqerr-gradient-rf-regressor --dataset friedman
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: 32ffe38f3c63e2a6bed34bffe77cf083
+      size: 1390
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/friedman/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: eb351e3045edb143d52b9706e852e718
+      size: 901053
+  train@sqerr-gradient-rf-regressor-mease:
+    cmd: python ../run_bvd.py --model sqerr-gradient-rf-regressor --dataset mease
+    deps:
+    - path: ../run_bvd.py
+      hash: md5
+      md5: 32ffe38f3c63e2a6bed34bffe77cf083
+      size: 1390
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/mease/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: 320e16fc9d4c8fed02e1e13c76580baa
+      size: 1081054
+  get_staged_errors@standard-rf-regressor-california:
+    cmd: python ../get_staged_errors.py --model standard-rf-regressor --dataset california
+    deps:
+    - path: ../get_staged_errors.py
+      hash: md5
+      md5: 08c40cc244d3c52f89b7292f5cc64c2f
+      size: 1298
+    - path: results/california/standard-rf-regressor.pkl
+      hash: md5
+      md5: e135c4d0c93a66d51c18ca4da74eb481
+      size: 18577048
+    outs:
+    - path: staged_errors/california/standard-rf-regressor.json
+      hash: md5
+      md5: ee890958efa7efa035cd7bb6f37938c4
+      size: 29562
+  get_staged_errors@standard-rf-regressor-friedman:
+    cmd: python ../get_staged_errors.py --model standard-rf-regressor --dataset friedman
+    deps:
+    - path: ../get_staged_errors.py
+      hash: md5
+      md5: 08c40cc244d3c52f89b7292f5cc64c2f
+      size: 1298
+    - path: results/friedman/standard-rf-regressor.pkl
+      hash: md5
+      md5: 696dee91d9e4b6900d52550a710f2d1c
+      size: 901047
+    outs:
+    - path: staged_errors/friedman/standard-rf-regressor.json
+      hash: md5
+      md5: d59231a3fbb7f4fa9aaf44546b9ce291
+      size: 29109
+  get_staged_errors@standard-rf-regressor-mease:
+    cmd: python ../get_staged_errors.py --model standard-rf-regressor --dataset mease
+    deps:
+    - path: ../get_staged_errors.py
+      hash: md5
+      md5: 08c40cc244d3c52f89b7292f5cc64c2f
+      size: 1298
+    - path: results/mease/standard-rf-regressor.pkl
+      hash: md5
+      md5: 1dd2d04370f8f9f3720414473a4d2b57
+      size: 1081048
+    outs:
+    - path: staged_errors/mease/standard-rf-regressor.json
+      hash: md5
+      md5: 4a9c7d8a39b7d39ff252761dbe31617f
+      size: 29596
+  get_staged_errors@sqerr-gradient-rf-regressor-california:
+    cmd: python ../get_staged_errors.py --model sqerr-gradient-rf-regressor --dataset
+      california
+    deps:
+    - path: ../get_staged_errors.py
+      hash: md5
+      md5: 08c40cc244d3c52f89b7292f5cc64c2f
+      size: 1298
+    - path: results/california/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: dd63a38b29f36b4e2d6ca1b06f76b3e3
+      size: 18577054
+    outs:
+    - path: staged_errors/california/sqerr-gradient-rf-regressor.json
+      hash: md5
+      md5: f75925ad12934451a00058faff3f97e7
+      size: 29656
+  get_staged_errors@sqerr-gradient-rf-regressor-friedman:
+    cmd: python ../get_staged_errors.py --model sqerr-gradient-rf-regressor --dataset
+      friedman
+    deps:
+    - path: ../get_staged_errors.py
+      hash: md5
+      md5: 08c40cc244d3c52f89b7292f5cc64c2f
+      size: 1298
+    - path: results/friedman/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: eb351e3045edb143d52b9706e852e718
+      size: 901053
+    outs:
+    - path: staged_errors/friedman/sqerr-gradient-rf-regressor.json
+      hash: md5
+      md5: 5405151d23b26d667e5204631c2792b9
+      size: 29107
+  get_staged_errors@sqerr-gradient-rf-regressor-mease:
+    cmd: python ../get_staged_errors.py --model sqerr-gradient-rf-regressor --dataset
+      mease
+    deps:
+    - path: ../get_staged_errors.py
+      hash: md5
+      md5: 08c40cc244d3c52f89b7292f5cc64c2f
+      size: 1298
+    - path: results/mease/sqerr-gradient-rf-regressor.pkl
+      hash: md5
+      md5: 320e16fc9d4c8fed02e1e13c76580baa
+      size: 1081054
+    outs:
+    - path: staged_errors/mease/sqerr-gradient-rf-regressor.json
+      hash: md5
+      md5: 3b363f6dd7b49054664863fc71406bf7
+      size: 29557
+  combine_metrics@california:
+    cmd: python ../combine_metrics.py --dataset california
+    deps:
+    - path: ../combine_metrics.py
+      hash: md5
+      md5: 8893f975d68a3fa039acecabc59f68cc
+      size: 958
+    - path: staged_errors/california
+      hash: md5
+      md5: 96e185fe748546467679564a859527c3.dir
+      size: 59218
+      nfiles: 2
+    outs:
+    - path: staged_errors/california-combined.json
+      hash: md5
+      md5: 0ad4f5daaa7fc02e154969712e3c5374
+      size: 92518
+  combine_metrics@friedman:
+    cmd: python ../combine_metrics.py --dataset friedman
+    deps:
+    - path: ../combine_metrics.py
+      hash: md5
+      md5: 8893f975d68a3fa039acecabc59f68cc
+      size: 958
+    - path: staged_errors/friedman
+      hash: md5
+      md5: eeeba1e681a24b649f0055ade5cb5907.dir
+      size: 58216
+      nfiles: 2
+    outs:
+    - path: staged_errors/friedman-combined.json
+      hash: md5
+      md5: 10193762476a3e8abd265bb4d4bbc667
+      size: 91516
+  combine_metrics@mease:
+    cmd: python ../combine_metrics.py --dataset mease
+    deps:
+    - path: ../combine_metrics.py
+      hash: md5
+      md5: 8893f975d68a3fa039acecabc59f68cc
+      size: 958
+    - path: staged_errors/mease
+      hash: md5
+      md5: d0f31431693d5b51ac7e8b9cbb8454ed.dir
+      size: 59153
+      nfiles: 2
+    outs:
+    - path: staged_errors/mease-combined.json
+      hash: md5
+      md5: 75acb2e4a58ae18f154e663ff4b468d8
+      size: 92453
+  plot_staged_errors:
+    cmd: python ../plot_staged_errors.py
+    deps:
+    - path: ../plot_staged_errors.py
+      hash: md5
+      md5: 3495cd5c3b7d7feecab3bb30bb57ee17
+      size: 2169
+    - path: results
+      hash: md5
+      md5: 6d073babe107ea8eb21e7c35f08a52b7.dir
+      size: 41118304
+      nfiles: 6
+    outs:
+    - path: plots/staged_errors/
+      hash: md5
+      md5: bbaf18a05a7d81e8eb6d6382f7f85c48.dir
+      size: 134232
+      nfiles: 3

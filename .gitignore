@@ -2,3 +2,4 @@
 *.pkl
 .pkl
 **.pkl
+/dvc-experiments/dvc_plots/
