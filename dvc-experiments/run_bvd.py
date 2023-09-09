@@ -26,7 +26,8 @@ def main():
     params = dvc.api.params_show("params.yaml")
     bvd_exp = BVDExperiment(model,
                             **params['bvd_config'],
-                            decompositions_prefix=model_id + "/decomp")
+                            decompositions_filepath=dvc_utils.decomps_filepath(model_id, dataset_id),
+                            )
     # mnist dataset comes with own special split
     frac_training = None if dataset_id == "mnist" else params['data']['frac_training']
     dataset = load_standard_dataset(dataset_id, frac_training=frac_training)

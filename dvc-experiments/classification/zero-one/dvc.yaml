@@ -2,12 +2,12 @@ vars:
   - models:
       - standard-rf-classifier
       - drf-weighted-classifier
-      - ensemble-weighted-classifier
+#      - ensemble-weighted-classifier
 #      - diversity-effect-weighted-classifier
   - datasets:
       - mnist_subset
       - cover
-      - digits
+#      - digits
 
 stages:
 
@@ -23,7 +23,6 @@ stages:
     outs:
       - results/${item.dataset}/${item.model}.pkl
 
-
   plot_staged_errors:
     cmd: python ../../plot_staged_errors.py
     deps:
@@ -31,6 +30,14 @@ stages:
       - ../../plot_staged_errors.py
     outs:
       - plots/staged_errors/
+
+  plot_ambiguity_decomp:
+    cmd: python ../../plot_ambiguity_decomp.py
+    deps:
+      - decomps
+      - ../../plot_ambiguity_decomp.py
+    outs:
+      - plots/ambiguity_decomp
 
 #  get_staged_errors:
 #    matrix:

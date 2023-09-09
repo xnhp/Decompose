@@ -104,24 +104,11 @@ class BVDExperiment(object):
 
     """
 
-    def __init__(self,
-                 model,
-                 loss,
-                 parameter_name=None,
-                 parameter_values=None,
-                 bootstrap=False,
-                 n_samples=0.9,
-                 warm_start=None,
-                 non_centroid_combiner=None,
-                 ensemble_warm_start=None,
-                 compute_zero_one_decomp=False,
-                 # TODO remove from other run files aswell
-                 save_decompositions=True,
-                 decompositions_prefix="decomposition_objects/",
-                 trials_progress_bar=False,
-                 smoothing_factor=1e-9,
-                 per_trial_test_error=False,
-                 log_git_info=False):
+    def __init__(self, model, loss, parameter_name=None, parameter_values=None, bootstrap=False, n_samples=0.9,
+                 warm_start=None, non_centroid_combiner=None, ensemble_warm_start=None, compute_zero_one_decomp=False,
+                 save_decompositions=True, decompositions_prefix="decomposition_objects/", trials_progress_bar=False,
+                 smoothing_factor=1e-9, per_trial_test_error=False, log_git_info=False,
+                 decompositions_filepath=None):
         logger.debug("Experiment object created")
         if log_git_info:
             _log_git_info()
@@ -131,6 +118,7 @@ class BVDExperiment(object):
         self.parameter_values = parameter_values
         self.save_decompositions = save_decompositions
         self.decompositions_prefix = decompositions_prefix
+        self.decompositions_filepath = decompositions_filepath
         self.trials_progress_bar = trials_progress_bar
         self.bootstrap = bootstrap
         self.max_samples = n_samples
@@ -226,11 +214,14 @@ class BVDExperiment(object):
             self.results_object = ResultsObject(self.parameter_name, self.parameter_values, self.decomposition_class,
                                                 n_test_splits=n_test_splits,
                                                 save_decompositions=self.save_decompositions,
-                                                decompositions_prefix=self.decompositions_prefix)
+                                                decompositions_prefix=self.decompositions_prefix,
+                                                decompositions_filepath=self.decompositions_filepath)
         else:
             self.results_object = ZeroOneResultsObject(self.parameter_name, self.parameter_values,
                                                        self.decomposition_class,
+                                                       decompositions_filepath=self.decompositions_filepath,
                                                        n_test_splits=n_test_splits)
+            # TODO use decompositions_filepath
 
         self.all_results = [self.results_object]
 
@@ -243,8 +234,7 @@ class BVDExperiment(object):
 
         if self.compute_zero_one_decomp:
             self.zero_one_results = ZeroOneResultsObject(self.parameter_name, self.parameter_values,
-                                                         self.decomposition_class,
-                                                         n_test_splits=n_test_splits)
+                                                         self.decomposition_class, n_test_splits=n_test_splits)
             self.all_results.append(self.zero_one_results)
 
         # Generate indices for training dataset for each bootstrap
@@ -986,8 +976,8 @@ class ResultsObject(AbstractResultsObject):
 
     """
 
-    def __init__(self, parameter_name, parameter_values, loss_func,
-                 n_test_splits, save_decompositions=False, decompositions_prefix="decomposition_object_names/"):
+    def __init__(self, parameter_name, parameter_values, loss_func, n_test_splits, save_decompositions=False,
+                 decompositions_prefix="decomposition_object_names/", decompositions_filepath=None):
         n_parameter_values = len(parameter_values)
         self.loss_func = loss_func
         self.parameter_name = parameter_name
@@ -1007,6 +997,7 @@ class ResultsObject(AbstractResultsObject):
 
         self.save_decompositions = save_decompositions
         self.decomposition_prefix = decompositions_prefix
+        self.decompositions_filepath = decompositions_filepath
         if save_decompositions:
             self.decomposition_object_names = [[] for _ in range(n_test_splits)]
 
@@ -1094,7 +1085,10 @@ class ResultsObject(AbstractResultsObject):
             if not self.parameter_name == "n_estimators" or param_idx == len(self.parameter_values) - 1:
                 # When updating the ensemble size, we don't need to save for every parameter index, since
                 # we can cheaply reconstruct smaller ensembles from the largest one
-                decomposition_filename = f"{self.decomposition_prefix}_{param_idx}_{split_idx}.pkl"
+                if self.decompositions_filepath is not None:
+                    decomposition_filename = f"{self.decompositions_filepath}_{param_idx}_{split_idx}.pkl"
+                else:
+                    decomposition_filename = f"{self.decomposition_prefix}_{param_idx}_{split_idx}.pkl"
                 from pathlib import Path
                 Path(os.path.dirname(decomposition_filename)).mkdir(parents=True, exist_ok=True)
                 self.decomposition_object_names[split_idx].append(decomposition_filename)
@@ -1384,8 +1378,7 @@ class ZeroOneResultsObject(AbstractResultsObject):
 
     """
 
-    def __init__(self, parameter_name, parameter_values, loss_func,
-                 n_test_splits):
+    def __init__(self, parameter_name, parameter_values, loss_func, n_test_splits, decompositions_filepath=None):
         n_parameter_values = len(parameter_values)
         self.loss_func = loss_func
         self.parameter_name = parameter_name
@@ -1400,6 +1393,7 @@ class ZeroOneResultsObject(AbstractResultsObject):
         self.train_error = np.zeros((n_parameter_values))
         self.member_test_error = np.zeros((n_parameter_values, n_test_splits))
         self.member_train_error = np.zeros((n_parameter_values))
+        self.decompositions_filepath=decompositions_filepath
         setattr(self, utils.CustomMetric.EXP_MEMBER_LOSS, np.zeros((n_parameter_values, n_test_splits)))
         setattr(self, utils.CustomMetric.MEMBER_DEVIATION, np.zeros((n_parameter_values, n_test_splits)))
         setattr(self, utils.CustomMetric.DISTMAT_DHAT, dict())
@@ -1480,6 +1474,13 @@ class ZeroOneResultsObject(AbstractResultsObject):
         if CustomMetric.DISTMAT_DISAGREEMENT in custom_metrics:
             self[CustomMetric.DISTMAT_DISAGREEMENT][(param_idx, split_idx)] = decomp.member_pairwise_matrix(
                 distances.disagreement_distance)
+
+        # if self.save_decompositions:
+        if True:
+            decomposition_filename = f"{self.decompositions_filepath}_{param_idx}_{split_idx}.pkl"
+            with open(decomposition_filename, "wb") as file_:
+                pickle.dump(decomp, file_)
+                logger.debug(f"writing decompose object to {decomposition_filename}")
 
     def __getitem__(self, item):
         return getattr(self, item)

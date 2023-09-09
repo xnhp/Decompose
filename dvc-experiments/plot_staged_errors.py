@@ -21,7 +21,7 @@ def get_model_color(identifier: str):
     return colors[identifier]
 
 def main():
-    colors = ["green", "orange", "blue", "red", "yellow", "brown"]
+    # TODO xlim s.t. no padding left and right of line
     start_at = 10
     for subdir, dirs, files in os.walk(results_filepath_base()):
         for dir in dirs:

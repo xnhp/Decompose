@@ -20,6 +20,10 @@ def staged_errors_filepath(model_identifier, dataset_identifier):
 def results_filepath_base():
     return os.path.join(os.getcwd(), "results")
 
+def decomps_filepath(model_identifier, dataset_identifier):
+    return cwd_path("decomps",
+                    dataset_identifier,
+                    model_identifier + "")  # ending attached when saving
 def results_filepath(model_identifier, dataset_identifier):
     return os.path.join(os.getcwd(),
                         "results",

@@ -2,7 +2,7 @@ bvd_config:
   loss: zero_one
   parameter_name: n_estimators
   parameter_values: [150]
-  save_decompositions: false
+  save_decompositions: true
   trials_progress_bar: true
 
 run_experiment_config:
