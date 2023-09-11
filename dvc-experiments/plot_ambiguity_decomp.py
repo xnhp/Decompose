@@ -5,25 +5,19 @@ import glob
 import os
 import pickle
 
-import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
 
-from decompose import dvc_utils
-from decompose.dvc_utils import results_filepath_base, results_filepath, cwd_path
-from decompose.experiments import load_results
+from decompose.dvc_utils import cwd_path, get_n_classes
 
 
 def main():
 
-    g = glob.glob(cwd_path("decomps") + "/*/*.pkl")
-    colors = ['red', 'green', 'blue', 'purple']
-
     for dataset_path in glob.glob(cwd_path("decomps") + "/*"):
         dataset_id = os.path.basename(dataset_path)
-        n_classes = None
-        if "mnist" in dataset_id:
-            n_classes = 10
+
+        n_classes = get_n_classes(dataset_id)
+
         for decomp_path in glob.glob(dataset_path + "/*.pkl"):
             with open(decomp_path, "rb") as f:
                 decomp = pickle.load(f)

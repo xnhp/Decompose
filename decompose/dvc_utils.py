@@ -1,13 +1,10 @@
 import argparse
 import logging
 import os
-import pickle
-
-import dvc.api
-import numpy as np
 
 from decompose.classifiers import StandardRFClassifier, DRFWeightedRFClassifier, SimpleWeightedRFClassifier
 from decompose.regressors import StandardRFRegressor, SquaredErrorGradientRFRegressor
+
 
 def staged_errors_filepath(model_identifier, dataset_identifier):
     return os.path.join(os.getcwd(),
@@ -71,3 +68,15 @@ def get_model(identifier: str):
     }
     return models[identifier]
 
+
+def get_n_classes(dataset_id):
+    if "mnist" in dataset_id:
+        return 10
+    if "cover" in dataset_id:
+        return 7
+    if "qsar-biodeg" in dataset_id:
+        return 2
+    if "bioresponse" in dataset_id:
+        return 2
+    else:
+        return None

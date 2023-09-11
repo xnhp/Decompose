@@ -7,6 +7,8 @@ vars:
   - datasets:
       - mnist_subset
       - cover
+      - qsar-biodeg
+      - bioresponse
 #      - digits
 
 stages:
@@ -38,6 +40,15 @@ stages:
       - ../../plot_ambiguity_decomp.py
     outs:
       - plots/ambiguity_decomp
+
+  dataset_summary:
+    matrix:
+      dataset: ${datasets}
+    cmd: python ../../dataset_summary.py --dataset ${item.dataset}
+    deps:
+      - ../../dataset_summary.py
+    outs:
+      - plots/dataset_summary/${item.dataset}.yaml
 
 #  get_staged_errors:
 #    matrix:

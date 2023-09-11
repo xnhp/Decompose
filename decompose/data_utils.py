@@ -157,6 +157,18 @@ def load_data(dataset_name, **params):
     if dataset_name == "breast":
         data, labels = load_breast_cancer(return_X_y=True)
 
+    elif dataset_name == "qsar-biodeg":
+        # https://www.openml.org/search?type=data&sort=runs&status=active&qualities.NumberOfClasses=%3D_2&id=1494
+        d = fetch_openml(data_id=1494, as_frame=False)
+        return d.data, d.target.astype(int)
+
+    elif dataset_name == "bioresponse":
+        # instances: 3751
+        # features: 1777
+        # https://www.openml.org/search?type=data&sort=runs&status=active&qualities.NumberOfClasses=%3D_2&qualities.NumberOfInstances=between_1000_10000&qualities.NumberOfFeatures=between_10_100&id=4134
+        d = fetch_openml(data_id=4134, as_frame=False)
+        return d.data, d.target.astype(int)
+
     # WINE (3-class)
     elif dataset_name == "wine":
         data, labels = sklearn.datasets.load_wine(return_X_y=True)
