@@ -1,14 +1,19 @@
 vars:
   - models:
       - standard-rf-classifier
-      - drf-weighted-classifier
+      - drf-weighted-bootstrap-classifier
+      - drf-weighted-fit-classifier
 #      - ensemble-weighted-classifier
 #      - diversity-effect-weighted-classifier
-  - datasets:
-      - mnist_subset
-      - cover
+  - datasets:  # roughly in order of size
+      # small
       - qsar-biodeg
-      - bioresponse
+      # medium
+#      - bioresponse
+#      - spambase-openml
+#      - mnist_subset
+      # large
+#      - cover
 #      - digits
 
 stages:
@@ -20,68 +25,59 @@ stages:
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
+      - ../../../decompose/caching.py
+      - ../../../decompose/classifiers.py
+      - ../../../decompose/data_utils.py
+      - ../../../decompose/decompositions.py
+      - ../../../decompose/experiments.py
     params:
       - params.yaml:
     outs:
       - results/${item.dataset}/${item.model}.pkl
+      - decomps/${item.dataset}/${item.model}.pkl
 
-  plot_staged_errors:
-    cmd: python ../../plot_staged_errors.py
-    deps:
-      - results
-      - ../../plot_staged_errors.py
-    outs:
-      - plots/staged_errors/
-
-  plot_ambiguity_decomp:
-    cmd: python ../../plot_ambiguity_decomp.py
-    deps:
-      - decomps
-      - ../../plot_ambiguity_decomp.py
-    outs:
-      - plots/ambiguity_decomp
-
-  dataset_summary:
-    matrix:
-      dataset: ${datasets}
-    cmd: python ../../dataset_summary.py --dataset ${item.dataset}
-    deps:
-      - ../../dataset_summary.py
-    outs:
-      - plots/dataset_summary/${item.dataset}.yaml
-
-#  get_staged_errors:
-#    matrix:
-#      model: ${models}
-#      dataset: ${datasets}
-#    cmd: python ../../get_staged_errors.py --model ${item.model} --dataset ${item.dataset}
+# deprecated, to be replaced with things from get_staged_decomp_values
+#  plot_staged_errors:
+#    cmd: python ../../plot_staged_errors.py
 #    deps:
-#      - ../../get_staged_errors.py
-#      - results/${item.dataset}/${item.model}.pkl
+#      - results
+#      - ../../plot_staged_errors.py
 #    outs:
-#      - staged_errors/${item.dataset}/${item.model}.json
+#      - plots/staged_errors/
+
+  get_staged_decomp_values:
+    matrix:
+      model: ${models}
+      dataset: ${datasets}
+    cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - decomps/${item.dataset}/${item.model}.pkl
+    outs:
+      - staged-decomp-values/${item.dataset}/${item.model}/
+
+  plot_bvd_decomps:
+    cmd: python ../../plot_bvd.py
+    deps:
+      - staged-decomp-values
+      - ../../plot_bvd.py
+    outs:
+      - plots/bvd-decomps/all.png
 #
-#  combine_metrics:
-#    foreach: ${datasets}
-#    do:
-#      cmd: python ../../combine_metrics.py --dataset ${item}
-#      deps:
-#        - ../../combine_metrics.py
-#        - staged_errors/${item}
-##      outs:
-##        - staged_errors/${item}-combined.json
-#      plots:
-#        - staged_errors/${item}-combined.json:
-#            template: ../../staged_errors_template.json
-#            x: member_idx
-#            y: error
-#
-#plots:
-#  - staged_errors/cover-combined.json:
-#      template: ../../staged_errors_template.json
-#      x: member_idx
-#      y: error
-#  - staged_errors/digits-combined.json:
-#      template: ../../staged_errors_template.json
-#      x: member_idx
-#      y: error
+#  plot_ambiguity_decomp:
+#    cmd: python ../../plot_ambiguity_decomp.py
+#    deps:
+#      - decomps
+#      - ../../plot_ambiguity_decomp.py
+#    outs:
+#      - plots/ambiguity_decomp
+
+# deprecated, now part of plot_bvd -- should still work though
+#  dataset_summary:
+#    matrix:
+#      dataset: ${datasets}
+#    cmd: python ../../dataset_summary.py --dataset ${item.dataset}
+#    deps:
+#      - ../../dataset_summary.py
+#    outs:
+#      - plots/dataset_summary/${item.dataset}.yaml
+
