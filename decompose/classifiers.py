@@ -8,6 +8,12 @@ from decompose.BaseHorizontalEnsemble import BaseHorizontalEnsemble
 from decompose.util import deep_tree_params
 
 
+def _drf_sample_weights(tree_preds, truth):
+    incorrect = tree_preds != truth  # binary vector with 1 where incorrect
+    means = np.mean(incorrect, axis=0)  # sum over trees # TODO verify this is the right axis
+    return means / means.sum()
+
+
 class StandardRFClassifier(BaseHorizontalEnsemble):
     def __init__(self, base_estimator=DecisionTreeClassifier(
         criterion="gini",
@@ -19,31 +25,40 @@ class StandardRFClassifier(BaseHorizontalEnsemble):
         modes = scipy.stats.mode(preds, axis=0)
         return modes.mode[0]
 
-class DRFWeightedRFClassifier(StandardRFClassifier):
+class DRFWeightedBootstrapRFClassifier(StandardRFClassifier):
     """ Variant of Vanilla RF that uses bootstrap weighting according to Bernard2012
         Differences to Bernard2012: They additionally use...
         - weighted splitting criterion
         - another method for selecting the number of features to test
         - determine the weights on out-of-bag trees
+        - use the weights *both* for weighted bootstrap sampling and weighted split selection
      """
 
-    def bootstrap_sample_weights(self, data, truth):
-        # 1/M*(#incorrect-trees)
-        tree_preds = self._tree_preds(data)
+    def _bootstrap_sample_weights(self, data, truth):
         if len(self.estimators_) == 0:
             # first estimator
             return None
-        incorrect = tree_preds != truth  # binary vector with 1 where incorrect
-        means = np.mean(incorrect, axis=0)  # sum over trees # TODO verify this is the right axis
-        return means / means.sum()
+        tree_preds = self._tree_preds()
+        return _drf_sample_weights(tree_preds, truth)
+
+class DRFWeightedFitRFClassifier(StandardRFClassifier):
+    """Variant of vanilla RF that uses fit example weighted according to Bernard2012"""
+    def fit_sample_weights(self, bootstrap):
+        if len(self.estimators_) == 0:
+            # first estimator
+            return None
+        xs, ys = bootstrap
+        tree_preds = self._tree_preds()
+        return _drf_sample_weights(tree_preds, ys)
+
 
 class AdjustedDRFWeightedRFClassifier(StandardRFClassifier):
-    def bootstrap_sample_weights(self, data, truth):
+    def _bootstrap_sample_weights(self, data, truth):
         if len(self.estimators_) == 0:
             # first estimator
             return None
         # 1/M*(#incorrect-trees)
-        tree_preds = self._tree_preds(data)
+        tree_preds = self._tree_preds()
         ens_preds = self.predict(data)
         ens_incorrect = ens_preds != truth
         ens_correct = ens_preds == truth
@@ -65,7 +80,7 @@ class AdjustedDRFWeightedRFClassifier(StandardRFClassifier):
 class SimpleWeightedRFClassifier(StandardRFClassifier):
     """ Use bootstrap weighting based on correctness of ensemble """
 
-    def bootstrap_sample_weights(self, data, truth):
+    def _bootstrap_sample_weights(self, data, truth):
         if len(self.estimators_) == 0:
             # first estimator
             ones = np.ones_like(truth)
@@ -99,11 +114,11 @@ class SimpleWeightedRFClassifier(StandardRFClassifier):
 
 class DiversityEffectWeightedRFClassifier(StandardRFClassifier):
 
-    def bootstrap_sample_weights(self, data, truth):
+    def _bootstrap_sample_weights(self, data, truth):
         if len(self.estimators_) == 0:
             # first estimator
             return None
-        tree_preds = self._tree_preds(data)
+        tree_preds = self._tree_preds()
         ens_preds = self.predict(data)
         incorrect = (tree_preds != truth)*1.0  # L(y, q_i)  # binary vector with 1 where incorrect
         yqbar = (ens_preds != truth)*1.0
