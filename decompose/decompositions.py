@@ -340,12 +340,13 @@ class EffectDecomposition(object):
         self.pred = pred
         self.labels = labels
 
-    def error_function(self, axes1=(), axes2=()):
+    def error_function(self, axes1=(), axes2=(), M=None):
+        preds = self.pred if M is None else self.pred[:, 0:M, :]
         if axes1 != ():
             # axes1=1: aggregate over individual ensemble members (i.e. apply combiner)
-            x = self.aggregator(self.pred, axis=axes1, weights=self.weights)
-        else:
-            x = self.pred
+            x = self.aggregator(preds, axis=axes1, weights=self.weights)
+        else:  # do not aggregate predictions
+            x = preds
         error = self._compute_error(x, self.labels)  # exp. ens. loss: disagreement vector (for each trial?)
         if self.weights is not None:  # apply weights
             weights = np.mean(
@@ -365,7 +366,7 @@ class EffectDecomposition(object):
     def staged_errors_train(self, preds, labels):
         return util.staged_errors_train(self, preds, labels)
 
-    def _central_model_difference(self, axes1=(), axes2=(), axes3=()):
+    def _central_model_difference(self, axes1=(), axes2=(), axes3=(), M=None):
         """
         Function to compute effect decomposition terms. The three axes parameters dictate which dimensions different
         aggregation operations occur.
@@ -413,9 +414,10 @@ class EffectDecomposition(object):
         # axes3 = (0,1)
 
         ## pred : ndarray of shape (n_trials, ensemble_size, n_examples)
-        central_prediction = self.aggregator(self.pred, axis=axes1,
+        preds = self.pred if M is None else self.pred[:, 0:M, :]
+        central_prediction = self.aggregator(preds, axis=axes1,
                                              weights=self.weights)  # for 01-decomp: majority vote (mode)
-        individuals = self.aggregator(self.pred, axis=axes2)
+        individuals = self.aggregator(preds, axis=axes2)
 
         first_term = self._compute_error(self.labels, individuals)
         second_term = self._compute_error(self.labels, central_prediction)  # L(Y, Qbar)
@@ -479,6 +481,11 @@ class EffectDecomposition(object):
         """
         return self.error_function(1, 0)
 
+    def get_expected_ensemble_loss(self, M):
+        return self.error_function(1,
+                                   (0,2) # aggregate over trials and points
+                                   , M)
+
     @cached_property
     def expected_member_loss(self):
         """
@@ -490,6 +497,9 @@ class EffectDecomposition(object):
             Array of size (n_test_points, )
         """
         return self.error_function((), (0, 1))
+
+    def get_expected_member_loss(self, M):
+        return self.error_function((), (0, 1, 2), M)
 
     @cached_property
     def ensemble_bias(self):
@@ -503,6 +513,9 @@ class EffectDecomposition(object):
 
         """
         return self.error_function((1, 0), ())
+
+    def get_ensemble_bias(self, M):
+        return self.error_function((1, 0), (0,2), M)
 
     @cached_property
     def average_bias(self):
@@ -519,6 +532,9 @@ class EffectDecomposition(object):
         """
         return self.error_function(0, 1)
 
+    def get_average_bias(self, M):
+        return self.error_function(0, (0,1,2), M)
+
     @cached_property
     def ensemble_variance_effect(self):
         """
@@ -532,7 +548,7 @@ class EffectDecomposition(object):
             Array of size (n_test_points)
 
         """
-        return self._central_model_difference((1, 0), 1, 0)
+        return self._central_model_difference((1, 0), (0,1,2), 0)
 
     @cached_property
     def average_variance_effect(self):
@@ -549,6 +565,9 @@ class EffectDecomposition(object):
         """
         return self._central_model_difference(0, (), (0, 1))
 
+    def get_average_variance_effect(self, M):
+        return self._central_model_difference(0, (), (0, 1, 2), M)
+
     @cached_property
     def diversity_effect(self):
         """
@@ -563,3 +582,6 @@ class EffectDecomposition(object):
 
         """
         return self._central_model_difference(1, (), (0, 1))
+
+    def get_diversity_effect(self, M):
+        return self._central_model_difference(1, (), (0, 1, 2), M)

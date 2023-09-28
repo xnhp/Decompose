@@ -386,20 +386,20 @@ class BVDExperiment(object):
 
                 # If we are varying ensemble size, we save evaluating individual models until the last (largest)
                 # parameter value and enter them all into the results_object in a single pass
-                # if param_idx + 1 == len(self.parameter_values) \
-                #         and self.parameter_name == "n_estimators" \
-                #         and self.ensemble_warm_start:
-                #     logger.debug("Evaluating all member training and test losses at end of run")
-                #     member_train_losses, member_test_losses = self._get_individual_errors(cur_model, my_train_data,
-                #                                                                           my_train_labels, test_data,
-                #                                                                           test_labels,
-                #                                                                           n_test_splits, loss_func,
-                #                                                                           return_mean=False)
-                #     # Fill in the results_object
-                #     for param_idx2, param_val2 in enumerate(self.parameter_values):
-                #         for results_object in self.all_results:
-                #             results_object.member_test_error[param_idx2, :] += (1. / self.n_trials) * member_test_losses[:param_val2,:].mean(axis=0)
-                #             results_object.member_train_error[param_idx2] += (1. / self.n_trials) * member_train_losses[:param_val2].mean()
+                if param_idx + 1 == len(self.parameter_values) \
+                        and self.parameter_name == "n_estimators" \
+                        and self.ensemble_warm_start:
+                    logger.debug("Evaluating all member training and test losses at end of run")
+                    member_train_losses, member_test_losses = self._get_individual_errors(cur_model, my_train_data,
+                                                                                          my_train_labels, test_data,
+                                                                                          test_labels,
+                                                                                          n_test_splits, loss_func,
+                                                                                          return_mean=False)
+                    # Fill in the results_object
+                    for param_idx2, param_val2 in enumerate(self.parameter_values):
+                        for results_object in self.all_results:
+                            results_object.member_test_error[param_idx2, :] += (1. / self.n_trials) * member_test_losses[:param_val2,:].mean(axis=0)
+                            results_object.member_train_error[param_idx2] += (1. / self.n_trials) * member_train_losses[:param_val2].mean()
 
             errors = [this_param_train_error, this_param_test_error]
             if self.parameter_name != "n_estimators" or not self.ensemble_warm_start:
@@ -1085,10 +1085,13 @@ class ResultsObject(AbstractResultsObject):
             if not self.parameter_name == "n_estimators" or param_idx == len(self.parameter_values) - 1:
                 # When updating the ensemble size, we don't need to save for every parameter index, since
                 # we can cheaply reconstruct smaller ensembles from the largest one
-                if self.decompositions_filepath is not None:
-                    decomposition_filename = f"{self.decompositions_filepath}_{param_idx}_{split_idx}.pkl"
-                else:
-                    decomposition_filename = f"{self.decomposition_prefix}_{param_idx}_{split_idx}.pkl"
+                # always only have one parameter value anyway (for n_estimators; for the time being)
+                # easier if decomp filename corresponds exactly to model id
+                decomposition_filename = f"{self.decompositions_filepath}.pkl"
+                # if self.decompositions_filepath is not None:
+                #     decomposition_filename = f"{self.decompositions_filepath}_{param_idx}_{split_idx}.pkl"
+                # else:
+                #     decomposition_filename = f"{self.decomposition_prefix}_{param_idx}_{split_idx}.pkl"
                 from pathlib import Path
                 Path(os.path.dirname(decomposition_filename)).mkdir(parents=True, exist_ok=True)
                 self.decomposition_object_names[split_idx].append(decomposition_filename)
@@ -1477,7 +1480,7 @@ class ZeroOneResultsObject(AbstractResultsObject):
 
         # if self.save_decompositions:
         if True:
-            decomposition_filename = f"{self.decompositions_filepath}_{param_idx}_{split_idx}.pkl"
+            decomposition_filename = f"{self.decompositions_filepath}.pkl"
             with open(decomposition_filename, "wb") as file_:
                 pickle.dump(decomp, file_)
                 logger.debug(f"writing decompose object to {decomposition_filename}")
