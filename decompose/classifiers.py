@@ -38,6 +38,7 @@ class DRFWeightedBootstrapRFClassifier(StandardRFClassifier):
         if len(self.estimators_) == 0:
             # first estimator
             return None
+        # all the predictions we have up to here
         tree_preds = self._tree_preds()
         return _drf_sample_weights(tree_preds, truth)
 

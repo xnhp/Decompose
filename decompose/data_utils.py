@@ -169,6 +169,11 @@ def load_data(dataset_name, **params):
         d = fetch_openml(data_id=4134, as_frame=False)
         return d.data, d.target.astype(int)
 
+    elif dataset_name == "spambase-openml":
+        # https://www.openml.org/search?type=data&status=active&sort=runs&qualities.NumberOfClasses=%3D_2&qualities.NumberOfInstances=between_1000_10000&id=44
+        d = fetch_openml(data_id=44, as_frame=False)
+        return d.data, d.target.astype(int)
+
     # WINE (3-class)
     elif dataset_name == "wine":
         data, labels = sklearn.datasets.load_wine(return_X_y=True)

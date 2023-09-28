@@ -29,34 +29,45 @@ def plot_summary(dataset_id, summary_axs):
         {summary["dimensions"]} features
         """
     summary_axs.text(0.1, 0.5, summary_text, fontsize=12, ha='left', va='center', linespacing=1.5)
-    summary_axs.set_xticks([])
-    summary_axs.set_yticks([])
+    # summary_axs.set_xticks([])
+    # summary_axs.set_yticks([])
 
 
 def main():
     plt.style.use(matplotx.styles.dufte)
 
-    n_datasets = len(list(children(cwd_path("decomps"))))
-    n_models = min(
+    n_datasets = len(list(children(cwd_path("staged-decomp-values"))))
+    n_models = max(
         [
             len(
                 list(children(dataset_path))
            )
-            for _, dataset_path in children(cwd_path("decomps"))
+            for _, dataset_path in children(cwd_path("staged-decomp-values"))
         ])
 
     # TODO spacing between rows
-    fig, axs = plt.subplots(n_datasets, n_models + 1, sharex=True, sharey=False, figsize=(10, 10))
+    fig, axs = plt.subplots(n_datasets, n_models + 1, sharey='row', figsize=(10, 3*n_datasets))
 
-    for dataset_idx, (dataset_id, dataset_path) in enumerate(children(cwd_path("decomps"))):
+    for dataset_idx, (dataset_id, dataset_path) in enumerate(children(cwd_path("staged-decomp-values"))):
+
+        # axs[dataset_idx, 1].set_ylabel("train error")
 
         summary_ax = axs[0] if n_datasets == 1 else axs[dataset_idx, 0]
         plot_summary(dataset_id, summary_ax)
 
         for model_idx, (model_id, _) in enumerate(children(dataset_path)):
+
+            if n_datasets == 1:
+                axs[model_idx].set_title(f"{model_id}")
+            else:
+                axs[0, model_idx].set_title(f"{model_id}")
+
             model_idx = model_idx + 1
             # ax = axs.flat[model_idx + dataset_idx * n_models]
-            ax = axs[dataset_idx, model_idx]
+            if n_datasets == 1:
+                ax = axs[model_idx]
+            else:
+                ax = axs[dataset_idx, model_idx]
 
             for getter_id, label in zip(getters(), getters_labels()):
                 plot_decomp_values(dataset_id, model_id, getter_id, ax, label=label)
@@ -64,12 +75,13 @@ def main():
             # ax.title(f"{decomp_id} on {dataset_id}")
             # ax.xlabel("Number of trees")
             # ax.ylabel("train error")
+            ax.set_title("title")
 
             # for ax in axs.flat:
             # Hide x labels and tick labels for top plots and y ticks for right plots.
             # for ax in axs.flat:
-            ax.label_outer()
-            ax.set(xlabel=f"{model_id}")
+            # ax.label_outer()
+            ax.set_xlabel("Number of trees")
             # ax.tick_params(axis='both', which='both', labelbottom=False, labelleft=False)
 
             # matplotx.line_labels(ax)  # line labels to the right

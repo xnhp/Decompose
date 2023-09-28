@@ -171,14 +171,16 @@ class BaseHorizontalEnsemble(object):
         return labels
 
     def _tree_preds(self, M=None):
+        # predictions based on full train dataset e.g. for tree construction
+        # not for testing
 
         if not hasattr(self, "tree_preds"):
             self.tree_preds = []
 
         if M is None:
-            M = self.n_estimators
+            # all the estimators we have actually trained
+            M = len(self.estimators_)
 
-        # always predict based on full dataset
         # extend cached sequence if needed
         for i in range(len(self.tree_preds), M):
             all_xs, _ = self.all_data
@@ -207,11 +209,12 @@ class BaseHorizontalEnsemble(object):
         # TODO cache combiner?
         raise NotImplementedError
 
-    def staged_predict(self, data):
-        for M in range(0, len(self.estimators_)):
-            yield self._combiner(self._tree_preds(M))
+    # def staged_predict(self, data):
+    #     for M in range(0, len(self.estimators_)):
+    #         yield self._combiner(self._tree_preds(M))
 
     def predict(self, data):
-        # just need to apply combiner across individual estimators
-        # in case of squared loss, combiner is just arithmetic mean
-        return self._combiner(self._tree_preds())
+        # return self._combiner(self._tree_preds())
+        return self._combiner(
+            [estimator.predict(data) for estimator in self.estimators_]
+        )

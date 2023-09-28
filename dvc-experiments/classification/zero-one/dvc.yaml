@@ -9,9 +9,9 @@ vars:
       # small
       - qsar-biodeg
       # medium
-#      - bioresponse
-#      - spambase-openml
-#      - mnist_subset
+      - bioresponse
+      - spambase-openml
+      - mnist_subset
       # large
 #      - cover
 #      - digits
