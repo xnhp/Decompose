@@ -19,6 +19,7 @@ vars:
 stages:
 
   train:
+    # noinspection YAMLSchemaValidation
     matrix:
       model: ${models}
       dataset: ${datasets}
@@ -46,6 +47,7 @@ stages:
 #      - plots/staged_errors/
 
   get_staged_decomp_values:
+    # noinspection YAMLSchemaValidation
     matrix:
       model: ${models}
       dataset: ${datasets}
