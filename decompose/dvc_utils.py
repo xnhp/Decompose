@@ -89,6 +89,7 @@ def get_n_classes(dataset_id):
         return None
 
 
+# TODO would be good if these were distinct from get_fn_color -- choose some colormap?
 def get_model_color(identifier: str):
     colors = {
         # regression

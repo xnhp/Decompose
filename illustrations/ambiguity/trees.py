@@ -59,12 +59,13 @@ variance_plot(
     plot_mean=True,
 )
 
-caption = """ Glyphs correspond to test errors of individual trees. 
+caption = """The spread of individual tree predictions in a random forest ensemble. 
+    Glyphs correspond to test errors of individual trees. 
     The dashed line is the average test error of individual trees 
     $\\frac{1}{M} \\sum_1^M L(y, q_i)$.
     The solid line is the test error of the ensemble
     $L(y, \\bar{q})$. 
-    TODO: diff is ensemble improvement, hint that later we'll see that this is actually function of diversity/ambigity
+    The difference between these values is the ensemble improvement or ambiguity-effect.
     """
 put_caption(caption,
          f"{plot_id}.tex")

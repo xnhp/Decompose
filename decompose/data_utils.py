@@ -174,6 +174,10 @@ def load_data(dataset_name, **params):
         d = fetch_openml(data_id=44, as_frame=False)
         return d.data, d.target.astype(int)
 
+    # elif dataset_name == "diabetes":
+    #     d = fetch_openml(data_id=37, as_frame=False)
+    #     return d.data, d.target.astype(int)
+
     # WINE (3-class)
     elif dataset_name == "wine":
         data, labels = sklearn.datasets.load_wine(return_X_y=True)
