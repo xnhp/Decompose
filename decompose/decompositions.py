@@ -550,6 +550,9 @@ class EffectDecomposition(object):
         """
         return self._central_model_difference((1, 0), (0,1,2), 0)
 
+    def get_ensemble_variance_effect(self, M):
+        return self._central_model_difference((1, 0), (0,1,2), (0,1,2), M)
+
     @cached_property
     def average_variance_effect(self):
         """

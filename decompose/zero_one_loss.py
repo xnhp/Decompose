@@ -33,8 +33,8 @@ def mode_with_random_ties(x, axis=-1, weights=None, random_ties=True, random_see
     """
 
     # Check first that we are dealing with ints
-    if not x.dtype == int:
-        print("Datatype of x is not int, this may give unexpected behaviour")
+    if not x.dtype == int or not np.issubdtype(x.dtype, np.integer):
+        print(f"Datatype of x is not int, this may give unexpected behaviour. Is {x.dtype} instead")
 
     num_classes = int(np.max(x) + 1)
 

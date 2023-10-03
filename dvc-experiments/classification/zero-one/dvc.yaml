@@ -10,12 +10,12 @@ vars:
       # small
       - qsar-biodeg
       # medium
+      - digits
       - bioresponse
       - spambase-openml
       - mnist_subset
       # large
-      - cover
-      - digits
+#      - cover
 
 stages:
 
@@ -29,7 +29,6 @@ stages:
       - ../../../decompose/caching.py
       - ../../../decompose/classifiers.py
       - ../../../decompose/data_utils.py
-      - ../../../decompose/decompositions.py
       - ../../../decompose/experiments.py
     params:
       - params.yaml:
@@ -53,6 +52,7 @@ stages:
     cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - decomps/${item.dataset}/${item.model}.pkl
+      - ../../get_staged_decomp_values.py
     outs:
       - staged-decomp-values/${item.dataset}/${item.model}/
 
@@ -62,7 +62,15 @@ stages:
       - staged-decomp-values
       - ../../plot_bvd.py
     outs:
-      - plots/bvd-decomps/all.png
+      - plots/bvd-decomps/bvd.png
+
+  plot_ens_decomps:
+    cmd: python ../../plot_ens.py
+    deps:
+      - staged-decomp-values
+      - ../../plot_ens.py
+    outs:
+      - plots/bvd-decomps/ens.png
 
   plot_compare_models:
     matrix:

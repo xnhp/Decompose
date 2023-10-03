@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 from decompose import dvc_utils
 from decompose.dvc_utils import cwd_path, get_model_color
-from decompose.utils import children, getters, getters_labels, load_saved_decomp
+from decompose.utils import children, load_saved_decomp, getters_and_labels
 
 
 def main():
@@ -17,13 +17,15 @@ def main():
 
     dataset_path = cwd_path("staged-decomp-values", dataset_id)
 
-    for getter_id, getter_label in zip(getters(), getters_labels()):
+    for getter_id, getter_label in getters_and_labels():
 
         mins = []
 
         for model_idx, (model_id, _) in enumerate(children(dataset_path)):
             plt.title(f"{dataset_id} / {getter_label}")
             x = load_saved_decomp(dataset_id, model_id, getter_id)
+            if x is None:
+                continue
             plt.plot(x[:, 0], x[:, 1], color=get_model_color(model_id), label=model_id)
 
             mins.append(
