@@ -63,8 +63,8 @@ def load_saved_decomp(dataset_id, model_id, getter_id):
     path = cwd_path("staged-decomp-values", dataset_id, model_id, f"{getter_id}.npy")
     try:
         return np.load(path)
-    except FileNotFoundError:
-        logging.error(f"Error loading {path}")
+    except FileNotFoundError as e:
+        logging.error(f"Error loading {path}: {e}")
         return None
     # for dataset_idx, dataset_path in enumerate(dataset_glob()):
     #     yield np.load(dataset_path + "/" + getter_id + ".npy")
@@ -76,6 +76,8 @@ def all_getters():
 
         "get_ensemble_bias": {"label": "bias($\\bar{q}$)"},
         "get_ensemble_variance_effect": {"label": "var($\\bar{q}$)"},
+
+        "get_expected_member_loss_per_example": {"label": "\\frac{1}{M} \\sum_{i=1}^M \\mathbb{E} [L(y, q_i)]"},
 
         "get_average_bias": {"label": "$\\overline{bias}$"},
         "get_average_variance_effect": {"label": "$\\overline{var}$"},
@@ -123,6 +125,44 @@ def plot_decomp_values(dataset_id, model_id, getter_id, ax, label=None):
     ax.plot(x[:, 0], x[:, 1], color=get_fn_color(getter_id), label=label)
 
 
+def data_model_foreach(base_dir, consumer):
+    n_datasets = len(list(children(base_dir)))
+    n_models = max([len(list(children(dataset_path))) for _, dataset_path in children(base_dir)])
+    for dataset_info in enumerate(children(base_dir)):
+        _, (_, dataset_path) = dataset_info
+        for model_info in enumerate(children(dataset_path)):
+            consumer(dataset_info, model_info)
+
+
+def plot_data_model_grid(base_dir, plotter):
+    plt.style.use(matplotx.styles.dufte)
+    n_datasets = len(list(children(base_dir)))
+    n_models = max([len(list(children(dataset_path))) for _, dataset_path in children(base_dir)])
+    width = 12
+    rowheight = 3
+    fig, axs = plt.subplots(n_datasets, n_models + 1, figsize=(width, rowheight * n_datasets))
+    for dataset_idx, (dataset_id, dataset_path) in enumerate(children(base_dir)):
+        summary_ax = axs[dataset_idx, 0]
+        plot_summary(dataset_id, summary_ax)
+        for model_idx, (model_id, _) in enumerate(children(dataset_path)):
+            if n_datasets == 1:
+                axs[model_idx].set_title(f"{model_id}")
+            else:
+                axs[0, model_idx + 1].set_title(f"{model_id}")
+            model_idx = model_idx + 1
+            if n_datasets == 1:
+                ax = axs[model_idx]
+            else:
+                ax = axs[dataset_idx, model_idx]
+            ax.tick_params(axis='x', which='major', reset=True)
+            ax.sharey(axs[dataset_idx, 1])  # share with first containing actual data
+
+            # now actually plot
+            plotter(dataset_id, model_id, ax)
+
+    return fig
+
+
 def plot_decomp_grid(getter_ids, target_filepath):
     plt.style.use(matplotx.styles.dufte)
     n_datasets = len(list(children(cwd_path("staged-decomp-values"))))
@@ -149,7 +189,6 @@ def plot_decomp_grid(getter_ids, target_filepath):
                 axs[0, model_idx + 1].set_title(f"{model_id}")
 
             model_idx = model_idx + 1
-            # ax = axs.flat[model_idx + dataset_idx * n_models]
             if n_datasets == 1:
                 ax = axs[model_idx]
             else:

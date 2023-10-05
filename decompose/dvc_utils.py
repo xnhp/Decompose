@@ -85,6 +85,10 @@ def get_n_classes(dataset_id):
         return 2
     if "spambase-openml" in dataset_id:
         return 2
+    if "diabetes" in dataset_id:
+        return 2
+    if "digits" in dataset_id:
+        return 10
     else:
         return None
 

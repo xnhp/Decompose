@@ -10,12 +10,13 @@ vars:
       # small
       - qsar-biodeg
       # medium
+      - diabetes
       - digits
       - bioresponse
       - spambase-openml
       - mnist_subset
       # large
-#      - cover
+      - cover
 
 stages:
 
@@ -26,10 +27,6 @@ stages:
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
-      - ../../../decompose/caching.py
-      - ../../../decompose/classifiers.py
-      - ../../../decompose/data_utils.py
-      - ../../../decompose/experiments.py
     params:
       - params.yaml:
     outs:

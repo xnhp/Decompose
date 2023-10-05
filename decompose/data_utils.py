@@ -3,7 +3,7 @@ import csv
 import sklearn
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 import os
 
 
@@ -174,9 +174,11 @@ def load_data(dataset_name, **params):
         d = fetch_openml(data_id=44, as_frame=False)
         return d.data, d.target.astype(int)
 
-    # elif dataset_name == "diabetes":
-    #     d = fetch_openml(data_id=37, as_frame=False)
-    #     return d.data, d.target.astype(int)
+    elif dataset_name == "diabetes":
+        d = fetch_openml(data_id=37, as_frame=False)
+        le = LabelEncoder()
+        d.target = le.fit_transform(d.target)
+        return d.data, d.target.astype(int)
 
     # WINE (3-class)
     elif dataset_name == "wine":

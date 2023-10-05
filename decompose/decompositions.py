@@ -501,6 +501,10 @@ class EffectDecomposition(object):
     def get_expected_member_loss(self, M):
         return self.error_function((), (0, 1, 2), M)
 
+
+    def get_expected_member_loss_per_example(self, M):
+        return self.error_function((), (0), M)
+
     @cached_property
     def ensemble_bias(self):
         """
