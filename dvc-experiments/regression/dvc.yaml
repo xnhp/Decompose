@@ -1,11 +1,14 @@
+#file: noinspection YAMLSchemaValidation
 vars:
   - models:
+      - sqerr-boosted-nobootstrap
+      - sqerr-boosted-clipped
       - standard-rf-regressor
-      - sqerr-gradient-rf-regressor
+      - standard-rf-nobootstrap
   - datasets:
       - california
-      - friedman
-      - mease
+#      - friedman
+#      - mease
 
 stages:
 
@@ -16,6 +19,7 @@ stages:
     cmd: python ../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../run_bvd.py
+      - ../../decompose/regressors.py
     params:
       - params.yaml:
     outs:

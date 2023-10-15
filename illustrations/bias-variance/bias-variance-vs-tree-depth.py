@@ -1,3 +1,4 @@
+import matplotx
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.datasets import make_regression
@@ -27,6 +28,7 @@ for depth in max_depths:
     bias = np.mean((y_train - y_train_pred) ** 2)
 
     # Calculate variance as the mean squared difference between predicted values and their mean
+    # TODO this is BS, this is not the variance we mean
     variance = np.mean((y_train_pred - np.mean(y_train_pred)) ** 2)
 
     biases.append(bias)
@@ -34,11 +36,12 @@ for depth in max_depths:
 
 # Plot the bias-variance tradeoff
 sz = 6
+plt.style.use(matplotx.styles.dufte)
 plt.figure(figsize=(sz, sz))
 plt.plot(max_depths, biases, marker='o', label='Bias$^2$')
 plt.plot(max_depths, variances, marker='o', label='Variance')
 plt.xlabel('Maximum Tree Depth')
-plt.ylabel('Bias$^2$ and Variance')
+plt.ylabel('Bias and Variance')
 plt.title('Bias-Variance Decomposition with Decision Trees')
 plt.legend()
 plt.grid(True)

@@ -5,9 +5,10 @@ import os
 from fuzzywuzzy import fuzz
 
 from decompose.classifiers import StandardRFClassifier, DRFWeightedBootstrapRFClassifier, SimpleWeightedRFClassifier, \
-    DRFWeightedFitRFClassifier
+    DRFWeightedFitRFClassifier, DRFWeightedFitOOBRFClassifier
 from decompose.data_utils import load_standard_dataset
-from decompose.regressors import StandardRFRegressor, SquaredErrorGradientRFRegressor
+from decompose.regressors import StandardRFRegressor, SqErrBoostedBase, SqErrBoostedShallow, SqErrBoostedNoBootstrap, \
+    StandardRFNoBootstrap, SqErrBoostedClipped
 
 
 def staged_errors_filepath(model_identifier, dataset_identifier):
@@ -64,11 +65,15 @@ def get_model(identifier: str):
     models = {
         # regression
         'standard-rf-regressor': StandardRFRegressor(),
-        'sqerr-gradient-rf-regressor': SquaredErrorGradientRFRegressor(),
+        'standard-rf-nobootstrap': StandardRFNoBootstrap(),
+        'sqerr-boosted-shallow': SqErrBoostedShallow(),
+        'sqerr-boosted-nobootstrap': SqErrBoostedNoBootstrap(),
+        'sqerr-boosted-clipped': SqErrBoostedClipped(),
         # classification
         'standard-rf-classifier': StandardRFClassifier(),
         'drf-weighted-bootstrap-classifier': DRFWeightedBootstrapRFClassifier(),
         'drf-weighted-fit-classifier': DRFWeightedFitRFClassifier(),
+        'drf-weighted-fit-oob-classifier': DRFWeightedFitOOBRFClassifier(),
         'ensemble-weighted-classifier': SimpleWeightedRFClassifier()
     }
     return models[identifier]
@@ -98,11 +103,15 @@ def get_model_color(identifier: str):
     colors = {
         # regression
         'standard-rf-regressor': "blue",
-        'sqerr-gradient-rf-regressor': "green",
+        'standard-rf-nobootstrap': "yellow",
+        'sqerr-boosted-shallow': "green",
+        'sqerr-boosted-nobootstrap': "red",
+        'sqerr-boosted-clipped': "orange",
         # classification
         'standard-rf-classifier': "blue",
         'drf-weighted-bootstrap-classifier': "red",
         'drf-weighted-fit-classifier': "orange",
+        'drf-weighted-fit-oob-classifier': "brown",
         'ensemble-weighted-classifier': "green"
     }
     return colors[identifier]

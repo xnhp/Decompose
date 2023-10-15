@@ -104,10 +104,14 @@ stages:
   train@standard-rf-regressor-california:
     cmd: python ../run_bvd.py --model standard-rf-regressor --dataset california
     deps:
+    - path: ../../decompose/regressors.py
+      hash: md5
+      md5: e8682c90787b63ee165ce78e6b70b05b
+      size: 8984
     - path: ../run_bvd.py
       hash: md5
-      md5: 32ffe38f3c63e2a6bed34bffe77cf083
-      size: 1390
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
     params:
       params.yaml:
         bvd_config:
@@ -124,15 +128,15 @@ stages:
     outs:
     - path: results/california/standard-rf-regressor.pkl
       hash: md5
-      md5: e135c4d0c93a66d51c18ca4da74eb481
-      size: 18577048
+      md5: 7022d78d00f9c6dd43b89b0c6b2d16f6
+      size: 18577177
   train@standard-rf-regressor-friedman:
     cmd: python ../run_bvd.py --model standard-rf-regressor --dataset friedman
     deps:
     - path: ../run_bvd.py
       hash: md5
-      md5: 32ffe38f3c63e2a6bed34bffe77cf083
-      size: 1390
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
     params:
       params.yaml:
         bvd_config:
@@ -149,15 +153,15 @@ stages:
     outs:
     - path: results/friedman/standard-rf-regressor.pkl
       hash: md5
-      md5: 696dee91d9e4b6900d52550a710f2d1c
-      size: 901047
+      md5: 6f0543cf3e71fc9ea2502be5ee5edd95
+      size: 901174
   train@standard-rf-regressor-mease:
     cmd: python ../run_bvd.py --model standard-rf-regressor --dataset mease
     deps:
     - path: ../run_bvd.py
       hash: md5
-      md5: 32ffe38f3c63e2a6bed34bffe77cf083
-      size: 1390
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
     params:
       params.yaml:
         bvd_config:
@@ -174,15 +178,15 @@ stages:
     outs:
     - path: results/mease/standard-rf-regressor.pkl
       hash: md5
-      md5: 1dd2d04370f8f9f3720414473a4d2b57
-      size: 1081048
+      md5: 20bf6f4b4963651e4859959c8a9c5b4f
+      size: 1081172
   train@sqerr-gradient-rf-regressor-california:
     cmd: python ../run_bvd.py --model sqerr-gradient-rf-regressor --dataset california
     deps:
     - path: ../run_bvd.py
       hash: md5
-      md5: 32ffe38f3c63e2a6bed34bffe77cf083
-      size: 1390
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
     params:
       params.yaml:
         bvd_config:
@@ -199,15 +203,15 @@ stages:
     outs:
     - path: results/california/sqerr-gradient-rf-regressor.pkl
       hash: md5
-      md5: dd63a38b29f36b4e2d6ca1b06f76b3e3
-      size: 18577054
+      md5: cd351b39390fe72c9e9f01cce067df02
+      size: 18577183
   train@sqerr-gradient-rf-regressor-friedman:
     cmd: python ../run_bvd.py --model sqerr-gradient-rf-regressor --dataset friedman
     deps:
     - path: ../run_bvd.py
       hash: md5
-      md5: 32ffe38f3c63e2a6bed34bffe77cf083
-      size: 1390
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
     params:
       params.yaml:
         bvd_config:
@@ -224,15 +228,15 @@ stages:
     outs:
     - path: results/friedman/sqerr-gradient-rf-regressor.pkl
       hash: md5
-      md5: eb351e3045edb143d52b9706e852e718
-      size: 901053
+      md5: 74aa192dc6cda6dec097b75d01223b87
+      size: 901180
   train@sqerr-gradient-rf-regressor-mease:
     cmd: python ../run_bvd.py --model sqerr-gradient-rf-regressor --dataset mease
     deps:
     - path: ../run_bvd.py
       hash: md5
-      md5: 32ffe38f3c63e2a6bed34bffe77cf083
-      size: 1390
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
     params:
       params.yaml:
         bvd_config:
@@ -249,8 +253,8 @@ stages:
     outs:
     - path: results/mease/sqerr-gradient-rf-regressor.pkl
       hash: md5
-      md5: 320e16fc9d4c8fed02e1e13c76580baa
-      size: 1081054
+      md5: 9702b9afaf2290fd1c25906dd9603b33
+      size: 1081178
   get_staged_errors@standard-rf-regressor-california:
     cmd: python ../get_staged_errors.py --model standard-rf-regressor --dataset california
     deps:
@@ -406,16 +410,132 @@ stages:
     deps:
     - path: ../plot_staged_errors.py
       hash: md5
-      md5: 3495cd5c3b7d7feecab3bb30bb57ee17
-      size: 2169
+      md5: 92460b50a309f49e7ee8ba8c2028ccbf
+      size: 2157
     - path: results
       hash: md5
-      md5: 6d073babe107ea8eb21e7c35f08a52b7.dir
-      size: 41118304
-      nfiles: 6
+      md5: 70e002e8127e2bcb85f1f45f161b495e.dir
+      size: 74308714
+      nfiles: 4
     outs:
     - path: plots/staged_errors/
       hash: md5
-      md5: bbaf18a05a7d81e8eb6d6382f7f85c48.dir
-      size: 134232
+      md5: b8d553945a184ad87c9e3b57c851d40a.dir
+      size: 91668
       nfiles: 3
+  train@sqerr-boosted-shallow-california:
+    cmd: python ../run_bvd.py --model sqerr-boosted-shallow --dataset california
+    deps:
+    - path: ../../decompose/regressors.py
+      hash: md5
+      md5: b4d9052f05df1ecefa52101b860bf17d
+      size: 7970
+    - path: ../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/california/sqerr-boosted-shallow.pkl
+      hash: md5
+      md5: 78954ef5cfec09b3c9a3da1b77fabf73
+      size: 18577177
+  train@standard-rf-nobootstrap-california:
+    cmd: python ../run_bvd.py --model standard-rf-nobootstrap --dataset california
+    deps:
+    - path: ../../decompose/regressors.py
+      hash: md5
+      md5: e8682c90787b63ee165ce78e6b70b05b
+      size: 8984
+    - path: ../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/california/standard-rf-nobootstrap.pkl
+      hash: md5
+      md5: 9ebda3e3629ef4ddc783e6a7f95a2e55
+      size: 18577179
+  train@sqerr-boosted-clipped-california:
+    cmd: python ../run_bvd.py --model sqerr-boosted-clipped --dataset california
+    deps:
+    - path: ../../decompose/regressors.py
+      hash: md5
+      md5: e8682c90787b63ee165ce78e6b70b05b
+      size: 8984
+    - path: ../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/california/sqerr-boosted-clipped.pkl
+      hash: md5
+      md5: aefda423f504f4682d6a1225f8081fb0
+      size: 18577177
+  train@sqerr-boosted-nobootstrap-california:
+    cmd: python ../run_bvd.py --model sqerr-boosted-nobootstrap --dataset california
+    deps:
+    - path: ../../decompose/regressors.py
+      hash: md5
+      md5: e8682c90787b63ee165ce78e6b70b05b
+      size: 8984
+    - path: ../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: squared
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: false
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/california/sqerr-boosted-nobootstrap.pkl
+      hash: md5
+      md5: b5fd4b2efc0e23e0266f98168efb91c1
+      size: 18577181

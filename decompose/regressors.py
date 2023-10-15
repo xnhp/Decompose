@@ -14,12 +14,21 @@ from decompose.util import deep_tree_params  # TODO make these DVC params?
 class StandardRFRegressor(BaseHorizontalEnsemble):
     """ Vanilla Random Forest to be used for control/comparison """
 
-    def __init__(self, base_estimator=DecisionTreeRegressor(
-        # TODO squared error sure sounds like it would make sense here but have to take care when comparing to other things
-        # TODO try different criteria?
-        criterion="squared_error",  # !!
-        **deep_tree_params
-    ), bootstrap_rate=1.0, bootstrap_with_replacement=True):
+    def __init__(self, base_estimator=None, bootstrap_rate=1.0, bootstrap_with_replacement=True,
+                 min_samples_leaf=None, max_depth=None):
+
+        if base_estimator is None:
+            args = deep_tree_params
+            if min_samples_leaf is not None:
+                args =  {**args, **{'min_samples_leaf': min_samples_leaf}}
+            if max_depth is not None:
+                args =  {**args, **{'max_depth': max_depth}}
+
+            base_estimator = DecisionTreeRegressor(
+                criterion="squared_error",  # !!
+                **args
+            )
+
         super().__init__(base_estimator, bootstrap_rate=bootstrap_rate,
                          bootstrap_with_replacement=bootstrap_with_replacement)
 
@@ -27,16 +36,17 @@ class StandardRFRegressor(BaseHorizontalEnsemble):
         return np.mean(preds, axis=0)
 
 
-class SubsamplingRFRegressor(StandardRFRegressor):
+# class SubsamplingRFRegressor(StandardRFRegressor):
+#
+#     def __init__(self, bootstrap_rate=0.5, bootstrap_with_replacement=False):
+#         super().__init__(bootstrap_rate=bootstrap_rate, bootstrap_with_replacement=bootstrap_with_replacement)
+#
 
-    def __init__(self, bootstrap_rate=0.5, bootstrap_with_replacement=False):
-        super().__init__(bootstrap_rate=bootstrap_rate, bootstrap_with_replacement=bootstrap_with_replacement)
+class SqErrBoostedBase(StandardRFRegressor):
 
-
-class SquaredErrorGradientRFRegressor(SubsamplingRFRegressor):
-
-    def __init__(self, bootstrap_rate=None, bootstrap_with_replacement=False):
-        super().__init__(bootstrap_rate=bootstrap_rate, bootstrap_with_replacement=bootstrap_with_replacement)
+    def __init__(self, min_samples_leaf=None, max_depth=None, bootstrap_rate=1.0, bootstrap_with_replacement=True):
+        # No bootstrapping!
+        super().__init__(min_samples_leaf=min_samples_leaf, max_depth=max_depth, bootstrap_rate=bootstrap_rate, bootstrap_with_replacement=bootstrap_with_replacement)
     #     if self.bootstrap_with_replacement is True:
     #         logging.warning("Using bootstrapping with replacement, this probably does not make sense with pseudotargets!")
 
@@ -58,7 +68,7 @@ class SquaredErrorGradientRFRegressor(SubsamplingRFRegressor):
         # output of ensemble built so far
         qbar = self.predict(xs)  # qbar_1^{M}
         # gradient of ensemble built so far
-        g = self._divergence_gradient(ys, qbar)
+        g = self._divergence_gradient(ys, qbar) # ...
         M = len(self.estimators_)
         # inverse of additive contribution of q_{M+1} to ensemble output qbar_1^{M+1}
         # return (M+1) * g + qbar  # => F_{M+1} \approx g
@@ -72,13 +82,46 @@ class SquaredErrorGradientRFRegressor(SubsamplingRFRegressor):
         # -- could also try a sort of "line search" thing in direction of the gradient
         # TODO constantly high error with subsampling rate 0.5 (no replacement)
 
-class SubsamplingSquaredErrorGradientRFRegressor(SquaredErrorGradientRFRegressor):
 
-    def __init__(self, bootstrap_rate=0.6, bootstrap_with_replacement=False):
+class StandardRFNoBootstrap(StandardRFRegressor):
+
+    def __init__(self, base_estimator=None, bootstrap_rate=None, bootstrap_with_replacement=False, min_samples_leaf=None,
+                 max_depth=None):
+        super().__init__(base_estimator, bootstrap_rate, bootstrap_with_replacement, min_samples_leaf, max_depth)
+
+
+class SqErrBoostedNoBootstrap(SqErrBoostedBase):
+
+    def __init__(self):
+        super().__init__(bootstrap_rate=None, bootstrap_with_replacement=False)
+
+
+class SqErrBoostedShallow(SqErrBoostedBase):
+
+    def __init__(self):
+        super().__init__(min_samples_leaf=10, max_depth=5)
+
+class SqErrBoostedClipped(SqErrBoostedBase):
+
+    def estimator_targets(self, xs, ys):
+        # output of ensemble built so far
+        qbar = self.predict(xs)  # qbar_1^{M}
+        # gradient of ensemble built so far
+        g = self._divergence_gradient(ys, qbar)
+        g = np.clip(g, -0.00001, 0.00001) # !
+        return g + qbar  # => F_{M+1} \approx g
+
+
+class SubsamplingSquaredErrorGradientRFRegressor(SqErrBoostedBase):
+
+    def __init__(self, bootstrap_rate=0.8, bootstrap_with_replacement=False):
         super().__init__(bootstrap_rate, bootstrap_with_replacement)
 
+# class ShallowBootstrappingSquaredErrorGradientRFRegressor(StandardRFRegressor):
+#     def __init__(self):
+#         super().__init__()
 
-class SimplifiedLineSearchSquaredErrorGradientRFRegressor(SquaredErrorGradientRFRegressor):
+class SimplifiedLineSearchSquaredErrorGradientRFRegressor(SqErrBoostedBase):
     def estimator_targets(self, xs, ys):
         qbar = self.predict(xs)  # qbar_1^{M}
         # gradient of ensemble built so far
@@ -107,7 +150,7 @@ class SimplifiedLineSearchSquaredErrorGradientRFRegressor(SquaredErrorGradientRF
         return beta * g + qbar
 
 
-class StupidLineSearchSquaredErrorGradientRFRegressor(SquaredErrorGradientRFRegressor):
+class StupidLineSearchSquaredErrorGradientRFRegressor(SqErrBoostedBase):
     def estimator_targets(self, xs, ys):
         qbar = self.predict(xs)  # qbar_1^{M}
         # gradient of ensemble built so far

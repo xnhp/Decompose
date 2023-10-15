@@ -1,36 +1,42 @@
 import math
 
 import matplotlib.pyplot as plt
+import matplotx
 import numpy as np
 
+from decompose.dvc_utils import cwd_path
+from illustrations.plot_utils import put_caption
 
 x = np.linspace(0, 1, 1000)
 
+plt.style.use(matplotx.styles.dufte)
 
-# TODO factor out from classfiers.py if we do more work on this
+scale = 2
+plt.figure(figsize=(scale*4, scale*3))
+
 
 def y_drf(x):
-    return 1-x
+    return x
 
 def y_drf_xu_chen(x):
     if (x < 1/2):  # "incorrect"
-        return 1 - x**2
+        return x**2
     else:
-        return 1 - math.sqrt(x)
+        return math.sqrt(x)
 
-plt.plot(x, y_drf(x), label="y_drf")
-plt.plot(x, [y_drf_xu_chen(x) for x in x], label="y_drf_xu_chen")
+plt.plot(x, y_drf(x), label="DRF weights")
+plt.plot(x, [y_drf_xu_chen(x) for x in x], label="Xu/Chen weights")
 
-plt.axvline(1/2, color="red", label="majority vote threshold")
+plt.axvline(1/2, color="red", label="Majority vote threshold")
 
 plt.ylabel("Weight")
-plt.xlabel("$1 - 1/M \\sum_{i=1}^{M}L_{01}(q_i, y)$ \n (Ratio trees correct) ")
+plt.xlabel("$1/M \\sum_{i=1}^{M}L_{01}(q_i, y)$ \n (Ratio trees incorrect) ")
 
 plt.xlim(0,1)
 
 alpha = 0.2
-plt.axvspan(1/2, 1, color="green", alpha=alpha, label="$X_+$ (ensemble correct)")
-plt.axvspan(0, 1/2, color="orange", alpha=alpha, label="$X_-$ (ensemble incorrect)")
+plt.axvspan(0, 1/2, color="green", alpha=alpha, label="$X_+$ (ensemble correct)")
+plt.axvspan(1/2, 1, color="orange", alpha=alpha, label="$X_-$ (ensemble incorrect)")
 
 plt.axhline(1/2, color="gray")
 
@@ -40,5 +46,15 @@ plt.yticks([0,1/2, 1])
 plt.legend()
 plt.tight_layout()
 
-plt.savefig("weighting-fns.png")
+plot_id = "weighting-fns"
+plt.savefig(cwd_path(f"{plot_id}.png"))
+
+put_caption(
+    """
+    Weighting functions for the original DRF \cite{DRF} weighting scheme and the variation proposed by \cite{XuChen}.
+    """
+    , cwd_path(f"{plot_id}.tex")
+)
+
+
 plt.show()

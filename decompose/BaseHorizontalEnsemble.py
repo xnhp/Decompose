@@ -34,6 +34,8 @@ class BaseHorizontalEnsemble(object):
         self.bootstrap_with_replacement = bootstrap_with_replacement
         self.pred_cache = {}
         self.all_data = None
+        self.oob_indices = []
+        self.bootstrap_indices = []
 
     def fit(self, all_xs, all_ys):
         """
@@ -71,14 +73,19 @@ class BaseHorizontalEnsemble(object):
             # (weighted) bootstrap
             if self.bootstrap_rate is None:
                 xs, ys = all_xs, all_ys  # no bootstrapping, use whole dataset
+                bootstrap_idx = np.arange(all_xs.shape[0])
             else:
-                xs, ys = self.bootstrap_()
+                xs, ys, bootstrap_idx = self.bootstrap_()  # bootstrap sample
+
+            self.bootstrap_indices.append(bootstrap_idx)
+            self.oob_indices.append(np.setdiff1d(np.arange(all_xs.shape[0]), bootstrap_idx))
 
             # pseudo-targets
             if len(self.estimators_) == 0:
                 pass
             else:
                 # use subsample to fit base learner and compute model update
+                # determine pseudo-targets for bootstrapped samples
                 ys = self.estimator_targets(xs, ys)
 
             # sample weights for fitting
@@ -106,7 +113,7 @@ class BaseHorizontalEnsemble(object):
         """ Return tuple of bootstrap samples for data, truth."""
         data, truth = self.all_data
         bootstrap_idx = self._bootstrap_indices(data, truth)
-        return data[bootstrap_idx], truth[bootstrap_idx]
+        return data[bootstrap_idx], truth[bootstrap_idx], bootstrap_idx
 
     def _bootstrap_indices(self, data, truth):
         """ Determine (indices of) bootstrap sample to be used for next estimator. Pure. """

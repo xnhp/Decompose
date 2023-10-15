@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 from strenum import StrEnum
 
 from decompose.dvc_utils import cwd_path, get_fn_color, dataset_summary
-from decompose.regressors import StandardRFRegressor, SquaredErrorGradientRFRegressor
+from decompose.regressors import StandardRFRegressor, SqErrBoostedBase
 
 
 def pairwise_matrix(data, fun):
@@ -77,7 +77,7 @@ def all_getters():
         "get_ensemble_bias": {"label": "bias($\\bar{q}$)"},
         "get_ensemble_variance_effect": {"label": "var($\\bar{q}$)"},
 
-        "get_expected_member_loss_per_example": {"label": "\\frac{1}{M} \\sum_{i=1}^M \\mathbb{E} [L(y, q_i)]"},
+        # "get_expected_member_loss_per_example": {"label": "\\frac{1}{M} \\sum_{i=1}^M \\mathbb{E} [L(y, q_i)]"},
 
         "get_average_bias": {"label": "$\\overline{bias}$"},
         "get_average_variance_effect": {"label": "$\\overline{var}$"},
@@ -169,7 +169,7 @@ def plot_decomp_grid(getter_ids, target_filepath):
     n_models = max(
         [len(list(children(dataset_path))) for _, dataset_path in children(cwd_path("staged-decomp-values"))])
     # TODO spacing between rows
-    width = 12
+    width = 16
     rowheight = 3
     fig, axs = plt.subplots(n_datasets, n_models + 1, figsize=(width, rowheight * n_datasets))
     for dataset_idx, (dataset_id, dataset_path) in enumerate(children(cwd_path("staged-decomp-values"))):

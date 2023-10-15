@@ -4,6 +4,7 @@ vars:
       - standard-rf-classifier
       - drf-weighted-bootstrap-classifier
       - drf-weighted-fit-classifier
+      - drf-weighted-fit-oob-classifier
 #      - ensemble-weighted-classifier
 #      - diversity-effect-weighted-classifier
   - datasets:  # roughly in order of size

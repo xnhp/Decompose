@@ -5,20 +5,9 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 
-from decompose.dvc_utils import results_filepath_base, results_filepath, cwd_path
+from decompose.dvc_utils import results_filepath_base, results_filepath, cwd_path, get_model_color
 from decompose.experiments import load_results
 
-def get_model_color(identifier: str):
-    colors = {
-        # regression
-        'standard-rf-regressor': "blue",
-        'sqerr-gradient-rf-regressor': "green",
-        # classification
-        'standard-rf-classifier': "blue",
-        'drf-weighted-classifier': "red",
-        'ensemble-weighted-classifier': "green"
-    }
-    return colors[identifier]
 
 def main():
     # TODO xlim s.t. no padding left and right of line

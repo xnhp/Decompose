@@ -1,3 +1,4 @@
+import matplotx
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -7,6 +8,7 @@ def put_caption(text, filename):
         f.write(s)
 
 def variance_plot(series, labels, colors, means, xlabel, ylabel, filename, plot_mean=False):
+    plt.style.use(matplotx.styles.dufte)
     plt.figure(figsize=(3,6))
     glyph_args = {
         "alpha": 0.3,
@@ -27,3 +29,24 @@ def variance_plot(series, labels, colors, means, xlabel, ylabel, filename, plot_
     plt.tight_layout()
     plt.savefig(filename)
     plt.show()
+
+
+def plot_1d_fn_mini(xrange, fn, yrange=None, xlabel=None, ylabel=None, xticks=None, yticks=None,
+                    figsize=(6,6)):
+    plt.figure(figsize)
+    plt.style.use(matplotx.styles.dufte)
+    xs = np.linspace(*xrange, 100)
+
+    fs = [fn(x) for x in xs]
+
+    if yrange is not None:
+        plt.ylim(*yrange)
+
+    if xticks is not None:
+        plt.xticks(xticks)
+
+    if yticks is not None:
+        plt.yticks(yticks)
+
+    matplotx.line_labels()  # line labels to the right
+    plt.plot(xs, fs, label=fn.__doc__)
