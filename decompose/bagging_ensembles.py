@@ -8,7 +8,7 @@ from sklearn.ensemble._base import _set_random_states
 from sklearn.base import clone
 from sklearn.utils import check_random_state
 
-from decompose.experiments import _add_model_smoothing
+from decompose.experiments_utils import _add_model_smoothing
 
 from joblib import Parallel
 

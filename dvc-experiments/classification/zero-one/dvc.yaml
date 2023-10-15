@@ -1,5 +1,10 @@
 #file: noinspection YAMLSchemaValidation
 vars:
+  - small_datasets:
+      - qsar-biodeg
+      - diabetes
+  - models_for_small:
+      - ce-nn
   - models:
       - standard-rf-classifier
       - drf-weighted-bootstrap-classifier
@@ -10,8 +15,8 @@ vars:
   - datasets:  # roughly in order of size
       # small
       - qsar-biodeg
-      # medium
       - diabetes
+      # medium
       - digits
       - bioresponse
       - spambase-openml
@@ -21,10 +26,10 @@ vars:
 
 stages:
 
-  train:
+  train_small:
     matrix:
-      model: ${models}
-      dataset: ${datasets}
+      model: ${models_for_small}
+      dataset: ${small_datasets}
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
@@ -33,6 +38,20 @@ stages:
     outs:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl
+
+  # leave this stage name unchanged to not discard the results
+#  train:
+#    matrix:
+#      model: ${models}
+#      dataset: ${datasets}
+#    cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
+#    deps:
+#      - ../../run_bvd.py
+#    params:
+#      - params.yaml:
+#    outs:
+#      - results/${item.dataset}/${item.model}.pkl
+#      - decomps/${item.dataset}/${item.model}.pkl
 
 # deprecated, to be replaced with things from get_staged_decomp_values
 #  plot_staged_errors:

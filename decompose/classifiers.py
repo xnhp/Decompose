@@ -2,10 +2,71 @@ import logging
 
 import numpy as np
 import scipy
+from sklearn.base import ClassifierMixin, BaseEstimator
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.validation import check_is_fitted, check_array
 
 from decompose.BaseHorizontalEnsemble import BaseHorizontalEnsemble
+from decompose.bagging_ensembles import GeometricBaggingClassifier
 from decompose.util import deep_tree_params
+from skorch import NeuralNet, NeuralNetClassifier
+from torch import nn
+
+class MyError(nn.Module):
+    def __init__(self):
+        super(MyError, self).__init__()
+
+    def forward(self, inputs, targets):
+        return nn.CrossEntropyLoss().forward(inputs, targets)
+
+def make_geometric_nn_ensemble(base):
+    # assumes cross-entropy loss in NN
+    return GeometricBaggingClassifier(
+        base_estimator=base,
+        warm_start=True,
+        smoothing_factor=1e-9
+    )
+
+class MLP(BaseEstimator, ClassifierMixin):
+
+    def __init__(self):
+        self.net = None
+
+    def fit(self, xs, ys):
+
+        input_dim = xs.shape[1]
+        hidden_dim = 20
+        output_dim = len(unique_labels(ys))
+
+        xs = check_array(xs)
+
+        module = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, output_dim),
+        )
+
+        module = module.double()
+
+        self.net = NeuralNetClassifier(
+            module=module,
+            max_epochs=10,
+            lr=0.1,
+            criterion=MyError(),
+            iterator_train__shuffle=True,
+            verbose=False
+        )
+
+        return self.net.fit(xs, ys)
+
+    def predict(self, xs):
+        return self.net.predict(xs)
+
+    def predict_proba(self, xs):
+        return self.net.predict_proba(xs)
+
+
 
 
 def _drf_sample_weights(tree_preds, truth):

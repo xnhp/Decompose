@@ -11,7 +11,7 @@ from decompose.zero_one_loss import mode_with_random_ties, ZeroOneLoss
 
 from decompose import (SquaredLoss, MultivariateSquaredLoss, BinaryCrossEntropy,
                        CrossEntropy, PoissonLoss, BujaExponentialLoss, LogisticMarginLoss)
-from decompose.experiments import _add_model_smoothing
+from decompose.experiments_utils import _add_model_smoothing
 
 from decompose.experiments import BVDExperiment
 

@@ -11,3 +11,5 @@ sklearn~=0.0.post7
 dvc~=3.16.0
 fuzzywuzzy~=0.18.0
 matplotx~=0.3.10
+skorch~=0.15.0
+torch~=2.1.0
