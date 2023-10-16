@@ -8,17 +8,13 @@ from decompose.data_utils import load_standard_dataset
 from decompose.dvc_utils import get_model
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
 warnings.filterwarnings(action='ignore', category=DataConversionWarning)
-# TODO fix "Datatype of x is not int, this may give unexpected behaviour"
-# e.g. when training stqandard-rf-classifier
-
-"""
-    Run a BVD experiment as parameterised by DVC. 
-"""
 
 
 def main():
+    """
+        Run a BVD experiment as parameterised by DVC.
+    """
     args = dvc_utils.parse_args()
     model_id = args.model
     dataset_id = args.dataset

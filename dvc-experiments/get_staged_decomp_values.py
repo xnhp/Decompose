@@ -10,8 +10,8 @@ from decompose.utils import all_getters
 
 
 def staged(getter):
-    M = 150  # TODO move to params
-    ms = range(1, M, 5) # TODO move step to params
+    M = 20  # TODO move to params
+    ms = range(1, M) # TODO move step to params
     values = np.vectorize(getter)(ms)
     return np.column_stack((ms, values))
 

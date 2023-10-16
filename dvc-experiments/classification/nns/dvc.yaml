@@ -3,35 +3,14 @@ vars:
   - small_datasets:
       - qsar-biodeg
       - diabetes
-      - mnist_subset
-  - models_for_small:
-      - ce-nn
   - models:
-      - standard-rf-classifier
-      - drf-weighted-bootstrap-classifier
-      - drf-weighted-fit-classifier
-      - drf-weighted-fit-oob-classifier
-#      - ensemble-weighted-classifier
-#      - diversity-effect-weighted-classifier
-  - datasets:  # roughly in order of size
-      # small
-      - qsar-biodeg
-      - diabetes
-      # medium
-      - digits
-      - bioresponse
-      - spambase-openml
-      - mnist_subset
-      # large
-      - cover
+      - ce-nn
 
 stages:
 
-  # TODO instead for NNs, have to set up bvd-exp with cross-entropy loss?
-  # or why else do we not see the same bvd plot as wood23?
   train_small:
     matrix:
-      model: ${models_for_small}
+      model: ${models}
       dataset: ${small_datasets}
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -42,29 +21,6 @@ stages:
     outs:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl
-
-  # leave this stage name unchanged to not discard the results
-#  train:
-#    matrix:
-#      model: ${models}
-#      dataset: ${datasets}
-#    cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
-#    deps:
-#      - ../../run_bvd.py
-#    params:
-#      - params.yaml:
-#    outs:
-#      - results/${item.dataset}/${item.model}.pkl
-#      - decomps/${item.dataset}/${item.model}.pkl
-
-# deprecated, to be replaced with things from get_staged_decomp_values
-#  plot_staged_errors:
-#    cmd: python ../../plot_staged_errors.py
-#    deps:
-#      - results
-#      - ../../plot_staged_errors.py
-#    outs:
-#      - plots/staged_errors/
 
   get_staged_decomp_values:
     matrix:

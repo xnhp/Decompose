@@ -26,6 +26,7 @@ def make_geometric_nn_ensemble(base):
         base_estimator=base,
         warm_start=True,
         smoothing_factor=1e-9
+        # TODO n_estimators is still fixed
     )
 
 class MLP(BaseEstimator, ClassifierMixin):
@@ -53,8 +54,7 @@ class MLP(BaseEstimator, ClassifierMixin):
             module=module,
             max_epochs=10,
             lr=0.1,
-            criterion=MyError(),
-            iterator_train__shuffle=True,
+            criterion=nn.CrossEntropyLoss(),
             verbose=False
         )
 
