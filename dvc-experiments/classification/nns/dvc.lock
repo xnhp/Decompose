@@ -1,0 +1,207 @@
+schema: '2.0'
+stages:
+  train_small@ce-nn-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model ce-nn --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: fe553aedc543fd787462b571b1574dc3
+      size: 11078
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: cross_entropy
+          parameter_name: n_estimators
+          parameter_values:
+          - 10
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/ce-nn.pkl
+      hash: md5
+      md5: 4e8942cd158361291034ce9d7e359c3b
+      size: 268969
+    - path: results/qsar-biodeg/ce-nn.pkl
+      hash: md5
+      md5: 628ec7609edc7bbd3937afa266dbbabb
+      size: 1249
+  get_staged_decomp_values@ce-nn-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model ce-nn --dataset qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 12139319f96178893e25477c6ac9e107
+      size: 1370
+    - path: decomps/qsar-biodeg/ce-nn.pkl
+      hash: md5
+      md5: 4e8942cd158361291034ce9d7e359c3b
+      size: 268969
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/ce-nn/
+      hash: md5
+      md5: 68fdf3203be86e17989ddb98435425f6.dir
+      size: 1728
+      nfiles: 4
+  train_small@ce-nn-diabetes:
+    cmd: python ../../run_bvd.py --model ce-nn --dataset diabetes
+    deps:
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: fe553aedc543fd787462b571b1574dc3
+      size: 11078
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: cross_entropy
+          parameter_name: n_estimators
+          parameter_values:
+          - 10
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/ce-nn.pkl
+      hash: md5
+      md5: fd22a78671c82185687ff4cc67d7c817
+      size: 195807
+    - path: results/diabetes/ce-nn.pkl
+      hash: md5
+      md5: 7ce6272203dcebedcde95bd6efcee613
+      size: 1243
+  get_staged_decomp_values@ce-nn-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model ce-nn --dataset diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 12139319f96178893e25477c6ac9e107
+      size: 1370
+    - path: decomps/diabetes/ce-nn.pkl
+      hash: md5
+      md5: fd22a78671c82185687ff4cc67d7c817
+      size: 195807
+    outs:
+    - path: staged-decomp-values/diabetes/ce-nn/
+      hash: md5
+      md5: 50f4dfa64fa6eef81080d674dd6688e6.dir
+      size: 1728
+      nfiles: 4
+  plot_ens_decomps:
+    cmd: python ../../plot_ens.py
+    deps:
+    - path: ../../plot_ens.py
+      hash: md5
+      md5: b923f16ba9383c5d492a9a740bf18f42
+      size: 697
+    - path: staged-decomp-values
+      hash: md5
+      md5: bff1d242193cbbaf7ee7f8c5bdce75f2.dir
+      size: 5208
+      nfiles: 15
+    outs:
+    - path: plots/bvd-decomps/ens.png
+      hash: md5
+      md5: fc78240c1b997dd86bd8842ebfcae49c
+      size: 90653
+  plot_bvd_decomps:
+    cmd: python ../../plot_bvd.py
+    deps:
+    - path: ../../plot_bvd.py
+      hash: md5
+      md5: db3254db308534622478b4f546818a24
+      size: 509
+    - path: staged-decomp-values
+      hash: md5
+      md5: bff1d242193cbbaf7ee7f8c5bdce75f2.dir
+      size: 5208
+      nfiles: 15
+    outs:
+    - path: plots/bvd-decomps/bvd.png
+      hash: md5
+      md5: 71e66091c6485acfc2c38c435849e28f
+      size: 82496
+  train_large@ce-nn-mnist_subset:
+    cmd: python ../../run_bvd.py --model ce-nn --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: fe553aedc543fd787462b571b1574dc3
+      size: 11078
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: cross_entropy
+          parameter_name: n_estimators
+          parameter_values:
+          - 10
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/ce-nn.pkl
+      hash: md5
+      md5: 0d4ad360387c8703b9cb0a4151b55052
+      size: 14568754
+    - path: results/mnist_subset/ce-nn.pkl
+      hash: md5
+      md5: 9eca712c2927ee9682edecc8156fed1c
+      size: 1251
+  get_staged_decomp_values_large@ce-nn-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model ce-nn --dataset mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 12139319f96178893e25477c6ac9e107
+      size: 1370
+    - path: decomps/mnist_subset/ce-nn.pkl
+      hash: md5
+      md5: 0d4ad360387c8703b9cb0a4151b55052
+      size: 14568754
+    outs:
+    - path: staged-decomp-values/mnist_subset/ce-nn/
+      hash: md5
+      md5: 39b40602bbfa07b22b7e89d08fb6da01.dir
+      size: 1728
+      nfiles: 4

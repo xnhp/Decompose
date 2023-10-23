@@ -1,0 +1,3293 @@
+schema: '2.0'
+stages:
+  train@standard-rf-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 7a3010c3cf7f55275548f79f1507e8e0
+      size: 23328
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/standard-rf-classifier.pkl
+      hash: md5
+      md5: 6e65eb6f9402dd41b0fc6958c5c4b036
+      size: 5544651
+    - path: results/mnist_subset/standard-rf-classifier.pkl
+      hash: md5
+      md5: 61c527da00b05cbb62775dbecadf2877
+      size: 39961380
+  train@drf-weighted-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf-weighted-classifier --dataset mnist_subset
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/mnist_subset/drf-weighted-classifier.pkl
+      hash: md5
+      md5: 41fc16084400057c488d0444d78580a2
+      size: 39961381
+  train@standard-rf-classifier-cover:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset cover
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/standard-rf-classifier.pkl
+      hash: md5
+      md5: 715634693152f595211d092fadccd363
+      size: 268428254
+    - path: results/cover/standard-rf-classifier.pkl
+      hash: md5
+      md5: f0f256a6bc0b9416addebd839f8f0e23
+      size: 1934770977
+  train@drf-weighted-classifier-cover:
+    cmd: python ../../run_bvd.py --model drf-weighted-classifier --dataset cover
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/cover/drf-weighted-classifier.pkl
+      hash: md5
+      md5: 6f4d85dfa98b67865e6f94bac554e39b
+      size: 1934770978
+  plot_staged_errors:
+    cmd: python ../../plot_staged_errors.py
+    deps:
+    - path: ../../plot_staged_errors.py
+      hash: md5
+      md5: da3845ee6734f02202a13abae8a72db4
+      size: 2507
+    - path: results
+      hash: md5
+      md5: 66ae2b7b9cf098ea09ed8cd9da598731.dir
+      size: 3981467034
+      nfiles: 8
+    outs:
+    - path: plots/staged_errors/
+      hash: md5
+      md5: 77fc2ec2a985c3b97a0b0ec24923bde7.dir
+      size: 247554
+      nfiles: 5
+  plot_ambiguity_decomp:
+    cmd: python ../../plot_ambiguity_decomp.py
+    deps:
+    - path: ../../plot_ambiguity_decomp.py
+      hash: md5
+      md5: 6b0070df386aaa9cb36c6892b6fddf4a
+      size: 3571
+    - path: decomps
+      hash: md5
+      md5: 3d38c4e814f6c1c8b75aa6324895f5d2.dir
+      size: 844864446
+      nfiles: 19
+    outs:
+    - path: plots/ambiguity_decomp
+      hash: md5
+      md5: b002ea2bff783bb9b05bdb032b40a107.dir
+      size: 766747
+      nfiles: 19
+  train@standard-rf-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: 29d33f40007d85668dbe88739786412c
+      size: 16287
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/standard-rf-classifier.pkl
+      hash: md5
+      md5: beecae275a00869924e519e2e39e48a9
+      size: 488514
+    - path: results/qsar-biodeg/standard-rf-classifier.pkl
+      hash: md5
+      md5: abbdc60d9737422b896a0ebee6777a76
+      size: 3511379
+  train@drf-weighted-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf-weighted-classifier --dataset qsar-biodeg
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/qsar-biodeg/drf-weighted-classifier.pkl
+      hash: md5
+      md5: a998029235aea53095bff58dc05c4167
+      size: 3511380
+  train@standard-rf-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset bioresponse
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 7a3010c3cf7f55275548f79f1507e8e0
+      size: 23328
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/standard-rf-classifier.pkl
+      hash: md5
+      md5: 49f5259b410126eb505ea79c37945b30
+      size: 1734066
+    - path: results/bioresponse/standard-rf-classifier.pkl
+      hash: md5
+      md5: 2bae91c91d8e1c8b155f08bfbd1feec8
+      size: 12489779
+  train@drf-weighted-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model drf-weighted-classifier --dataset bioresponse
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/bioresponse/drf-weighted-classifier.pkl
+      hash: md5
+      md5: da38f546c1dd3fb60a20920cca1ec092
+      size: 12489780
+  dataset_summary@mnist_subset:
+    cmd: python ../../dataset_summary.py --dataset mnist_subset
+    deps:
+    - path: ../../dataset_summary.py
+      hash: md5
+      md5: 95f7132e560aca842b0143ccaed73936
+      size: 991
+    outs:
+    - path: plots/dataset_summary/mnist_subset.yaml
+      hash: md5
+      md5: 659b241c467e38d770bd322d8d98aea1
+      size: 82
+  dataset_summary@cover:
+    cmd: python ../../dataset_summary.py --dataset cover
+    deps:
+    - path: ../../dataset_summary.py
+      hash: md5
+      md5: 95f7132e560aca842b0143ccaed73936
+      size: 991
+    outs:
+    - path: plots/dataset_summary/cover.yaml
+      hash: md5
+      md5: 4cfdb3709faeb6b813e46f8e4b81ea13
+      size: 84
+  dataset_summary@qsar-biodeg:
+    cmd: python ../../dataset_summary.py --dataset qsar-biodeg
+    deps:
+    - path: ../../dataset_summary.py
+      hash: md5
+      md5: 95f7132e560aca842b0143ccaed73936
+      size: 991
+    outs:
+    - path: plots/dataset_summary/qsar-biodeg.yaml
+      hash: md5
+      md5: 21cebf1fb34b2bee8c82e287314196fe
+      size: 78
+  dataset_summary@bioresponse:
+    cmd: python ../../dataset_summary.py --dataset bioresponse
+    deps:
+    - path: ../../dataset_summary.py
+      hash: md5
+      md5: 95f7132e560aca842b0143ccaed73936
+      size: 991
+    outs:
+    - path: plots/dataset_summary/bioresponse.yaml
+      hash: md5
+      md5: 0a09b16eaa2783d6f3c5bbc0b6cc0482
+      size: 81
+  train@standard-rf-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 7a3010c3cf7f55275548f79f1507e8e0
+      size: 23328
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/standard-rf-classifier.pkl
+      hash: md5
+      md5: 308219a1ee61c063659b33bfd68e0601
+      size: 2127690
+    - path: results/spambase-openml/standard-rf-classifier.pkl
+      hash: md5
+      md5: f6f28ea0f8cb412ce9c15e469c3be7d1
+      size: 15322983
+  train@drf-weighted-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf-weighted-classifier --dataset spambase-openml
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: results/spambase-openml/drf-weighted-classifier.pkl
+      hash: md5
+      md5: 46fd2a597b2fb77864aafc1cfc9e06d1
+      size: 15322984
+  dataset_summary@spambase-openml:
+    cmd: python ../../dataset_summary.py --dataset spambase-openml
+    deps:
+    - path: ../../dataset_summary.py
+      hash: md5
+      md5: 95f7132e560aca842b0143ccaed73936
+      size: 991
+    outs:
+    - path: plots/dataset_summary/spambase-openml.yaml
+      hash: md5
+      md5: 03c27420c73437647991c9b0114bcfc4
+      size: 80
+  train@drf-weighted-bootstrap-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      mnist_subset
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 06f0331376f433710265e45b23d4e0e7
+      size: 5544651
+    - path: results/mnist_subset/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: a1629706f1340112c9d316a0ee613fc7
+      size: 39961391
+  train@drf-weighted-bootstrap-classifier-cover:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      cover
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: b442c77b7f366baccd833f2bced3b6db
+      size: 268428254
+    - path: results/cover/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: e4313e0fada1c9d5cb6448b47eadaeb5
+      size: 1934770988
+  train@drf-weighted-bootstrap-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 7a3010c3cf7f55275548f79f1507e8e0
+      size: 23328
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 1bbea358409f8b7eccc962362b10331a
+      size: 488514
+    - path: results/qsar-biodeg/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: b99bb4c56152adaf04c3b779c6718d37
+      size: 3511390
+  train@drf-weighted-bootstrap-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      bioresponse
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 7a3010c3cf7f55275548f79f1507e8e0
+      size: 23328
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: aa31dd035112716b3457ef43c8b06026
+      size: 1734066
+    - path: results/bioresponse/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: d0308aa37dfda16d5afc94235eabdecc
+      size: 12489790
+  train@drf-weighted-bootstrap-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      spambase-openml
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 7a3010c3cf7f55275548f79f1507e8e0
+      size: 23328
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 701933a1161a6611e89bbb7c73fc86bf
+      size: 2127690
+    - path: results/spambase-openml/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: e2a1b4eda60de7f2882386257ed648e1
+      size: 15322994
+  train@drf-weighted-fit-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: c38ae74a0a413e966cdff13c1976cc26
+      size: 5544651
+    - path: results/mnist_subset/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: d185e3b5ec59c2da8cbf9db22ca38176
+      size: 39961385
+  train@drf-weighted-fit-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: dff1eaaac96d8c95181a47de9214ab8f
+      size: 488514
+    - path: results/qsar-biodeg/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: f79b50b315e19388ff83f3e9a09ebfe4
+      size: 3511384
+  train@drf-weighted-fit-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset bioresponse
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 70ce84989d66d6bab936d02bf0ec83e8
+      size: 1734066
+    - path: results/bioresponse/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 5a37ab5cb70fd790b8fd0bce18fc294e
+      size: 12489784
+  train@drf-weighted-fit-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 7c0b9b25522c4280cb5dbe8c147043d2
+      size: 2127690
+    - path: results/spambase-openml/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: d0edaf39b4fbd73a72ccdff81b299cf9
+      size: 15322988
+  get_staged_decomp_values@standard-rf-classifier-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model standard-rf-classifier --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/qsar-biodeg/standard-rf-classifier.pkl
+      hash: md5
+      md5: beecae275a00869924e519e2e39e48a9
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/standard-rf-classifier/
+      hash: md5
+      md5: a05630bdd37f5a99f99cd2fd6669fbb9.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-bootstrap-classifier-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-bootstrap-classifier
+      --dataset qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/qsar-biodeg/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 1bbea358409f8b7eccc962362b10331a
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/drf-weighted-bootstrap-classifier/
+      hash: md5
+      md5: 20bfe283ab80c6ed1150b6b9a347b5e7.dir
+      size: 3648
+      nfiles: 6
+  plot_bvd_decomps:
+    cmd: python ../../plot_bvd.py
+    deps:
+    - path: ../../plot_bvd.py
+      hash: md5
+      md5: da0758a5763287bdc89d443d785d693e
+      size: 523
+    - path: staged-decomp-values
+      hash: md5
+      md5: 6765f5adbd39a0b532ab2ea9bd94f648.dir
+      size: 8675
+      nfiles: 25
+    outs:
+    - path: plots/bvd-decomps/bvd.png
+      hash: md5
+      md5: a8dc93b33afa73963d64a290ac377188
+      size: 167976
+  get_staged_decomp_values@drf-weighted-fit-classifier-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
+      --dataset qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/qsar-biodeg/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: dff1eaaac96d8c95181a47de9214ab8f
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/drf-weighted-fit-classifier/
+      hash: md5
+      md5: e4bd36e9910083f480211119bd09d943.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@standard-rf-classifier-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model standard-rf-classifier --dataset
+      bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/bioresponse/standard-rf-classifier.pkl
+      hash: md5
+      md5: 49f5259b410126eb505ea79c37945b30
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/standard-rf-classifier/
+      hash: md5
+      md5: 47db6ee6f4471068ba7b91c966c7f519.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@standard-rf-classifier-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model standard-rf-classifier --dataset
+      spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/spambase-openml/standard-rf-classifier.pkl
+      hash: md5
+      md5: 308219a1ee61c063659b33bfd68e0601
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/standard-rf-classifier/
+      hash: md5
+      md5: 6235932999d55c015c9dd037172a541f.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-bootstrap-classifier-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-bootstrap-classifier
+      --dataset bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/bioresponse/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: aa31dd035112716b3457ef43c8b06026
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/drf-weighted-bootstrap-classifier/
+      hash: md5
+      md5: f5517006c51f8f310c369aea66f93309.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-bootstrap-classifier-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-bootstrap-classifier
+      --dataset spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/spambase-openml/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 701933a1161a6611e89bbb7c73fc86bf
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/drf-weighted-bootstrap-classifier/
+      hash: md5
+      md5: 4c0e9acd5c84a344afaa85b6c4d35abd.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-classifier-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
+      --dataset bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/bioresponse/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 70ce84989d66d6bab936d02bf0ec83e8
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/drf-weighted-fit-classifier/
+      hash: md5
+      md5: 230d3ee660e3999e69fce6b5d3c30296.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-classifier-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
+      --dataset spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/spambase-openml/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 7c0b9b25522c4280cb5dbe8c147043d2
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/drf-weighted-fit-classifier/
+      hash: md5
+      md5: 17f16d8611d861292aa1a0c16e712d53.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@standard-rf-classifier-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model standard-rf-classifier --dataset
+      mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/mnist_subset/standard-rf-classifier.pkl
+      hash: md5
+      md5: 6e65eb6f9402dd41b0fc6958c5c4b036
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/standard-rf-classifier/
+      hash: md5
+      md5: 96a2278d2f0d23f0b0d7d7dea19511f2.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-bootstrap-classifier-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-bootstrap-classifier
+      --dataset mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/mnist_subset/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 06f0331376f433710265e45b23d4e0e7
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/drf-weighted-bootstrap-classifier/
+      hash: md5
+      md5: 745622f9471bbf802b1f441f5a6f7409.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-classifier-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
+      --dataset mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/mnist_subset/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: c38ae74a0a413e966cdff13c1976cc26
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/drf-weighted-fit-classifier/
+      hash: md5
+      md5: ee962d98f92c21a26e56042b0c61546b.dir
+      size: 3648
+      nfiles: 6
+  train@standard-rf-classifier-digits:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset digits
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/standard-rf-classifier.pkl
+      hash: md5
+      md5: 73051ff10c4859212981a5ebd8c26c9a
+      size: 832242
+    - path: results/digits/standard-rf-classifier.pkl
+      hash: md5
+      md5: 7040ed967729b4d91a432773a8aa8b80
+      size: 5984574
+  train@drf-weighted-bootstrap-classifier-digits:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      digits
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 5c0e12a33a2e4daee94fb1af9242777d
+      size: 832242
+    - path: results/digits/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 863077c81d1a3733a5d0cb23843b30b9
+      size: 5984585
+  train@drf-weighted-fit-classifier-cover:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset cover
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: 8c28973f36eed6a5f43ffd0ed8e33593
+      size: 16057
+    - path: ../../../decompose/decompositions.py
+      hash: md5
+      md5: 8e2ee27dab198ee060a7b4ec523242ca
+      size: 23208
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: cbf1813eac60b8faacf30d38341442f8
+      size: 268428254
+    - path: results/cover/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 11859f76ddec619ddf347567c72eba94
+      size: 1934770982
+  train@drf-weighted-fit-classifier-digits:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset digits
+    deps:
+    - path: ../../../decompose/caching.py
+      hash: md5
+      md5: fb24601447699c72d5b4c67173586260
+      size: 1197
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: aa8cbb708c60688dc89876fc8f29c2d8
+      size: 5848
+    - path: ../../../decompose/data_utils.py
+      hash: md5
+      md5: c3dc31be3bbf0b5ba4016f1e96bf6c24
+      size: 16202
+    - path: ../../../decompose/experiments.py
+      hash: md5
+      md5: 6a262047bde1da24d8ec254df01828e3
+      size: 80940
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 97144df704f4f3b4ef850ce86657a455
+      size: 832242
+    - path: results/digits/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 3dc35144549f668277dcd371e460beba
+      size: 5984579
+  get_staged_decomp_values@standard-rf-classifier-cover:
+    cmd: python ../../get_staged_decomp_values.py --model standard-rf-classifier --dataset
+      cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/cover/standard-rf-classifier.pkl
+      hash: md5
+      md5: 715634693152f595211d092fadccd363
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/standard-rf-classifier/
+      hash: md5
+      md5: 016b0fede5b382ca5af67f3432ed4627.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@standard-rf-classifier-digits:
+    cmd: python ../../get_staged_decomp_values.py --model standard-rf-classifier --dataset
+      digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/digits/standard-rf-classifier.pkl
+      hash: md5
+      md5: 73051ff10c4859212981a5ebd8c26c9a
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/standard-rf-classifier/
+      hash: md5
+      md5: ab865a3149ae215bb1d373b37820f387.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-bootstrap-classifier-cover:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-bootstrap-classifier
+      --dataset cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/cover/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: b442c77b7f366baccd833f2bced3b6db
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/drf-weighted-bootstrap-classifier/
+      hash: md5
+      md5: a0a8453ca0e349e49f0a620239e0fdaf.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-bootstrap-classifier-digits:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-bootstrap-classifier
+      --dataset digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/digits/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 5c0e12a33a2e4daee94fb1af9242777d
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/drf-weighted-bootstrap-classifier/
+      hash: md5
+      md5: 8bbc042ee5e56368b8e8416003e4c311.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-classifier-cover:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
+      --dataset cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/cover/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: cbf1813eac60b8faacf30d38341442f8
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/drf-weighted-fit-classifier/
+      hash: md5
+      md5: 9d9a025d54d47bd3ba1c1437b5d96aee.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-classifier-digits:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
+      --dataset digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/digits/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 97144df704f4f3b4ef850ce86657a455
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/drf-weighted-fit-classifier/
+      hash: md5
+      md5: 53a1a3ab5fc1ed842999ec1015d799e2.dir
+      size: 3648
+      nfiles: 6
+  plot_compare_models@qsar-biodeg:
+    cmd: python ../../plot_compare_models.py --dataset qsar-biodeg
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 9af46350bbb8ef18035570f654e8e475
+      size: 1498
+    - path: staged-decomp-values
+      hash: md5
+      md5: f293ec0810b1da5f200610a8b2fea143.dir
+      size: 3195
+      nfiles: 19
+    outs:
+    - path: plots/bvd-decomps/qsar-biodeg/
+      hash: md5
+      md5: 0280bdb04269c9b8c4e2def27b19147e.dir
+      size: 132545
+      nfiles: 6
+  plot_compare_models@bioresponse:
+    cmd: python ../../plot_compare_models.py --dataset bioresponse
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 9af46350bbb8ef18035570f654e8e475
+      size: 1498
+    - path: staged-decomp-values
+      hash: md5
+      md5: 931453245b8cc4ab4f411fb091d340b3.dir
+      size: 103019
+      nfiles: 175
+    outs:
+    - path: plots/bvd-decomps/bioresponse/
+      hash: md5
+      md5: eb986f81d96f1d5d1b6bfea393eab1e4.dir
+      size: 414783
+      nfiles: 6
+  plot_compare_models@spambase-openml:
+    cmd: python ../../plot_compare_models.py --dataset spambase-openml
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 9af46350bbb8ef18035570f654e8e475
+      size: 1498
+    - path: staged-decomp-values
+      hash: md5
+      md5: 931453245b8cc4ab4f411fb091d340b3.dir
+      size: 103019
+      nfiles: 175
+    outs:
+    - path: plots/bvd-decomps/spambase-openml/
+      hash: md5
+      md5: 2aa3b999c25651984021341e398b358c.dir
+      size: 391723
+      nfiles: 6
+  plot_compare_models@mnist_subset:
+    cmd: python ../../plot_compare_models.py --dataset mnist_subset
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 9af46350bbb8ef18035570f654e8e475
+      size: 1498
+    - path: staged-decomp-values
+      hash: md5
+      md5: 931453245b8cc4ab4f411fb091d340b3.dir
+      size: 103019
+      nfiles: 175
+    outs:
+    - path: plots/bvd-decomps/mnist_subset/
+      hash: md5
+      md5: 79e8c0ee810792a8a68aa16fc2920855.dir
+      size: 352261
+      nfiles: 6
+  plot_compare_models@cover:
+    cmd: python ../../plot_compare_models.py --dataset cover
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 9af46350bbb8ef18035570f654e8e475
+      size: 1498
+    - path: staged-decomp-values
+      hash: md5
+      md5: 931453245b8cc4ab4f411fb091d340b3.dir
+      size: 103019
+      nfiles: 175
+    outs:
+    - path: plots/bvd-decomps/cover/
+      hash: md5
+      md5: 1844762784ae88218ade66ecd08dafd2.dir
+      size: 351420
+      nfiles: 6
+  plot_compare_models@digits:
+    cmd: python ../../plot_compare_models.py --dataset digits
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 9af46350bbb8ef18035570f654e8e475
+      size: 1498
+    - path: staged-decomp-values
+      hash: md5
+      md5: 931453245b8cc4ab4f411fb091d340b3.dir
+      size: 103019
+      nfiles: 175
+    outs:
+    - path: plots/bvd-decomps/digits/
+      hash: md5
+      md5: 746f0ff3e5c0ae54a4f8aa63b6767e7c.dir
+      size: 376440
+      nfiles: 6
+  plot_ens_decomps:
+    cmd: python ../../plot_ens.py
+    deps:
+    - path: ../../plot_ens.py
+      hash: md5
+      md5: b923f16ba9383c5d492a9a740bf18f42
+      size: 697
+    - path: staged-decomp-values
+      hash: md5
+      md5: 6765f5adbd39a0b532ab2ea9bd94f648.dir
+      size: 8675
+      nfiles: 25
+    outs:
+    - path: plots/bvd-decomps/ens.png
+      hash: md5
+      md5: 42d9cf77805a07d477d40c82b1c0bba8
+      size: 157728
+  train@standard-rf-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/standard-rf-classifier.pkl
+      hash: md5
+      md5: 827ba53e141602c8e7ee1534af319ff0
+      size: 355451
+    - path: results/diabetes/standard-rf-classifier.pkl
+      hash: md5
+      md5: fc755678172c56115a7cf2f0fd94659f
+      size: 2557375
+  train@drf-weighted-bootstrap-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 0df039cd4cc1e6805918620b70d3e176
+      size: 355451
+    - path: results/diabetes/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 483709929d55d775a06cf89329d75d5c
+      size: 2557386
+  train@drf-weighted-fit-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 16c34bbd3fe7925e08b4187ab0c8ce1d
+      size: 355451
+    - path: results/diabetes/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 40be47f8b287e17a6a3dfa3288bab7a0
+      size: 2557380
+  get_staged_decomp_values@standard-rf-classifier-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model standard-rf-classifier --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/diabetes/standard-rf-classifier.pkl
+      hash: md5
+      md5: 827ba53e141602c8e7ee1534af319ff0
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/standard-rf-classifier/
+      hash: md5
+      md5: 8b5570587e6f8956c49ea68f327fc270.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-bootstrap-classifier-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-bootstrap-classifier
+      --dataset diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/diabetes/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 0df039cd4cc1e6805918620b70d3e176
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/drf-weighted-bootstrap-classifier/
+      hash: md5
+      md5: a2b9bd087c76c72500bcafb308c0841e.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-classifier-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
+      --dataset diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/diabetes/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 16c34bbd3fe7925e08b4187ab0c8ce1d
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/drf-weighted-fit-classifier/
+      hash: md5
+      md5: 5919dbb455f8bcf51be6a5a8fcf8da34.dir
+      size: 3648
+      nfiles: 6
+  plot_compare_models@diabetes:
+    cmd: python ../../plot_compare_models.py --dataset diabetes
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 9af46350bbb8ef18035570f654e8e475
+      size: 1498
+    - path: staged-decomp-values
+      hash: md5
+      md5: f293ec0810b1da5f200610a8b2fea143.dir
+      size: 3195
+      nfiles: 19
+    outs:
+    - path: plots/bvd-decomps/diabetes/
+      hash: md5
+      md5: 4a7b39fd01f7162f5ab2ddf7b79ad498.dir
+      size: 133173
+      nfiles: 6
+  train@drf-weighted-fit-oob-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 9ec082a5b1a05dbc6b1a58eacd8ebc57
+      size: 488514
+    - path: results/qsar-biodeg/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: dc6eca9fa7d6a5c10c617fd6658e81e8
+      size: 3511388
+  train@drf-weighted-fit-oob-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 64788678e8217279d9d2160ebb0b9bb7
+      size: 355451
+    - path: results/diabetes/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 5a2edafca5d5dd2899cfa53a05a3ca02
+      size: 2557384
+  train@drf-weighted-fit-oob-classifier-digits:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      digits
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: c499590a1baac128d9468dc6321bce28
+      size: 832242
+    - path: results/digits/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 64781b08dffa15d82e0b21b1ce49a06f
+      size: 5984583
+  train@drf-weighted-fit-oob-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      bioresponse
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 5fda0cc0385b38db6c809548f8ba1e58
+      size: 1734066
+    - path: results/bioresponse/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: a13d06ecc63c82ed35bc36df59dc31c4
+      size: 12489788
+  train@drf-weighted-fit-oob-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      spambase-openml
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 08e5c6c9f433eb8845dfa322267583ba
+      size: 2127690
+    - path: results/spambase-openml/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 9c69d914bbf5ae225127b80689f37407
+      size: 15322992
+  train@drf-weighted-fit-oob-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      mnist_subset
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 363e58489213ba1da779c96894c6802d
+      size: 5544651
+    - path: results/mnist_subset/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: e601345660e5b7d63bee263fc060b03d
+      size: 39961389
+  train@drf-weighted-fit-oob-classifier-cover:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      cover
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: b1856f781159f6e391fac94cfbb6713b
+      size: 268428254
+    - path: results/cover/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 2b089c82c29eb6e9ff91735455b45c0a
+      size: 1934770986
+  get_staged_decomp_values@drf-weighted-fit-oob-classifier-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-oob-classifier
+      --dataset qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/qsar-biodeg/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 9ec082a5b1a05dbc6b1a58eacd8ebc57
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/drf-weighted-fit-oob-classifier/
+      hash: md5
+      md5: 4c60cf4c1b9b3796881a407a82522792.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-oob-classifier-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-oob-classifier
+      --dataset diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/diabetes/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 64788678e8217279d9d2160ebb0b9bb7
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/drf-weighted-fit-oob-classifier/
+      hash: md5
+      md5: 5f4874b01980e03dd5d8f97ffa195b8f.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-oob-classifier-digits:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-oob-classifier
+      --dataset digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/digits/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: c499590a1baac128d9468dc6321bce28
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/drf-weighted-fit-oob-classifier/
+      hash: md5
+      md5: 8eef5e00ddc124cd2e487497ecb8e50b.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-oob-classifier-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-oob-classifier
+      --dataset bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/bioresponse/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 5fda0cc0385b38db6c809548f8ba1e58
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/drf-weighted-fit-oob-classifier/
+      hash: md5
+      md5: 800b671550d8788507ad234c53907f0f.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-oob-classifier-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-oob-classifier
+      --dataset spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/spambase-openml/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 08e5c6c9f433eb8845dfa322267583ba
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/drf-weighted-fit-oob-classifier/
+      hash: md5
+      md5: 6ebe92fd24acbf60ec96111d0e5f8d02.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-oob-classifier-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-oob-classifier
+      --dataset mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/mnist_subset/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 363e58489213ba1da779c96894c6802d
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/drf-weighted-fit-oob-classifier/
+      hash: md5
+      md5: 6e8dd3c2a99992e2eb024bf6725b6c86.dir
+      size: 3648
+      nfiles: 6
+  get_staged_decomp_values@drf-weighted-fit-oob-classifier-cover:
+    cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-oob-classifier
+      --dataset cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 0b245975cda06a9ab77ee980bd8c230e
+      size: 1287
+    - path: decomps/cover/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: b1856f781159f6e391fac94cfbb6713b
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/drf-weighted-fit-oob-classifier/
+      hash: md5
+      md5: 053d59245a265fb23eee9045130b4f3c.dir
+      size: 3648
+      nfiles: 6
+  train_small@ce-nn-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model ce-nn --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: 090461e924d71ad0bfb324d6c1b1d508
+      size: 11076
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/ce-nn.pkl
+      hash: md5
+      md5: 4600dacb7b98d5350774bf1263f6b377
+      size: 488514
+    - path: results/qsar-biodeg/ce-nn.pkl
+      hash: md5
+      md5: c45a845f4eeb6565b369d93b60d43ebe
+      size: 3511362
+  train_small@ce-nn-diabetes:
+    cmd: python ../../run_bvd.py --model ce-nn --dataset diabetes
+    deps:
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: 090461e924d71ad0bfb324d6c1b1d508
+      size: 11076
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/ce-nn.pkl
+      hash: md5
+      md5: 33e492d882c45a3ca9848f00c199bff3
+      size: 355451
+    - path: results/diabetes/ce-nn.pkl
+      hash: md5
+      md5: 83d659b5149b56c4e3008ed50c049e88
+      size: 2557358
+  get_staged_decomp_values@ce-nn-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model ce-nn --dataset qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: f9138edc29348503382149ecd493b2c2
+      size: 1283
+    - path: decomps/qsar-biodeg/ce-nn.pkl
+      hash: md5
+      md5: 4600dacb7b98d5350774bf1263f6b377
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/ce-nn/
+      hash: md5
+      md5: 34c0afb759bf9df8b53b8fb944264cbb.dir
+      size: 2592
+      nfiles: 6
+  get_staged_decomp_values@ce-nn-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model ce-nn --dataset diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: f9138edc29348503382149ecd493b2c2
+      size: 1283
+    - path: decomps/diabetes/ce-nn.pkl
+      hash: md5
+      md5: 33e492d882c45a3ca9848f00c199bff3
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/ce-nn/
+      hash: md5
+      md5: 0fcd7e27a543ace0a9d3e8d99a6b2968.dir
+      size: 2592
+      nfiles: 6
+  train_small@ce-nn-mnist_subset:
+    cmd: python ../../run_bvd.py --model ce-nn --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/classifiers.py
+      hash: md5
+      md5: 090461e924d71ad0bfb324d6c1b1d508
+      size: 11076
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: e2861fbc747e64931430ad90f6751fc2
+      size: 1451
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/ce-nn.pkl
+      hash: md5
+      md5: 845a829d961e4cdc6c46f55ca54082ff
+      size: 5544651
+    - path: results/mnist_subset/ce-nn.pkl
+      hash: md5
+      md5: 7303fcd1d5b4acda8c74099ee0755abe
+      size: 39961363
+  get_staged_decomp_values@ce-nn-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model ce-nn --dataset mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: f9138edc29348503382149ecd493b2c2
+      size: 1283
+    - path: decomps/mnist_subset/ce-nn.pkl
+      hash: md5
+      md5: 845a829d961e4cdc6c46f55ca54082ff
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/ce-nn/
+      hash: md5
+      md5: 33f35f3fdacf505b6f1b0dc683f37456.dir
+      size: 2592
+      nfiles: 6
+  train_small@standard-rf-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset qsar-biodeg
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance_effect
+        - get_diversity_effect
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/standard-rf-classifier.pkl
+      hash: md5
+      md5: 1b5a3c3f1eba5e3afc35016369212d85
+      size: 488514
+    - path: results/qsar-biodeg/standard-rf-classifier.pkl
+      hash: md5
+      md5: af963724f8c1f18200950d376e47960d
+      size: 951710
+  train_small@standard-rf-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance_effect
+        - get_diversity_effect
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/standard-rf-classifier.pkl
+      hash: md5
+      md5: 207cf881462a59cda5d6bbeb63f605cd
+      size: 355451
+    - path: results/diabetes/standard-rf-classifier.pkl
+      hash: md5
+      md5: 5bf0f813980fffb08b1618d11556401a
+      size: 692506
+  train_small@drf-weighted-bootstrap-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance_effect
+        - get_diversity_effect
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: a3d8e6e4a67b58a827932375fad581b3
+      size: 488514
+    - path: results/qsar-biodeg/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: ee6b2ace3a612f6d8aed2279c9795989
+      size: 951721
+  train_small@drf-weighted-bootstrap-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance_effect
+        - get_diversity_effect
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 4af090806c78a4f9611ba07a95872798
+      size: 355451
+    - path: results/diabetes/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: f170c8b22b2735b5281ee9ec742f1e57
+      size: 692517
+  train_small@drf-weighted-fit-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset qsar-biodeg
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance_effect
+        - get_diversity_effect
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: a8376eb76e26ded96394c0649c2fb790
+      size: 488514
+    - path: results/qsar-biodeg/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 4d14a5d6173658abecc0556b582107ad
+      size: 951715
+  train_small@drf-weighted-fit-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 4e2657cba4c1552c7bea084c8278e6f1
+      size: 355451
+    - path: results/diabetes/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: f96831b7cd757bd53105de97b03c50c5
+      size: 692511
+  train_small@drf-weighted-fit-oob-classifier-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: ec33afdc6d595c0b12ddf7da57d1e75b
+      size: 488514
+    - path: results/qsar-biodeg/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: cb87bdfe402a2220e62736a457841609
+      size: 951719
+  train_small@drf-weighted-fit-oob-classifier-diabetes:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      diabetes
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: ca63671370a9e39b21ec782d23700186
+      size: 355451
+    - path: results/diabetes/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 57a6876009bcc1a03c9cf3c0b4279baf
+      size: 692515
+  train_medium@standard-rf-classifier-digits:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset digits
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/standard-rf-classifier.pkl
+      hash: md5
+      md5: bda92962092b07def652f38dcf6fc915
+      size: 832242
+    - path: results/digits/standard-rf-classifier.pkl
+      hash: md5
+      md5: 3078c5cb94468433044647fa35853714
+      size: 1621305
+  train_medium@standard-rf-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset bioresponse
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/standard-rf-classifier.pkl
+      hash: md5
+      md5: 57585dbf6a8e0f8dc221e74d512434bb
+      size: 1734066
+    - path: results/bioresponse/standard-rf-classifier.pkl
+      hash: md5
+      md5: 71abe6c4a5129ae048deabd80058d70d
+      size: 3378110
+  train_medium@standard-rf-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset spambase-openml
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/standard-rf-classifier.pkl
+      hash: md5
+      md5: 5aaa3280af44ae4dcea1926780b5d81c
+      size: 2127690
+    - path: results/spambase-openml/standard-rf-classifier.pkl
+      hash: md5
+      md5: eece9feba9dcd41b8878afbccfa8ce1d
+      size: 4144914
+  train_medium@drf-weighted-bootstrap-classifier-digits:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      digits
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 94186613b44953158cdedd0c7f9ea206
+      size: 832242
+    - path: results/digits/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: d98173e4eecf95540807eae026ca1c98
+      size: 1621316
+  train_medium@drf-weighted-bootstrap-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      bioresponse
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: ab51fc90b9a520580c0c77a1583cda22
+      size: 1734066
+    - path: results/bioresponse/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: ee252574f3e7b75452dd8863dd9df1b4
+      size: 3378121
+  train_medium@drf-weighted-bootstrap-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      spambase-openml
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 104d7280e837a7a797cce877d1d1b7dc
+      size: 2127690
+    - path: results/spambase-openml/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 5726ff7a854d7147f58d1a09ab99a88d
+      size: 4144925
+  train_medium@drf-weighted-fit-classifier-digits:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset digits
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 96aff1ca09b49f2190034ddcf0b595ce
+      size: 832242
+    - path: results/digits/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 7eb29ab7436abcf494ce6de4a1512d1c
+      size: 1621310
+  train_medium@drf-weighted-fit-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset bioresponse
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 7fa088c30b832a7f81d083249e929480
+      size: 1734066
+    - path: results/bioresponse/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 7931edd1de54bd71d62ec7ecd6a880f5
+      size: 3378115
+  train_medium@drf-weighted-fit-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset spambase-openml
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 99b9c4336b4c60c5cd7ffed619a07546
+      size: 2127690
+    - path: results/spambase-openml/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: d13e0dc2a4c3a80ec623250302730a4d
+      size: 4144919
+  train_medium@drf-weighted-fit-oob-classifier-digits:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      digits
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: aec7c7197e6cf44c0dbd414eaf9afaf9
+      size: 832242
+    - path: results/digits/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 687924c533deb08ea94cc83360cc01a8
+      size: 1621314
+  train_medium@drf-weighted-fit-oob-classifier-bioresponse:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      bioresponse
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: a9f914228ad93b77c7dd32ab589ba61e
+      size: 1734066
+    - path: results/bioresponse/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: cc3a90f86bd52f02364348d3284a4664
+      size: 3378119
+  train_medium@drf-weighted-fit-oob-classifier-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      spambase-openml
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: e76a0d43d27520ddcf93c7feaa7ed4b8
+      size: 2127690
+    - path: results/spambase-openml/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 693e726810deadcf59fb0977bf7a4489
+      size: 4144923
+  train_large@standard-rf-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset mnist_subset
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/standard-rf-classifier.pkl
+      hash: md5
+      md5: 4cc1a301470b13f87b88c6fd00c6074c
+      size: 5544651
+    - path: results/mnist_subset/standard-rf-classifier.pkl
+      hash: md5
+      md5: 16fb47e1f077eeccf24484cd136afcb4
+      size: 10801311
+  train_large@standard-rf-classifier-cover:
+    cmd: python ../../run_bvd.py --model standard-rf-classifier --dataset cover
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/standard-rf-classifier.pkl
+      hash: md5
+      md5: b369c5c1c36e761bad03a3f173587861
+      size: 268428254
+    - path: results/cover/standard-rf-classifier.pkl
+      hash: md5
+      md5: c17c75c87c7f4827c804598dec97c005
+      size: 522912106
+  train_large@drf-weighted-bootstrap-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      mnist_subset
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: ade64e09ac91d68ff62d90daa4247737
+      size: 5544651
+    - path: results/mnist_subset/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 0c1b40a41eb6fa410827be6b382b4512
+      size: 10801322
+  train_large@drf-weighted-bootstrap-classifier-cover:
+    cmd: python ../../run_bvd.py --model drf-weighted-bootstrap-classifier --dataset
+      cover
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: 2995ea1712f1d750d36da1244cd54420
+      size: 268428254
+    - path: results/cover/drf-weighted-bootstrap-classifier.pkl
+      hash: md5
+      md5: c1eb00b60601eb89c25afa5d655d2416
+      size: 522912117
+  train_large@drf-weighted-fit-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset mnist_subset
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: c83f7ed2203feee0526a0169219d3cee
+      size: 5544651
+    - path: results/mnist_subset/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: d9624c37d6c5ced56dea7bc143e435d2
+      size: 10801316
+  train_large@drf-weighted-fit-classifier-cover:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-classifier --dataset cover
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 41799b1ddd7452db3754da749052f445
+      size: 268428254
+    - path: results/cover/drf-weighted-fit-classifier.pkl
+      hash: md5
+      md5: 72291a89b74845c590bc8b5105e32362
+      size: 522912111
+  train_large@drf-weighted-fit-oob-classifier-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      mnist_subset
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 520ba87946ec6f71f92b6e8843e612f5
+      size: 5544651
+    - path: results/mnist_subset/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: f5b3454076533498c037e46dddbe7097
+      size: 10801320
+  train_large@drf-weighted-fit-oob-classifier-cover:
+    cmd: python ../../run_bvd.py --model drf-weighted-fit-oob-classifier --dataset
+      cover
+    deps:
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        plot_bvd_getters:
+        - get_expected_ensemble_loss
+        - get_average_bias
+        - get_average_variance
+        - get_diversity
+        plot_ens_getters:
+        - get_expected_ensemble_loss
+        - get_ensemble_variance_effect
+        - get_ensemble_bias
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: e9c9c9d8142731a4c1fdf67cea83258f
+      size: 268428254
+    - path: results/cover/drf-weighted-fit-oob-classifier.pkl
+      hash: md5
+      md5: 83c8ba4db4f67559e634c8207fcbccfd
+      size: 522912115
