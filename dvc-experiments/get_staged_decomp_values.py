@@ -1,5 +1,6 @@
 import glob
 import logging
+import os.path
 import pickle
 
 import numpy as np
@@ -30,14 +31,18 @@ def main():
 
     decomp_path = cwd_path("decomps", dataset_id, model_id + ".pkl")
 
-    with open(decomp_path, "rb") as f:
-        try:
+    if not os.path.exists(decomp_path):
+        logging.error(f"Error loading {decomp_path}")
+        cwd_path("staged-decomp-values", dataset_id, model_id, "foo")  # still create out path
+        return
+
+    try:
+        with open(decomp_path, "rb") as f:
             decomp = pickle.load(f)
-        except EOFError as e:
-            # dont want other stages to fail so log & continue
-            logging.error(f"Error loading {decomp_path}: {e}")
-            cwd_path("staged-decomp-values", dataset_id, model_id, "foo")  # still create out path
-            return
+    except (OSError, EOFError) as e:
+        logging.error(f"Error loading {decomp_path}: {e}")
+        cwd_path("staged-decomp-values", dataset_id, model_id, "foo")  # still create out path
+        return
     for getter_id in getters:
         getter = getattr(decomp, getter_id)
         path = cwd_path("staged-decomp-values", dataset_id, model_id, f"{getter_id}.npy")
