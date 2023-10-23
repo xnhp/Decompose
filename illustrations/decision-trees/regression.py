@@ -1,3 +1,4 @@
+import matplotx
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeRegressor
@@ -41,6 +42,11 @@ display.ax_.scatter(
     iris.data[:, 0], iris.data[:, 1], c=iris.target, edgecolor="black"
 )
 
+plt.xticks([])
+plt.yticks([])
+
+plt.style.use(matplotx.styles.dufte)
+
 plt.tight_layout()
 plt.show()
 
@@ -49,7 +55,8 @@ plot_id = "decision-tree-boundaries"
 display.figure_.savefig(cwd_path(f"{plot_id}.png"))
 
 caption = """
-    Decision tree boundaries (TODO: attribute or adjust code, figsize)
+    Decision boundaries of a tree in two (arbitrary) features constructed on the \\textit{iris} dataset.
+     Visualisation based on \\cite{_SklearnInspectionDecisionBoundaryDisplay_}.
     """
 put_caption(caption,
             cwd_path(f"{plot_id}.tex"))

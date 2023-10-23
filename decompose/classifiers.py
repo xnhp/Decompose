@@ -52,7 +52,7 @@ class MLP(BaseEstimator, ClassifierMixin):
 
         self.net = NeuralNetClassifier(
             module=module,
-            max_epochs=10,
+            max_epochs=100,
             lr=0.1,
             criterion=nn.CrossEntropyLoss(),
             verbose=False
@@ -67,7 +67,14 @@ class MLP(BaseEstimator, ClassifierMixin):
         return self.net.predict_proba(xs)
 
 
+class NCLMLP(MLP):
+    def __init__(self):
+        super(NCLMLP, self).__init__()
 
+    # for NCL, need prediction of ensemble
+    # so have, to train all epochs of ensemble in a coordinated manner
+    # -> will have write manual training loop after all
+    # but probably not so bad
 
 def _drf_sample_weights(tree_preds, truth):
     incorrect = tree_preds != truth  # binary vector with 1 where incorrect

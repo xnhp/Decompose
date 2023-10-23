@@ -6,7 +6,6 @@ import numpy as np
 
 from decompose import dvc_utils
 from decompose.dvc_utils import cwd_path
-from decompose.utils import all_getters
 
 
 def staged(getter):
@@ -25,6 +24,10 @@ def main():
     model_id = args.model
     dataset_id = args.dataset
 
+    import dvc.api
+    params = dvc.api.params_show("params-getters.yaml")
+    getters = set(params['plot_bvd_getters'] + params['plot_ens_getters'])
+
     decomp_path = cwd_path("decomps", dataset_id, model_id + ".pkl")
 
     with open(decomp_path, "rb") as f:
@@ -33,9 +36,9 @@ def main():
         except EOFError as e:
             # dont want other stages to fail so log & continue
             logging.error(f"Error loading {decomp_path}: {e}")
-            path = cwd_path("staged-decomp-values", dataset_id, model_id, "foo") # still create out path
+            cwd_path("staged-decomp-values", dataset_id, model_id, "foo")  # still create out path
             return
-    for getter_id in all_getters().keys():
+    for getter_id in getters:
         getter = getattr(decomp, getter_id)
         path = cwd_path("staged-decomp-values", dataset_id, model_id, f"{getter_id}.npy")
         np.save(path, staged(getter))

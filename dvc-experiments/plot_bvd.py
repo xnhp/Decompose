@@ -7,13 +7,13 @@ def main():
     Grid of plots with one row per dataset and one column per model, each plotting individual decomp terms.
     """
 
-    plot_decomp_grid([
-        "get_expected_ensemble_loss",
-        "get_average_bias",
-        "get_average_variance_effect",
-        "get_diversity_effect"
-    ],
-    cwd_path("plots", "bvd-decomps", "bvd.png")
+    import dvc.api
+    params = dvc.api.params_show("params-getters.yaml")
+    getters = params['plot_bvd_getters']
+
+    plot_decomp_grid(
+        getters,
+        cwd_path("plots", "bvd-decomps", "bvd.png")
     )
 
 

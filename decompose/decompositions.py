@@ -82,16 +82,20 @@ class BregmanDecomposition(object):
             grad_term = np.einsum("ijkl,ijkl->ijk", self._generator_gradient(q), p - q)
         return self.bregman_generator(p) - self.bregman_generator(q) - grad_term
 
-    def _bregman_expectation(self, axes1=(), axes2=(), axes3=()):
+    def _bregman_expectation(self, axes1=(), axes2=(), axes3=(), M=None):
+        if M is None:
+            etas = self.etas
+        else:
+            etas = self.etas[:, 0:M, :]
         centroid = self._inverse_generator_gradient(
-            self.etas.mean(axis=axes1, keepdims=True)
+            etas.mean(axis=axes1, keepdims=True)
         )
         individuals = self._inverse_generator_gradient(
-            self.etas.mean(axis=axes2, keepdims=True)
+            etas.mean(axis=axes2, keepdims=True)
         )
         return self._bregman_divergence(centroid, individuals).mean(axis=axes3).squeeze()
 
-    def _error_function(self, axes1=(), axes2=()):
+    def _error_function(self, axes1=(), axes2=(), M=None):
         # axes1 combines etas
         # axes2 combines means of errors
         # axes1=1, axes2=0 for \\mathbb{E}_D[ B (y, \\bar{q})]
@@ -106,8 +110,13 @@ class BregmanDecomposition(object):
         # This function generalizes this, allowing it to be used to compute each
         # of the expected error and bias terms.
 
+        if M is None:
+            etas = self.etas
+        else:
+            etas = self.etas[:, 0:M, :]
+
         x = self._inverse_generator_gradient(
-            self.etas.mean(axis=axes1, keepdims=True))
+            etas.mean(axis=axes1, keepdims=True))
 
         error = self._compute_error(x, self.labels)
         return np.mean(error, axis=axes2).squeeze()
@@ -135,6 +144,11 @@ class BregmanDecomposition(object):
         """
         return self._error_function(1, 0)
 
+    def get_expected_ensemble_loss(self, M):
+        return self._error_function(1,
+                                    (0, 2)  # aggregate over trials and points
+                                    , M)
+
     @cached_property
     def expected_member_loss(self):
         """
@@ -148,6 +162,9 @@ class BregmanDecomposition(object):
 
         """
         return self._error_function(axes2=(0, 1))
+
+    def get_expected_member_loss(self, M):
+        return self._error_function((), (0, 1, 2), M)
 
     @cached_property
     def ensemble_bias(self):
@@ -163,6 +180,9 @@ class BregmanDecomposition(object):
 
         """
         return self._error_function((0, 1))
+
+    def get_ensemble_bias(self, M):
+        return self._error_function((1, 0), (0, 2), M)
 
     @cached_property
     def ensemble_variance(self):
@@ -193,6 +213,9 @@ class BregmanDecomposition(object):
         """
         return self._error_function(0, 1)
 
+    def get_average_bias(self, M):
+        return self._error_function(0, (0, 1, 2), M)
+
     @cached_property
     def average_variance(self):
         """
@@ -206,6 +229,9 @@ class BregmanDecomposition(object):
 
         """
         return self._bregman_expectation(0, (), (0, 1))
+
+    def get_average_variance(self, M):
+        return self._bregman_expectation(0, (), (0, 1,2), M)
 
     @cached_property
     def disparity(self):
@@ -233,6 +259,9 @@ class BregmanDecomposition(object):
             A (N,)-shape array with one value per test data point
         """
         return self._bregman_expectation(1, (), (0, 1))
+
+    def get_diversity(self, M):
+        return self._bregman_expectation(1, (), (0, 1, 2), M)
 
     def _non_centroid_error_function(self, combination_func, axes1=(), axes2=()):
 
@@ -483,7 +512,7 @@ class EffectDecomposition(object):
 
     def get_expected_ensemble_loss(self, M):
         return self.error_function(1,
-                                   (0,2) # aggregate over trials and points
+                                   (0, 2)  # aggregate over trials and points
                                    , M)
 
     @cached_property
@@ -500,7 +529,6 @@ class EffectDecomposition(object):
 
     def get_expected_member_loss(self, M):
         return self.error_function((), (0, 1, 2), M)
-
 
     def get_expected_member_loss_per_example(self, M):
         return self.error_function((), (0), M)
@@ -519,7 +547,7 @@ class EffectDecomposition(object):
         return self.error_function((1, 0), ())
 
     def get_ensemble_bias(self, M):
-        return self.error_function((1, 0), (0,2), M)
+        return self.error_function((1, 0), (0, 2), M)
 
     @cached_property
     def average_bias(self):
@@ -537,7 +565,7 @@ class EffectDecomposition(object):
         return self.error_function(0, 1)
 
     def get_average_bias(self, M):
-        return self.error_function(0, (0,1,2), M)
+        return self.error_function(0, (0, 1, 2), M)
 
     @cached_property
     def ensemble_variance_effect(self):
@@ -552,10 +580,10 @@ class EffectDecomposition(object):
             Array of size (n_test_points)
 
         """
-        return self._central_model_difference((1, 0), (0,1,2), 0)
+        return self._central_model_difference((1, 0), (0, 1, 2), 0)
 
     def get_ensemble_variance_effect(self, M):
-        return self._central_model_difference((1, 0), (0,1,2), (0,1,2), M)
+        return self._central_model_difference((1, 0), (0, 1, 2), (0, 1, 2), M)
 
     @cached_property
     def average_variance_effect(self):

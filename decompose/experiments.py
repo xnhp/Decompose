@@ -336,17 +336,17 @@ class BVDExperiment(object):
 
 
                 # np_output_train = np.zeros([n_trials, n_estimators, n_train], dtype=int)
-                train_out = np.zeros([n_estimators, my_train_data.shape[0]])
+                # train_out = np.zeros([n_estimators, my_train_data.shape[0]])
                 if hasattr(cur_model, "estimators_"):
                     for est_idx, member in enumerate(cur_model.estimators_):
                         np_output[t_idx, est_idx, ...] = self._get_pred(member, test_data)
-                        train_preds = self._get_pred(member, my_train_data)
-                        train_out[est_idx, ...] = train_preds
+                        # train_preds = self._get_pred(member, my_train_data)
+                        # train_out[est_idx, ...] = train_preds
                         if self.compute_zero_one_decomp:
                             np_class_pred[t_idx, est_idx, ...] = cur_model.estimators_[est_idx].predict(test_data)
                             # np_class_pred_train[t_idx, est_idx, ...] = cur_model.estimators_[est_idx].predict(my_train_data)
-                    np_output_train.append(train_out)
-                    _train_labels.append(my_train_labels)
+                    # np_output_train.append(train_out)
+                    # _train_labels.append(my_train_labels)
                 else:
                     assert n_estimators == 1, f"n_estimators should be 1 for single model, not {n_estimators}"
                     np_output[t_idx, 0, ...] = self._get_pred(cur_model, test_data)
@@ -1063,7 +1063,7 @@ class ResultsObject(AbstractResultsObject):
         self.ensemble_risk[param_idx, split_idx] = np.average(decomp.expected_ensemble_loss,
                                                               weights=sample_weight)
 
-        self.staged_errors = decomp.staged_errors_regr()
+        # self.staged_errors = decomp.staged_errors_regr()
 
         # self.staged_errors_train = decomp.staged_errors_train(np.array(np_output_train), np.array(train_labels))
 
@@ -1459,7 +1459,7 @@ class ZeroOneResultsObject(AbstractResultsObject):
 
         self.staged_errors = decomp.staged_errors()
 
-        self.staged_errors_train = decomp.staged_errors_train(np.array(np_output_train), np.array(train_labels))
+        # self.staged_errors_train = decomp.staged_errors_train(np.array(np_output_train), np.array(train_labels))
 
         # TODO make other computations optional aswell
 

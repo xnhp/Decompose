@@ -76,12 +76,15 @@ def all_getters():
 
         "get_ensemble_bias": {"label": "bias($\\bar{q}$)"},
         "get_ensemble_variance_effect": {"label": "var($\\bar{q}$)"},
+        "get_ensemble_variance": {"label": "var($\\bar{q}$)"},
 
         # "get_expected_member_loss_per_example": {"label": "\\frac{1}{M} \\sum_{i=1}^M \\mathbb{E} [L(y, q_i)]"},
 
         "get_average_bias": {"label": "$\\overline{bias}$"},
         "get_average_variance_effect": {"label": "$\\overline{var}$"},
+        "get_average_variance": {"label": "$\\overline{var}$"},
         "get_diversity_effect": {"label": "div"},
+        "get_diversity": {"label": "div"},
     }
 
 def getters_and_labels():

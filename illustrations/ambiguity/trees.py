@@ -63,9 +63,8 @@ caption = """The spread of individual tree predictions in a random forest ensemb
     Glyphs correspond to test errors of individual trees. 
     The dashed line is the average test error of individual trees 
     $\\frac{1}{M} \\sum_1^M L(y, q_i)$.
-    The solid line is the test error of the ensemble
-    $L(y, \\bar{q})$. 
-    The difference between these values is the ensemble improvement or ambiguity-effect.
+    The solid line is the test error of the ensemblL(y, \\bar{q})$. 
+    The difference between these values is the \\textit{ensemble improvement} or \\textit{ambiguity-effect}. (TODO resolve double terms)
     """
 put_caption(caption,
          f"{plot_id}.tex")

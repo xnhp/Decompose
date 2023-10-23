@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 from decompose import dvc_utils
 from decompose.dvc_utils import cwd_path, get_model_color
-from decompose.utils import children, load_saved_decomp, getters_and_labels
+from decompose.utils import children, load_saved_decomp, getters_and_labels, all_getters
 
 
 def main():
@@ -15,9 +15,14 @@ def main():
     args = dvc_utils.parse_args()
     dataset_id = args.dataset
 
+    import dvc.api
+    params = dvc.api.params_show("params-getters.yaml")
+    getters = set(params['plot_bvd_getters'] + params['plot_ens_getters'])
+    getters_and_labels = [(g, all_getters()[g]['label']) for g in getters]
+
     dataset_path = cwd_path("staged-decomp-values", dataset_id)
 
-    for getter_id, getter_label in getters_and_labels():
+    for getter_id, getter_label in getters_and_labels:
 
         mins = []
 

@@ -3,6 +3,8 @@ vars:
   - small_datasets:
       - qsar-biodeg
       - diabetes
+  - large_datasets:
+      - mnist_subset
   - models:
       - ce-nn
 
@@ -22,10 +24,35 @@ stages:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl
 
+  train_large:
+    matrix:
+      model: ${models}
+      dataset: ${large_datasets}
+    cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - ../../run_bvd.py
+      - ../../../decompose/classifiers.py  # todo maybe remove
+    params:
+      - params.yaml:
+    outs:
+      - results/${item.dataset}/${item.model}.pkl
+      - decomps/${item.dataset}/${item.model}.pkl
+
   get_staged_decomp_values:
     matrix:
-      model: ${models_for_small}
+      model: ${models}
       dataset: ${small_datasets}
+    cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - decomps/${item.dataset}/${item.model}.pkl
+      - ../../get_staged_decomp_values.py
+    outs:
+      - staged-decomp-values/${item.dataset}/${item.model}/
+
+  get_staged_decomp_values_large:
+    matrix:
+      model: ${models}
+      dataset: ${large_datasets}
     cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - decomps/${item.dataset}/${item.model}.pkl
