@@ -57,7 +57,6 @@ stages:
       - ../../run_bvd.py
     params:
       - params.yaml:
-      - params-sigmoid.yaml:
     outs:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl
@@ -82,7 +81,6 @@ stages:
       - ../../run_bvd.py
     params:
       - params.yaml:
-      - params-sigmoid.yaml:
     outs:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl
@@ -107,7 +105,6 @@ stages:
       - ../../run_bvd.py
     params:
       - params.yaml:
-      - params-sigmoid.yaml:
     outs:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl

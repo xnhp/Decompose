@@ -82,9 +82,10 @@ def lerp_b(m):
     start = 0
     stop = 5
 
-    import dvc.api
-    params = dvc.api.params_show("params-sigmoid.yaml")
-    max_m = params['max_m']
+    # import dvc.api
+    # params = dvc.api.params_show("params-sigmoid.yaml")
+    # max_m = params['max_m']
+    max_m = 5
 
     bs = - np.arange(start, stop, stop/(max_m+1))
     assert len(bs) >= max_m + 1
