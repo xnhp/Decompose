@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotx
 import numpy as np
 
+from decompose.classifiers import lerp_b, transform_weights, y_drf_xu_chen
 from decompose.dvc_utils import cwd_path
 from illustrations.plot_utils import put_caption
 
@@ -18,11 +19,14 @@ plt.figure(figsize=(scale*4, scale*3))
 def y_drf(x):
     return x
 
-def y_drf_xu_chen(x):
-    if (x < 1/2):  # "incorrect"
-        return x**2
-    else:
-        return math.sqrt(x)
+
+
+ms = [-5, 0, 1, 5, 10, 15, 20, 25]
+for i, m in enumerate(ms):
+    b = lerp_b(m)
+    ys = transform_weights(x, b)
+    plt.plot(x, ys, color="orange", alpha=i / len(ms) + 0.1 )
+    # TODO plot with varying opacity
 
 plt.plot(x, y_drf(x), label="DRF weights")
 plt.plot(x, [y_drf_xu_chen(x) for x in x], label="Xu/Chen weights")

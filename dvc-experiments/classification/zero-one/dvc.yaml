@@ -1,12 +1,18 @@
 #file: noinspection YAMLSchemaValidation
 vars:
-  - models:
+  - faster_models:
       - standard-rf-classifier
       - drf-weighted-bootstrap-classifier
       - drf-weighted-fit-classifier
-      - drf-weighted-fit-oob-classifier
 #      - ensemble-weighted-classifier
 #      - diversity-effect-weighted-classifier
+  - all_models:
+      - standard-rf-classifier
+      - drf-weighted-bootstrap-classifier
+      - sigmoid-weighted-bootstrap-classifier
+      - xuchen-weighted-bootstrap-classifier
+      - drf-weighted-fit-classifier
+      - drf-weighted-fit-oob-classifier  # slow!
   - small_datasets:
       - qsar-biodeg
       - diabetes
@@ -28,9 +34,23 @@ vars:
 
 stages:
 
+#  train_weight_transformation_models:
+#    matrix:
+#      model: ${weighted_bootstrap_models}
+#      dataset: ${medium_datasets}
+#    cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
+#    deps:
+#      - ../../run_bvd.py
+#    params:
+#      - params.yaml:
+#    outs:
+#      - results/${item.dataset}/${item.model}.pkl
+#      - decomps/${item.dataset}/${item.model}.pkl
+
+
   train_small:
     matrix:
-      model: ${models}
+      model: ${all_models}
       dataset: ${small_datasets}  # only difference
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -41,9 +61,20 @@ stages:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl
 
+  get_staged_decomp_values_small:
+    matrix:
+      model: ${all_models}
+      dataset: ${small_datasets}
+    cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - decomps/${item.dataset}/${item.model}.pkl
+      - ../../get_staged_decomp_values.py
+    outs:
+      - staged-decomp-values/${item.dataset}/${item.model}/
+
   train_medium:
     matrix:
-      model: ${models}
+      model: ${all_models}
       dataset: ${medium_datasets}  # only difference
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -54,18 +85,40 @@ stages:
       - results/${item.dataset}/${item.model}.pkl
       - decomps/${item.dataset}/${item.model}.pkl
 
-#  train_large:
-#    matrix:
-#      model: ${models}
-#      dataset: ${large_datasets}  # only difference
-#    cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
-#    deps:
-#      - ../../run_bvd.py
-#    params:
-#      - params.yaml:
-#    outs:
-#      - results/${item.dataset}/${item.model}.pkl
-#      - decomps/${item.dataset}/${item.model}.pkl
+  get_staged_decomp_values_medium:
+    matrix:
+      model: ${all_models}
+      dataset: ${medium_datasets}
+    cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - decomps/${item.dataset}/${item.model}.pkl
+      - ../../get_staged_decomp_values.py
+    outs:
+      - staged-decomp-values/${item.dataset}/${item.model}/
+
+  train_large:
+    matrix:
+      model: ${faster_models}
+      dataset: ${large_datasets}  # only difference
+    cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - ../../run_bvd.py
+    params:
+      - params.yaml:
+    outs:
+      - results/${item.dataset}/${item.model}.pkl
+      - decomps/${item.dataset}/${item.model}.pkl
+
+  get_staged_decomp_values_large:
+    matrix:
+      model: ${faster_models}
+      dataset: ${large_datasets}
+    cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
+    deps:
+      - decomps/${item.dataset}/${item.model}.pkl
+      - ../../get_staged_decomp_values.py
+    outs:
+      - staged-decomp-values/${item.dataset}/${item.model}/
 
 # deprecated, to be replaced with things from get_staged_decomp_values
 #  plot_staged_errors:
@@ -76,16 +129,6 @@ stages:
 #    outs:
 #      - plots/staged_errors/
 
-  get_staged_decomp_values:
-    matrix:
-      model: ${models}
-      dataset: ${all_datasets}
-    cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
-    deps:
-      - decomps/${item.dataset}/${item.model}.pkl
-      - ../../get_staged_decomp_values.py
-    outs:
-      - staged-decomp-values/${item.dataset}/${item.model}/
 
   plot_bvd_decomps:
     cmd: python ../../plot_bvd.py

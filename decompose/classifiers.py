@@ -1,4 +1,5 @@
 import logging
+import math
 
 import numpy as np
 import scipy
@@ -76,10 +77,54 @@ class NCLMLP(MLP):
     # -> will have write manual training loop after all
     # but probably not so bad
 
-def _drf_sample_weights(tree_preds, truth):
+def lerp_b(m):
+    min_m = 0
+    start = 0
+    stop = 5
+    max_m = 20
+    bs = - np.arange(start, stop, stop/(max_m+1))
+    assert len(bs) >= max_m + 1
+    if m < min_m:
+        return bs[0]
+    if m > max_m:
+        return bs[20]
+    return bs[m]
+
+def transform_weights(weights, b):
+    sigmoid_fn = make_sigmoid(b)
+    assert np.min(weights) >= 0
+    assert np.max(weights) <= 1
+    return sigmoid_fn(weights - 1/2)
+
+def make_sigmoid(b):
+    return lambda x: centered_sigmoid(b, x)
+
+def centered_sigmoid(b, x):
+    """
+    sigmoid function with center at (1/2, 1/2), min 0, max 1
+    -------
+
+    """
+    return sigmoid(a=0, b=b, k=1, x=x)
+
+def sigmoid(a, b, k, x):
+    return k/(1 + np.exp(a+b*x))
+
+
+def normalize_weights(weights):
+    return weights / weights.sum()
+
+
+def y_drf_xu_chen(x):
+    if (x < 1/2):
+        return x**2
+    else:
+        return math.sqrt(x)
+
+def ratio_incorrect_trees(tree_preds, truth):
     incorrect = tree_preds != truth  # binary vector with 1 where incorrect
     means = np.mean(incorrect, axis=0)  # sum over trees # TODO verify this is the right axis
-    return means / means.sum()
+    return means
 
 
 class StandardRFClassifier(BaseHorizontalEnsemble):
@@ -108,8 +153,30 @@ class DRFWeightedBootstrapRFClassifier(StandardRFClassifier):
             return None
         # all the predictions we have up to here
         tree_preds = self._tree_preds()
-        return _drf_sample_weights(tree_preds, truth)
+        return normalize_weights(ratio_incorrect_trees(tree_preds, truth))
 
+class DRFSigmoidWeightedBootstrapRFClassifier(StandardRFClassifier):
+
+    def _bootstrap_sample_weights(self, data, truth):
+        if len(self.estimators_) == 0:
+            # first estimator
+            return None
+        # all the predictions we have up to here
+        tree_preds = self._tree_preds()
+        w = ratio_incorrect_trees(tree_preds, truth)
+        w = transform_weights(w, lerp_b(len(self.estimators_)))
+        return normalize_weights(w)
+
+class XuChenWeightedBootstrapRFClassifier(StandardRFClassifier):
+    def _bootstrap_sample_weights(self, data, truth):
+        if len(self.estimators_) == 0:
+            # first estimator
+            return None
+        # all the predictions we have up to here
+        tree_preds = self._tree_preds()
+        w = ratio_incorrect_trees(tree_preds, truth)
+        w = np.array([y_drf_xu_chen(x) for x in w])
+        return normalize_weights(w)
 
 class DRFWeightedFitOOBRFClassifier(StandardRFClassifier):
 
@@ -149,12 +216,13 @@ class DRFWeightedFitOOBRFClassifier(StandardRFClassifier):
             # oob_tree_indices = list(filter(lambda weights_to_modify: x_idx in weights_to_modify, oob_trees))
             if len(oob_tree_indices) > 0:
                 oob_tree_preds = tree_preds[oob_tree_indices]
-                return _drf_sample_weights(oob_tree_preds, [y])
+                weights = ratio_incorrect_trees(oob_tree_preds, [y])
+                return normalize_weights(weights)
             else:
                 # old weight
                 # but what is the very first weight?
                 if (len(self.estimators_) -1 ) == 0:
-                    return [1/2]
+                    return normalize_weights(np.array([1/2]))
                 return self.drf_sample_weights[-1][x_idx]
 
         new_weights = []
@@ -195,7 +263,8 @@ class DRFWeightedFitRFClassifier(StandardRFClassifier):
             return None
         xs, ys = bootstrap
         tree_preds = self._tree_preds()
-        return _drf_sample_weights(tree_preds, ys)
+        weights = ratio_incorrect_trees(tree_preds, ys)
+        return normalize_weights(weights)
 
 
 class AdjustedDRFWeightedRFClassifier(StandardRFClassifier):

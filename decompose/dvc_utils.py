@@ -5,7 +5,8 @@ import os
 from fuzzywuzzy import fuzz
 
 from decompose.classifiers import StandardRFClassifier, DRFWeightedBootstrapRFClassifier, SimpleWeightedRFClassifier, \
-    DRFWeightedFitRFClassifier, DRFWeightedFitOOBRFClassifier, make_geometric_nn_ensemble, MLP
+    DRFWeightedFitRFClassifier, DRFWeightedFitOOBRFClassifier, make_geometric_nn_ensemble, MLP, \
+    DRFSigmoidWeightedBootstrapRFClassifier, XuChenWeightedBootstrapRFClassifier
 from decompose.data_utils import load_standard_dataset
 from decompose.regressors import StandardRFRegressor, SqErrBoostedBase, SqErrBoostedShallow, SqErrBoostedNoBootstrap, \
     StandardRFNoBootstrap, SqErrBoostedClipped
@@ -76,6 +77,8 @@ def get_model(identifier: str):
         'drf-weighted-bootstrap-classifier': DRFWeightedBootstrapRFClassifier(),
         'drf-weighted-fit-classifier': DRFWeightedFitRFClassifier(),
         'drf-weighted-fit-oob-classifier': DRFWeightedFitOOBRFClassifier(),
+        'sigmoid-weighted-bootstrap-classifier': DRFSigmoidWeightedBootstrapRFClassifier(),
+        'xuchen-weighted-bootstrap-classifier': XuChenWeightedBootstrapRFClassifier(),
         'ensemble-weighted-classifier': SimpleWeightedRFClassifier(),
         # neural networks
         'ce-nn': make_geometric_nn_ensemble(MLP())
@@ -113,9 +116,11 @@ def get_model_color(identifier: str):
         'sqerr-boosted-clipped': "orange",
         # classification
         'standard-rf-classifier': "blue",
-        'drf-weighted-bootstrap-classifier': "red",
         'drf-weighted-fit-classifier': "orange",
         'drf-weighted-fit-oob-classifier': "brown",
+        'drf-weighted-bootstrap-classifier': "red",
+        'sigmoid-weighted-bootstrap-classifier': "red",
+        'xuchen-weighted-bootstrap-classifier': "red",
         'ensemble-weighted-classifier': "green",
         'ce-nn': "blue"
     }

@@ -106,7 +106,6 @@ def children_decomp_objs(dataset_path):
         yield decomp_id, decomp_path
 
 
-
 def plot_summary(dataset_id, summary_axs):
     summary = dataset_summary(dataset_id)
     summary_text = f"""
@@ -129,85 +128,113 @@ def plot_decomp_values(dataset_id, model_id, getter_id, ax, label=None):
 
 
 def data_model_foreach(base_dir, consumer):
-    n_datasets = len(list(children(base_dir)))
-    n_models = max([len(list(children(dataset_path))) for _, dataset_path in children(base_dir)])
+    # TODO same order as in other grids
     for dataset_info in enumerate(children(base_dir)):
         _, (_, dataset_path) = dataset_info
         for model_info in enumerate(children(dataset_path)):
             consumer(dataset_info, model_info)
 
 
-def plot_data_model_grid(base_dir, plotter):
-    plt.style.use(matplotx.styles.dufte)
-    n_datasets = len(list(children(base_dir)))
-    n_models = max([len(list(children(dataset_path))) for _, dataset_path in children(base_dir)])
-    width = 12
-    rowheight = 3
-    fig, axs = plt.subplots(n_datasets, n_models + 1, figsize=(width, rowheight * n_datasets))
-    for dataset_idx, (dataset_id, dataset_path) in enumerate(children(base_dir)):
-        summary_ax = axs[dataset_idx, 0]
-        plot_summary(dataset_id, summary_ax)
-        for model_idx, (model_id, _) in enumerate(children(dataset_path)):
-            if n_datasets == 1:
-                axs[model_idx].set_title(f"{model_id}")
-            else:
-                axs[0, model_idx + 1].set_title(f"{model_id}")
-            model_idx = model_idx + 1
-            if n_datasets == 1:
-                ax = axs[model_idx]
-            else:
-                ax = axs[dataset_idx, model_idx]
-            ax.tick_params(axis='x', which='major', reset=True)
-            ax.sharey(axs[dataset_idx, 1])  # share with first containing actual data
+def reverse(dict):
+    inv_map = {v: k for k, v in dict.items()}
+    return inv_map
 
-            # now actually plot
-            plotter(dataset_id, model_id, ax)
-
-    return fig
-
-
-def plot_decomp_grid(getter_ids, target_filepath):
+def plot_decomp_grid(consumer):
     plt.style.use(matplotx.styles.dufte)
     n_datasets = len(list(children(cwd_path("staged-decomp-values"))))
     n_models = max(
         [len(list(children(dataset_path))) for _, dataset_path in children(cwd_path("staged-decomp-values"))])
     # TODO spacing between rows
-    width = 16
+    colwidth = 16
     rowheight = 3
-    fig, axs = plt.subplots(n_datasets, n_models + 1, figsize=(width, rowheight * n_datasets))
+    n_rows = n_datasets
+    n_cols = n_models + 1  # +1 for dataset summary
+    gridfig, gridaxs = plt.subplots(n_rows, n_cols, figsize=(colwidth, rowheight * n_rows))
+
+    col_indices = reverse(dict(enumerate([
+        'standard-rf-classifier',
+        'drf-weighted-bootstrap-classifier',
+        'sigmoid-weighted-bootstrap-classifier',
+        'xuchen-weighted-bootstrap-classifier',
+        'drf-weighted-fit-classifier',
+        'drf-weighted-fit-oob-classifier'
+    ])))
+
+    dataset_indices = reverse(dict(enumerate([
+        # large to small
+        'cover',
+        'mnist_subset',
+        'spambase-openml',
+        'bioresponse',
+        'digits',
+        'diabetes',
+        'qsar-biodeg',
+    ])))
+
+    rowfigs = []
+    singlecell_figs = []
+
     for dataset_idx, (dataset_id, dataset_path) in enumerate(children(cwd_path("staged-decomp-values"))):
 
-        # axs[dataset_idx, 1].set_ylabel("train error")
+        # also save row in separate plot
+        rowfig, rowfigaxs = plt.subplots(1, n_cols, figsize=(colwidth, 4))
 
-        # summary_ax = axs[0] if n_datasets == 1 else axs[dataset_idx, 0]
-        # TODO re-enable
-        summary_ax = axs[dataset_idx, 0]
-        plot_summary(dataset_id, summary_ax)
+        plot_summary(dataset_id, rowfigaxs[0])
+        row_index = dataset_indices[dataset_id]
+        plot_summary(dataset_id, gridaxs[row_index, 0])
 
-        for model_idx, (model_id, _) in enumerate(children(dataset_path)):
+        model_results = children(dataset_path)
+        for _, (model_id, _) in enumerate(model_results):
 
-            if n_datasets == 1:
-                axs[model_idx].set_title(f"{model_id}")
-            else:
-                axs[0, model_idx + 1].set_title(f"{model_id}")
+            # save each cell to a separate plot
 
-            model_idx = model_idx + 1
-            if n_datasets == 1:
-                ax = axs[model_idx]
-            else:
-                ax = axs[dataset_idx, model_idx]
+            col_index = col_indices[model_id] + 1
 
-            ax.tick_params(axis='x', which='major', reset=True)
-            ax.sharey(axs[dataset_idx, 1])  # share with first containing actual data
+            gridaxs[0, col_index].set_title(f"{model_id}")
+            rowfigaxs[col_index].set_title(f"{model_id}")
 
-            for getter_id in getter_ids:
-                plot_decomp_values(dataset_id, model_id, getter_id, ax, label=label(getter_id))
+            singlecell_fig, singlecell_ax = plt.subplots(1,1, figsize=(4,4))
+            gridcell_ax = gridaxs[row_index, col_index]
 
-            matplotx.line_labels()  # line labels to the right
-            # TODO shared legend
+            target_axs = [gridcell_ax, rowfigaxs[col_index], singlecell_ax]
 
-    # for ax in axs.flat:
-    #     ax.label_outer()
+            def set_tick_params(ax):
+                ax.tick_params(axis='x', which='major', reset=True)
+            map(set_tick_params, target_axs)
 
-    fig.tight_layout()
-    fig.savefig(target_filepath)
+            gridcell_ax.sharey(gridaxs[row_index, 1])  # share with first containing actual data
+            rowfigaxs[col_index].sharey(rowfigaxs[1])
+
+            for ax in target_axs:
+                consumer(dataset_id, model_id, ax)
+            # for getter_id in getter_ids:
+            #     plot_decomp_values(dataset_id, model_id, getter_id, gridcell_ax, label=label(getter_id))
+            #     plot_decomp_values(dataset_id, model_id, getter_id, singlecell_ax, label=label(getter_id))
+            #     plot_decomp_values(dataset_id, model_id, getter_id, rowfigaxs[col_index], label=label(getter_id))
+
+            # TODO get legend right
+            # matplotx.line_labels()  # line labels to the right
+
+            singlecell_figs.append((dataset_id, model_id, singlecell_fig))
+            # singlecell_fig.tight_layout()
+            # singlecell_fig.savefig(cwd_path(target_dir, dataset_id, "bvd-individual", f"{model_id}.png"))
+
+        rowfigs.append((dataset_id, rowfig))
+        # rowfig.tight_layout()
+        # rowfig.savefig(cwd_path(target_dir, dataset_id, f"{kind}.png"))
+
+    # gridfig.tight_layout()
+    # gridfig.savefig(cwd_path(target_dir, f"{kind}.png"))
+
+    return gridfig, rowfigs, singlecell_figs
+
+
+def savefigs(basepath, kind, gridfig, rowfigs, singlecell_figs):
+    gridfig.tight_layout()
+    gridfig.savefig(cwd_path(basepath, f"{kind}.png"))
+    for dataset_id, rowfig in rowfigs:
+        rowfig.tight_layout()
+        rowfig.savefig(cwd_path(basepath, dataset_id, f"{kind}.png"))
+    for dataset_id, model_id, singlecell_fig in singlecell_figs:
+        singlecell_fig.tight_layout()
+        singlecell_fig.savefig(cwd_path(basepath, dataset_id, f"{model_id}.png"))

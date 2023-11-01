@@ -96,6 +96,7 @@ class BaseHorizontalEnsemble(object):
                 # TODO careful: this would mean weights are determined based on the bootstrap examples only
 
             # fit model
+            # TODO does this actually take effect??
             estimator.model.fit(
                 xs,
                 ys,

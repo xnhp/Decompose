@@ -4,7 +4,7 @@ vars:
       - qsar-biodeg
       - diabetes
   - large_datasets:
-      - mnist_subset
+      - mnist
   - models:
       - ce-nn
 
@@ -17,7 +17,6 @@ stages:
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
-      - ../../../decompose/classifiers.py  # todo maybe remove
     params:
       - params.yaml:
     outs:
@@ -31,7 +30,6 @@ stages:
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
-      - ../../../decompose/classifiers.py  # todo maybe remove
     params:
       - params.yaml:
     outs:
