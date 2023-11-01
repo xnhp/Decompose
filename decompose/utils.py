@@ -145,7 +145,7 @@ def plot_decomp_grid(consumer):
     n_models = max(
         [len(list(children(dataset_path))) for _, dataset_path in children(cwd_path("staged-decomp-values"))])
     # TODO spacing between rows
-    colwidth = 16
+    colwidth = 24
     rowheight = 3
     n_rows = n_datasets
     n_cols = n_models + 1  # +1 for dataset summary

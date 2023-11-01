@@ -81,13 +81,17 @@ def lerp_b(m):
     min_m = 0
     start = 0
     stop = 5
-    max_m = 20
+
+    import dvc.api
+    params = dvc.api.params_show("params-sigmoid.yaml")
+    max_m = params['max_m']
+
     bs = - np.arange(start, stop, stop/(max_m+1))
     assert len(bs) >= max_m + 1
     if m < min_m:
         return bs[0]
     if m > max_m:
-        return bs[20]
+        return bs[max_m]
     return bs[m]
 
 def transform_weights(weights, b):
