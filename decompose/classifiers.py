@@ -167,12 +167,15 @@ class DRFGoodWeightedBootstrapRFClassifier(StandardRFClassifier):
      """
 
     def _bootstrap_sample_weights(self, data, truth):
-        if len(self.estimators_) == 0:  # first estimator
+        if len(self.estimators_) == 0:
+            # first estimator
             return None
+        # all the predictions we have up to here
         tree_preds = self._tree_preds()
-        incorrect = ratio_incorrect_trees(tree_preds, truth)
-        weights = np.clip(incorrect, 0, 1/2)
-        return normalize_weights(weights)
+        w = ratio_incorrect_trees(tree_preds, truth)
+        w = transform_weights(w, lerp_b(len(self.estimators_)))
+        w = np.clip(w, 0, 1/2)
+        return normalize_weights(w)
 
 class DRFSigmoidWeightedBootstrapRFClassifier(StandardRFClassifier):
 
