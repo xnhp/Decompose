@@ -3,7 +3,7 @@ vars:
   - faster_models:
       - standard-rf-classifier
       - drf-weighted-bootstrap-classifier
-      - drf-good-weighted-bootstrap-classifer
+      - drf-good-weighted-bootstrap-classifier
       - drf-weighted-fit-classifier
       - sigmoid-weighted-bootstrap-classifier
       - xuchen-weighted-bootstrap-classifier
