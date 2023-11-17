@@ -3,7 +3,10 @@ vars:
   - faster_models:
       - standard-rf-classifier
       - drf-weighted-bootstrap-classifier
+      - drf-good-weighted-bootstrap-classifer
       - drf-weighted-fit-classifier
+      - sigmoid-weighted-bootstrap-classifier
+      - xuchen-weighted-bootstrap-classifier
 #      - ensemble-weighted-classifier
 #      - diversity-effect-weighted-classifier
   - all_models:
@@ -34,18 +37,19 @@ vars:
 
 stages:
 
-#  train_weight_transformation_models:
+  # hack to mark all with this model as changed, remove
+#  train_sigmoid:
 #    matrix:
-#      model: ${weighted_bootstrap_models}
 #      dataset: ${medium_datasets}
-#    cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
+#    cmd: python ../../run_bvd.py --model sigmoid-weighted-bootstrap-classifier --dataset ${item.dataset}
 #    deps:
 #      - ../../run_bvd.py
 #    params:
 #      - params.yaml:
+#      - params-sigmoid.yaml:
 #    outs:
-#      - results/${item.dataset}/${item.model}.pkl
-#      - decomps/${item.dataset}/${item.model}.pkl
+#      - results/${item.dataset}/sigmoid-weighted-bootstrap-classifier.pkl
+#      - decomps/${item.dataset}/sigmoid-weighted-bootstrap-classifier.pkl
 
 
   train_small:

@@ -6,7 +6,7 @@ from fuzzywuzzy import fuzz
 
 from decompose.classifiers import StandardRFClassifier, DRFWeightedBootstrapRFClassifier, SimpleWeightedRFClassifier, \
     DRFWeightedFitRFClassifier, DRFWeightedFitOOBRFClassifier, make_geometric_nn_ensemble, MLP, \
-    DRFSigmoidWeightedBootstrapRFClassifier, XuChenWeightedBootstrapRFClassifier
+    DRFSigmoidWeightedBootstrapRFClassifier, XuChenWeightedBootstrapRFClassifier, DRFGoodWeightedBootstrapRFClassifier
 from decompose.data_utils import load_standard_dataset
 from decompose.regressors import StandardRFRegressor, SqErrBoostedBase, SqErrBoostedShallow, SqErrBoostedNoBootstrap, \
     StandardRFNoBootstrap, SqErrBoostedClipped
@@ -75,6 +75,7 @@ def get_model(identifier: str):
         # random forests
         'standard-rf-classifier': StandardRFClassifier(),
         'drf-weighted-bootstrap-classifier': DRFWeightedBootstrapRFClassifier(),
+        'drf-good-weighted-bootstrap-classifier': DRFGoodWeightedBootstrapRFClassifier(),
         'drf-weighted-fit-classifier': DRFWeightedFitRFClassifier(),
         'drf-weighted-fit-oob-classifier': DRFWeightedFitOOBRFClassifier(),
         'sigmoid-weighted-bootstrap-classifier': DRFSigmoidWeightedBootstrapRFClassifier(),
