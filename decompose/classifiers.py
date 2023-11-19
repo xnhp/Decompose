@@ -3,6 +3,7 @@ import math
 
 import numpy as np
 import scipy
+from scipy.stats import stats
 from sklearn.base import ClassifierMixin, BaseEstimator
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils.multiclass import unique_labels
@@ -78,35 +79,43 @@ class NCLMLP(MLP):
     # but probably not so bad
 
 def lerp_b(m):
-    min_m = 0
-    start = 0
-    stop = 5
 
-    # import dvc.api
-    # params = dvc.api.params_show("params-sigmoid.yaml")
-    # max_m = params['max_m']
-    max_m = 5
+    b_min = 0
+    b_max = 15
+    m_max = 10
+    m_eff = min(m, m_max)
 
-    bs = - np.arange(start, stop, stop/(max_m+1))
-    assert len(bs) >= max_m + 1
-    if m < min_m:
-        return bs[0]
-    if m > max_m:
-        return bs[max_m]
-    return bs[m]
+    return (m_eff / m_max) * (b_max) * (-1)
+
+    # min_m = 0
+    # start = 0
+    # stop = 15
+    #
+    # # import dvc.api
+    # # params = dvc.api.params_show("params-sigmoid.yaml")
+    # # max_m = params['max_m']
+    # max_m = 15
+    #
+    # bs = - np.arange(start, stop, stop/(max_m+1))
+    # assert len(bs) >= max_m + 1
+    # if m < min_m:
+    #     return bs[0]
+    # if m > max_m:
+    #     return bs[max_m]
+    # return bs[m]
 
 def transform_weights(weights, b):
     sigmoid_fn = make_sigmoid(b)
-    assert np.min(weights) >= 0
-    assert np.max(weights) <= 1
-    return sigmoid_fn(weights - 1/2)
+    # assert np.min(weights) >= 0
+    # assert np.max(weights) <= 1
+    return sigmoid_fn(weights)
 
 def make_sigmoid(b):
     return lambda x: centered_sigmoid(b, x)
 
 def centered_sigmoid(b, x):
     """
-    sigmoid function with center at (1/2, 1/2), min 0, max 1
+    sigmoid function with center at (0, 1/2), min 0, max 1
     -------
 
     """
@@ -131,6 +140,42 @@ def ratio_incorrect_trees(tree_preds, truth):
     means = np.mean(incorrect, axis=0)  # sum over trees # TODO verify this is the right axis
     return means
 
+def ratio_votes_next_best(tree_preds, truth):
+    cat = np.concatenate(([truth], tree_preds), axis=0)
+    r = np.apply_along_axis(ratio_votes_next_best_el, 0, cat)
+    return r
+
+
+def sort(arr, axis):
+    sorted_indices = np.argsort(arr, axis=axis)
+    sorted_arr = arr[np.arange(arr.shape[0])[:, None], sorted_indices]
+    return sorted_arr
+
+def ratio_votes_next_best_el(single_tree_preds):
+    # first el is always ground truth
+    if len(single_tree_preds) == 1:  # no actual tree preds
+        return 0
+    gt = single_tree_preds[0]
+    tree_preds = single_tree_preds[1:]
+    # mask out gt
+    tree_preds_for_other_classes = tree_preds[tree_preds != gt]
+    if len(tree_preds_for_other_classes) == 0:
+        return 0  # all voted for gt
+    # otherwise, get most common class
+    mode = stats.mode(tree_preds_for_other_classes).mode[0]
+    votes_for_mode = sum(tree_preds_for_other_classes == mode)
+    return votes_for_mode / len(single_tree_preds - 1)
+
+    # u, c = np.unique(tree_preds, return_counts=True)
+    # sinds = np.argsort(-c)
+    # if sinds.shape[0] < 2:
+    #     return 0
+
+    pass
+    return 0
+
+    # if len(u) <= 1:
+    #     return 0  # only one value
 
 class StandardRFClassifier(BaseHorizontalEnsemble):
     def __init__(self, base_estimator=DecisionTreeClassifier(
@@ -173,8 +218,12 @@ class DRFGoodWeightedBootstrapRFClassifier(StandardRFClassifier):
         # all the predictions we have up to here
         tree_preds = self._tree_preds()
         w = ratio_incorrect_trees(tree_preds, truth)
-        w = transform_weights(w, lerp_b(len(self.estimators_)))
-        w = np.clip(w, 0, 1/2)
+
+        # this is now per example
+        thresh = ratio_votes_next_best(tree_preds, truth)
+
+        w = transform_weights(w - thresh, lerp_b(len(self.estimators_)))
+        w = np.clip(w, 0, 1/2) # always above 1/2 exactly beyond threshold
         return normalize_weights(w)
 
 class DRFSigmoidWeightedBootstrapRFClassifier(StandardRFClassifier):
@@ -186,7 +235,8 @@ class DRFSigmoidWeightedBootstrapRFClassifier(StandardRFClassifier):
         # all the predictions we have up to here
         tree_preds = self._tree_preds()
         w = ratio_incorrect_trees(tree_preds, truth)
-        w = transform_weights(w, lerp_b(len(self.estimators_)))
+        w = transform_weights(w - 1/2, lerp_b(len(self.estimators_)))
+        w = np.clip(w, 0, 1/2) # always above 1/2 exactly beyond threshold
         return normalize_weights(w)
 
 class XuChenWeightedBootstrapRFClassifier(StandardRFClassifier):

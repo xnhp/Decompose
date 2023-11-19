@@ -139,7 +139,7 @@ def reverse(dict):
     inv_map = {v: k for k, v in dict.items()}
     return inv_map
 
-def plot_decomp_grid(consumer):
+def plot_decomp_grid(consumer, task):
     plt.style.use(matplotx.styles.dufte)
     n_datasets = len(list(children(cwd_path("staged-decomp-values"))))
     n_models = max(
@@ -151,25 +151,11 @@ def plot_decomp_grid(consumer):
     n_cols = n_models + 1  # +1 for dataset summary
     gridfig, gridaxs = plt.subplots(n_rows, n_cols, figsize=(colwidth, rowheight * n_rows))
 
-    col_indices = reverse(dict(enumerate([
-        'standard-rf-classifier',
-        'drf-weighted-bootstrap-classifier',
-        'sigmoid-weighted-bootstrap-classifier',
-        'xuchen-weighted-bootstrap-classifier',
-        'drf-weighted-fit-classifier',
-        'drf-weighted-fit-oob-classifier'
-    ])))
+    models = task['models']
+    col_indices = reverse(dict(enumerate(models)))
 
-    dataset_indices = reverse(dict(enumerate([
-        # large to small
-        'cover',
-        'mnist_subset',
-        'spambase-openml',
-        'bioresponse',
-        'digits',
-        'diabetes',
-        'qsar-biodeg',
-    ])))
+    datasets = task['datasets']
+    dataset_indices = reverse(dict(enumerate(datasets)))
 
     rowfigs = []
     singlecell_figs = []
@@ -183,10 +169,7 @@ def plot_decomp_grid(consumer):
         row_index = dataset_indices[dataset_id]
         plot_summary(dataset_id, gridaxs[row_index, 0])
 
-        model_results = children(dataset_path)
-        for _, (model_id, _) in enumerate(model_results):
-
-            # save each cell to a separate plot
+        for model_id in models:
 
             col_index = col_indices[model_id] + 1
 
@@ -207,24 +190,14 @@ def plot_decomp_grid(consumer):
 
             for ax in target_axs:
                 consumer(dataset_id, model_id, ax)
-            # for getter_id in getter_ids:
-            #     plot_decomp_values(dataset_id, model_id, getter_id, gridcell_ax, label=label(getter_id))
-            #     plot_decomp_values(dataset_id, model_id, getter_id, singlecell_ax, label=label(getter_id))
-            #     plot_decomp_values(dataset_id, model_id, getter_id, rowfigaxs[col_index], label=label(getter_id))
 
             # TODO get legend right
             # matplotx.line_labels()  # line labels to the right
 
             singlecell_figs.append((dataset_id, model_id, singlecell_fig))
-            # singlecell_fig.tight_layout()
-            # singlecell_fig.savefig(cwd_path(target_dir, dataset_id, "bvd-individual", f"{model_id}.png"))
 
         rowfigs.append((dataset_id, rowfig))
-        # rowfig.tight_layout()
-        # rowfig.savefig(cwd_path(target_dir, dataset_id, f"{kind}.png"))
 
-    # gridfig.tight_layout()
-    # gridfig.savefig(cwd_path(target_dir, f"{kind}.png"))
 
     return gridfig, rowfigs, singlecell_figs
 
@@ -236,5 +209,6 @@ def savefigs(basepath, kind, gridfig, rowfigs, singlecell_figs):
         rowfig.tight_layout()
         rowfig.savefig(cwd_path(basepath, dataset_id, f"{kind}.png"))
     for dataset_id, model_id, singlecell_fig in singlecell_figs:
+        singlecell_fig.suptitle(f"{model_id}")
         singlecell_fig.tight_layout()
-        singlecell_fig.savefig(cwd_path(basepath, dataset_id, f"{model_id}.png"))
+        singlecell_fig.savefig(cwd_path(basepath, dataset_id, f"{kind}-{model_id}.png"))

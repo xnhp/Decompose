@@ -1,10 +1,1 @@
-plot_bvd_getters:
-  - get_expected_ensemble_loss
-  - get_average_bias
-  - get_average_variance_effect
-  - get_diversity_effect
-
-plot_ens_getters:
-  - get_expected_ensemble_loss
-  - get_ensemble_variance_effect
-  - get_ensemble_bias
+foo: 2

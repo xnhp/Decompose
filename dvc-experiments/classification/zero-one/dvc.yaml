@@ -1,6 +1,6 @@
 #file: noinspection YAMLSchemaValidation
 vars:
-  - faster_models:
+  - models:
       - standard-rf-classifier
       - drf-weighted-bootstrap-classifier
       - drf-good-weighted-bootstrap-classifier
@@ -9,12 +9,7 @@ vars:
       - xuchen-weighted-bootstrap-classifier
 #      - ensemble-weighted-classifier
 #      - diversity-effect-weighted-classifier
-  - all_models:
-      - standard-rf-classifier
-      - drf-weighted-bootstrap-classifier
-      - sigmoid-weighted-bootstrap-classifier
-      - xuchen-weighted-bootstrap-classifier
-      - drf-weighted-fit-classifier
+  - slow_models:  # TODO
       - drf-weighted-fit-oob-classifier  # slow!
   - small_datasets:
       - qsar-biodeg
@@ -34,6 +29,11 @@ vars:
       - spambase-openml
       - mnist_subset
       - cover
+  - binary_datasets:
+      - qsar-biodeg
+      - diabetes
+      - bioresponse
+      - spambase-openml
 
 stages:
 
@@ -51,10 +51,16 @@ stages:
 #      - results/${item.dataset}/sigmoid-weighted-bootstrap-classifier.pkl
 #      - decomps/${item.dataset}/sigmoid-weighted-bootstrap-classifier.pkl
 
+  # okay so my "good drf" thing is *not* a special case of binary with fixed threshold at 1/2
+  # so we can't kill two birds with one stone here
+  # -- evaluating with fixed threshold most likely only makes sense on binary classification problems since
+  # equivalence (correct/incorrect) is not given there
+  # -- evaluating with dynamic threshold is also different for binary, should evaluate these on all datasets
+
 
   train_small:
     matrix:
-      model: ${all_models}
+      model: ${models}
       dataset: ${small_datasets}  # only difference
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -67,7 +73,7 @@ stages:
 
   get_staged_decomp_values_small:
     matrix:
-      model: ${all_models}
+      model: ${models}
       dataset: ${small_datasets}
     cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -78,7 +84,7 @@ stages:
 
   train_medium:
     matrix:
-      model: ${all_models}
+      model: ${models}
       dataset: ${medium_datasets}  # only difference
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -91,7 +97,7 @@ stages:
 
   get_staged_decomp_values_medium:
     matrix:
-      model: ${all_models}
+      model: ${models}
       dataset: ${medium_datasets}
     cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -102,7 +108,7 @@ stages:
 
   train_large:
     matrix:
-      model: ${faster_models}
+      model: ${models}
       dataset: ${large_datasets}  # only difference
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -115,7 +121,7 @@ stages:
 
   get_staged_decomp_values_large:
     matrix:
-      model: ${faster_models}
+      model: ${models}
       dataset: ${large_datasets}
     cmd: python ../../get_staged_decomp_values.py --model ${item.model} --dataset ${item.dataset}
     deps:
@@ -124,14 +130,17 @@ stages:
     outs:
       - staged-decomp-values/${item.dataset}/${item.model}/
 
-# deprecated, to be replaced with things from get_staged_decomp_values
-#  plot_staged_errors:
-#    cmd: python ../../plot_staged_errors.py
-#    deps:
-#      - results
-#      - ../../plot_staged_errors.py
-#    outs:
-#      - plots/staged_errors/
+  # introducing DRF, XuChen:
+  # [standard-rf-classifier, drf-weighted-bootstrap-classifier, xuchen-weighted-bootstrap-classifier]
+  # ~> does not improve avg member error, improves diversity
+  # ~> should actually only apply to binary but can still run and evaluate for multiclass
+
+  # should cap at threshold -> sigmoid
+  # [standard-rf-classifier, drf-weighted-bootstrap-classifier, sigmoid-weighted-bootstrap-classifier (without lerping b)]
+
+
+  # multiclass
+  # [standard-rf-classifier, drf-good-weighted-bootstrap-classifier (rename)]
 
 
   plot_bvd_decomps:
@@ -150,15 +159,16 @@ stages:
     outs:
       - plots/bvd-decomps/ens.png
 
-  plot_compare_models:
-    matrix:
-      dataset: ${all_datasets}
-    cmd: python ../../plot_compare_models.py --dataset ${item.dataset}
-    deps:
-      - staged-decomp-values
-      - ../../plot_compare_models.py
-    outs:
-      - plots/bvd-decomps/${item.dataset}/
+# just because im too tired to wait, re-enable
+#  plot_compare_models:
+#    matrix:
+#      dataset: ${all_datasets}
+#    cmd: python ../../plot_compare_models.py --dataset ${item.dataset}
+#    deps:
+#      - staged-decomp-values
+#      - ../../plot_compare_models.py
+#    outs:
+#      - plots/bvd-decomps/${item.dataset}/
 
 
 

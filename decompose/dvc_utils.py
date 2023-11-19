@@ -120,8 +120,9 @@ def get_model_color(identifier: str):
         'drf-weighted-fit-classifier': "orange",
         'drf-weighted-fit-oob-classifier': "brown",
         'drf-weighted-bootstrap-classifier': "red",
-        'sigmoid-weighted-bootstrap-classifier': "red",
-        'xuchen-weighted-bootstrap-classifier': "red",
+        'drf-good-weighted-bootstrap-classifier': "red",
+        'sigmoid-weighted-bootstrap-classifier': "purple",
+        'xuchen-weighted-bootstrap-classifier': "yellow",
         'ensemble-weighted-classifier': "green",
         'ce-nn': "blue"
     }
