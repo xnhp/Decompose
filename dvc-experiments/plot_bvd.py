@@ -15,12 +15,52 @@ def main():
         for getter_id in getters:
             plot_decomp_values(dataset_id, model_id, getter_id, ax, label=label(getter_id))
 
-    gridfig, rowfigs, singlecell_figs = plot_decomp_grid(consumer)
+    binary_datasets = [
+        'qsar-biodeg', "diabetes", "bioresponse", "spambase-openml"
+    ]
 
-    basepath = cwd_path("plots", "bvd-decomps")
-    kind = "bvd"
+    all_datasets = binary_datasets + ['digits', 'mnist_subset', 'cover']
 
-    savefigs(basepath, kind, gridfig, rowfigs, singlecell_figs)
+    tasks = [
+        {
+            'out_path': "plots/bvd-decomps/plot_bvd_drf",
+            'datasets': binary_datasets,
+            "models": [
+                'standard_rf',
+                'drf_weighted_bootstrap',
+                'drf_weighted_fit',
+                'xuchen-weighted_bootstrap-classifier',
+            ]
+        },
+
+        {
+            'out_path': "plots/bvd-decomps/plot_bvd_capped_lerped_sigmoid",
+            'datasets': binary_datasets,
+            "models": [
+                'standard_rf',
+                "drf_weighted_bootstrap",
+                "capped_sigmoid",
+                "capped_lerped_sigmoid"
+            ]
+        },
+
+        {
+            'out_path': "plots/bvd-decomps/plot_bvd_multiclass",
+            'datasets': all_datasets,
+            "models": [
+                'standard_rf',
+                "drf_weighted_bootstrap",
+                "capped_lerped_sigmoid",
+                "dynamic_threshold"
+            ]
+        }
+    ]
+
+    for task in tasks:
+        gridfig, rowfigs, singlecell_figs = plot_decomp_grid(consumer, task)
+        basepath = cwd_path(task['out_path'])
+        kind = "bvd"
+        savefigs(basepath, kind, gridfig, rowfigs, singlecell_figs)
 
 
 if __name__ == "__main__":

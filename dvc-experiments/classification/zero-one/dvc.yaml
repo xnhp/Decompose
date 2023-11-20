@@ -1,16 +1,17 @@
 #file: noinspection YAMLSchemaValidation
 vars:
   - models:
-      - standard-rf-classifier
-      - drf-weighted-bootstrap-classifier
-      - drf-good-weighted-bootstrap-classifier
-      - drf-weighted-fit-classifier
-      - sigmoid-weighted-bootstrap-classifier
-      - xuchen-weighted-bootstrap-classifier
+      - standard_rf
+      - drf_weighted_bootstrap
+      - drf-weighted-fit
+      - xu_chen
+      - capped_sigmoid
+      - capped_lerped_sigmoid
+      - dynamic_threshold
 #      - ensemble-weighted-classifier
 #      - diversity-effect-weighted-classifier
   - slow_models:  # TODO
-      - drf-weighted-fit-oob-classifier  # slow!
+      - drf_weighted_fit_oob
   - small_datasets:
       - qsar-biodeg
       - diabetes
@@ -65,6 +66,7 @@ stages:
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
+      - ../../../decompose/models/${item.model}.py
     params:
       - params.yaml:
     outs:
@@ -89,6 +91,7 @@ stages:
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
+      - ../../../decompose/models/${item.model}.py
     params:
       - params.yaml:
     outs:
@@ -113,6 +116,7 @@ stages:
     cmd: python ../../run_bvd.py --model ${item.model} --dataset ${item.dataset}
     deps:
       - ../../run_bvd.py
+      - ../../../decompose/models/${item.model}.py
     params:
       - params.yaml:
     outs:
@@ -137,7 +141,7 @@ stages:
 
   # should cap at threshold -> sigmoid
   # [standard-rf-classifier, drf-weighted-bootstrap-classifier, sigmoid-weighted-bootstrap-classifier (without lerping b)]
-
+  # spike ~> capped lerped sigmoid
 
   # multiclass
   # [standard-rf-classifier, drf-good-weighted-bootstrap-classifier (rename)]

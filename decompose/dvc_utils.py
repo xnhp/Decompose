@@ -4,9 +4,17 @@ import os
 
 from fuzzywuzzy import fuzz
 
-from decompose.classifiers import StandardRFClassifier, DRFWeightedBootstrapRFClassifier, SimpleWeightedRFClassifier, \
-    DRFWeightedFitRFClassifier, DRFWeightedFitOOBRFClassifier, make_geometric_nn_ensemble, MLP, \
-    DRFSigmoidWeightedBootstrapRFClassifier, XuChenWeightedBootstrapRFClassifier, DRFGoodWeightedBootstrapRFClassifier
+from decompose.classifiers import SimpleWeightedRFClassifier, \
+    make_geometric_nn_ensemble, MLP, \
+    DRFSigmoidWeightedBootstrapRFClassifier
+from decompose.models.drf_weighted_fit import DRFWeightedFitOOBRFClassifier, DRFWeightedFitRFClassifier
+from decompose.models.standard_rf import StandardRF
+from decompose.models.xu_chen import XuChenWeightedBootstrapRFClassifier
+from decompose.models.dynamic_threshold import DRFGoodWeightedBootstrapRFClassifier
+from decompose.drf_weighted_bootstrap import DRFWeightedBootstrapRFClassifier
+from decompose.models.standard_rf_classifier import StandardRFClassifier
+from decompose.models.capped_lerped_sigmoid import CappedLerpedSigmoid
+from decompose.models.capped_sigmoid import CappedSigmoid
 from decompose.data_utils import load_standard_dataset
 from decompose.regressors import StandardRFRegressor, SqErrBoostedBase, SqErrBoostedShallow, SqErrBoostedNoBootstrap, \
     StandardRFNoBootstrap, SqErrBoostedClipped
@@ -64,6 +72,21 @@ def parse_args():
 
 def get_model(identifier: str):
     models = {
+
+        # classification
+        # random forests
+        'standard_rf_classifier': StandardRF(),
+        'drf_weighted_bootstrap': DRFWeightedBootstrapRFClassifier(),
+        'dynamic_threshold': DRFGoodWeightedBootstrapRFClassifier(),
+        'capped_sigmoid': CappedSigmoid(),
+        'capped_lerped_sigmoid': CappedLerpedSigmoid(),
+
+        'drf_weighted_fit': DRFWeightedFitRFClassifier(),
+        'drf_weighted_fit_oob': DRFWeightedFitOOBRFClassifier(),
+        'xu_chen': XuChenWeightedBootstrapRFClassifier(),
+
+        # old stuff
+        'ensemble-weighted-classifier': SimpleWeightedRFClassifier(),
         # regression
         'standard-rf-regressor': StandardRFRegressor(),
         'standard-rf-nobootstrap': StandardRFNoBootstrap(),
@@ -71,16 +94,6 @@ def get_model(identifier: str):
         'sqerr-boosted-nobootstrap': SqErrBoostedNoBootstrap(),
         'sqerr-boosted-clipped': SqErrBoostedClipped(),
 
-        # classification
-        # random forests
-        'standard-rf-classifier': StandardRFClassifier(),
-        'drf-weighted-bootstrap-classifier': DRFWeightedBootstrapRFClassifier(),
-        'drf-good-weighted-bootstrap-classifier': DRFGoodWeightedBootstrapRFClassifier(),
-        'drf-weighted-fit-classifier': DRFWeightedFitRFClassifier(),
-        'drf-weighted-fit-oob-classifier': DRFWeightedFitOOBRFClassifier(),
-        'sigmoid-weighted-bootstrap-classifier': DRFSigmoidWeightedBootstrapRFClassifier(),
-        'xuchen-weighted-bootstrap-classifier': XuChenWeightedBootstrapRFClassifier(),
-        'ensemble-weighted-classifier': SimpleWeightedRFClassifier(),
         # neural networks
         'ce-nn': make_geometric_nn_ensemble(MLP())
     }
@@ -116,13 +129,13 @@ def get_model_color(identifier: str):
         'sqerr-boosted-nobootstrap': "red",
         'sqerr-boosted-clipped': "orange",
         # classification
-        'standard-rf-classifier': "blue",
-        'drf-weighted-fit-classifier': "orange",
-        'drf-weighted-fit-oob-classifier': "brown",
-        'drf-weighted-bootstrap-classifier': "red",
-        'drf-good-weighted-bootstrap-classifier': "red",
+        'standard_rf': "blue",
+        'drf_weighted_fit': "orange",
+        'drf_weighted_fit_oob': "brown",
+        'drf_weighted_bootstrap': "red",
+        'dynamic_threshold': "red",
         'sigmoid-weighted-bootstrap-classifier': "purple",
-        'xuchen-weighted-bootstrap-classifier': "yellow",
+        'xu_chen': "yellow",
         'ensemble-weighted-classifier': "green",
         'ce-nn': "blue"
     }
