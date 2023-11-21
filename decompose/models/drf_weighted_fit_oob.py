@@ -2,11 +2,11 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
 from decompose.classifiers import ratio_incorrect_trees, normalize_weights
-from decompose.models.standard_rf_classifier import StandardRFClassifier
+from decompose.models.standard_rf import StandardRF
 from decompose.util import deep_tree_params
 
 
-class DRFWeightedFitOOBRFClassifier(StandardRFClassifier):
+class DRFWeightedFitOOBRFClassifier(StandardRF):
 
     def __init__(self, base_estimator=DecisionTreeClassifier(
         criterion="gini",

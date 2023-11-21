@@ -4,15 +4,13 @@ import os
 
 from fuzzywuzzy import fuzz
 
-from decompose.classifiers import SimpleWeightedRFClassifier, \
-    make_geometric_nn_ensemble, MLP, \
-    DRFSigmoidWeightedBootstrapRFClassifier
-from decompose.models.drf_weighted_fit import DRFWeightedFitOOBRFClassifier, DRFWeightedFitRFClassifier
+from decompose.classifiers import make_geometric_nn_ensemble, MLP
+from decompose.models.drf_weighted_fit import DRFWeightedFitRFClassifier
+from decompose.models.drf_weighted_fit_oob import DRFWeightedFitOOBRFClassifier
 from decompose.models.standard_rf import StandardRF
 from decompose.models.xu_chen import XuChenWeightedBootstrapRFClassifier
 from decompose.models.dynamic_threshold import DRFGoodWeightedBootstrapRFClassifier
-from decompose.drf_weighted_bootstrap import DRFWeightedBootstrapRFClassifier
-from decompose.models.standard_rf_classifier import StandardRFClassifier
+from decompose.models.drf_weighted_bootstrap import DRFWeightedBootstrapRFClassifier
 from decompose.models.capped_lerped_sigmoid import CappedLerpedSigmoid
 from decompose.models.capped_sigmoid import CappedSigmoid
 from decompose.data_utils import load_standard_dataset
@@ -75,7 +73,7 @@ def get_model(identifier: str):
 
         # classification
         # random forests
-        'standard_rf_classifier': StandardRF(),
+        'standard_rf': StandardRF(),
         'drf_weighted_bootstrap': DRFWeightedBootstrapRFClassifier(),
         'dynamic_threshold': DRFGoodWeightedBootstrapRFClassifier(),
         'capped_sigmoid': CappedSigmoid(),
@@ -86,7 +84,7 @@ def get_model(identifier: str):
         'xu_chen': XuChenWeightedBootstrapRFClassifier(),
 
         # old stuff
-        'ensemble-weighted-classifier': SimpleWeightedRFClassifier(),
+        # 'ensemble-weighted-classifier': SimpleWeightedRFClassifier(),
         # regression
         'standard-rf-regressor': StandardRFRegressor(),
         'standard-rf-nobootstrap': StandardRFNoBootstrap(),

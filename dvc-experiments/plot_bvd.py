@@ -1,5 +1,6 @@
 from decompose.dvc_utils import cwd_path
-from decompose.utils import plot_decomp_grid, plot_decomp_values, label, savefigs
+from decompose.utils import plot_decomp_values, label, savefigs
+from decompose.plot_decomp_grid import plot_decomp_grid
 
 
 def main():
@@ -18,10 +19,22 @@ def main():
     binary_datasets = [
         'qsar-biodeg', "diabetes", "bioresponse", "spambase-openml"
     ]
+    nonbinary_datasets = ['digits', 'mnist_subset', 'cover']
 
-    all_datasets = binary_datasets + ['digits', 'mnist_subset', 'cover']
+    all_datasets = binary_datasets + nonbinary_datasets
 
     tasks = [
+
+        # "diversity is a measure of model fit"
+        # cf corresponding in plot_ens
+        {
+            'out_path': "plots/bvd-decomps/plot_bvd_standard_rf",
+            'datasets': nonbinary_datasets,
+            "models": [
+                'standard_rf'
+            ]
+        },
+
         {
             'out_path': "plots/bvd-decomps/plot_bvd_drf",
             'datasets': binary_datasets,
@@ -29,7 +42,7 @@ def main():
                 'standard_rf',
                 'drf_weighted_bootstrap',
                 'drf_weighted_fit',
-                'xuchen-weighted_bootstrap-classifier',
+                'xu_chen',
             ]
         },
 
@@ -49,7 +62,7 @@ def main():
             'datasets': all_datasets,
             "models": [
                 'standard_rf',
-                "drf_weighted_bootstrap",
+                # "drf_weighted_bootstrap",
                 "capped_lerped_sigmoid",
                 "dynamic_threshold"
             ]

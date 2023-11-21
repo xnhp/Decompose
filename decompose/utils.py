@@ -3,13 +3,10 @@ import logging
 import os
 from enum import auto
 
-import matplotx
 import numpy as np
-from matplotlib import pyplot as plt
 from strenum import StrEnum
 
 from decompose.dvc_utils import cwd_path, get_fn_color, dataset_summary
-from decompose.regressors import StandardRFRegressor, SqErrBoostedBase
 
 
 def pairwise_matrix(data, fun):
@@ -138,68 +135,6 @@ def data_model_foreach(base_dir, consumer):
 def reverse(dict):
     inv_map = {v: k for k, v in dict.items()}
     return inv_map
-
-def plot_decomp_grid(consumer, task):
-    plt.style.use(matplotx.styles.dufte)
-    n_datasets = len(list(children(cwd_path("staged-decomp-values"))))
-    n_models = max(
-        [len(list(children(dataset_path))) for _, dataset_path in children(cwd_path("staged-decomp-values"))])
-    # TODO spacing between rows
-    colwidth = 24
-    rowheight = 3
-    n_rows = n_datasets
-    n_cols = n_models + 1  # +1 for dataset summary
-    gridfig, gridaxs = plt.subplots(n_rows, n_cols, figsize=(colwidth, rowheight * n_rows))
-
-    models = task['models']
-    col_indices = reverse(dict(enumerate(models)))
-
-    datasets = task['datasets']
-    dataset_indices = reverse(dict(enumerate(datasets)))
-
-    rowfigs = []
-    singlecell_figs = []
-
-    for dataset_idx, (dataset_id, dataset_path) in enumerate(children(cwd_path("staged-decomp-values"))):
-
-        # also save row in separate plot
-        rowfig, rowfigaxs = plt.subplots(1, n_cols, figsize=(colwidth, 4))
-
-        plot_summary(dataset_id, rowfigaxs[0])
-        row_index = dataset_indices[dataset_id]
-        plot_summary(dataset_id, gridaxs[row_index, 0])
-
-        for model_id in models:
-
-            col_index = col_indices[model_id] + 1
-
-            gridaxs[0, col_index].set_title(f"{model_id}")
-            rowfigaxs[col_index].set_title(f"{model_id}")
-
-            singlecell_fig, singlecell_ax = plt.subplots(1,1, figsize=(4,4))
-            gridcell_ax = gridaxs[row_index, col_index]
-
-            target_axs = [gridcell_ax, rowfigaxs[col_index], singlecell_ax]
-
-            def set_tick_params(ax):
-                ax.tick_params(axis='x', which='major', reset=True)
-            map(set_tick_params, target_axs)
-
-            gridcell_ax.sharey(gridaxs[row_index, 1])  # share with first containing actual data
-            rowfigaxs[col_index].sharey(rowfigaxs[1])
-
-            for ax in target_axs:
-                consumer(dataset_id, model_id, ax)
-
-            # TODO get legend right
-            # matplotx.line_labels()  # line labels to the right
-
-            singlecell_figs.append((dataset_id, model_id, singlecell_fig))
-
-        rowfigs.append((dataset_id, rowfig))
-
-
-    return gridfig, rowfigs, singlecell_figs
 
 
 def savefigs(basepath, kind, gridfig, rowfigs, singlecell_figs):

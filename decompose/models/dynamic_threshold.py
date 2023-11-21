@@ -2,10 +2,10 @@ import numpy as np
 
 from decompose.classifiers import ratio_incorrect_trees, ratio_votes_next_best, transform_weights, lerp_b, \
     normalize_weights
-from decompose.models.standard_rf_classifier import StandardRFClassifier
+from decompose.models.standard_rf import StandardRF
 
 
-class DRFGoodWeightedBootstrapRFClassifier(StandardRFClassifier):
+class DRFGoodWeightedBootstrapRFClassifier(StandardRF):
     """
         Constant above 1/2 -- only applies to binary classif
      """

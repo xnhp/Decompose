@@ -10,7 +10,7 @@ from decompose.dvc_utils import cwd_path
 
 
 def staged(getter):
-    M = 20  # TODO move to params
+    M = 40  # TODO move to params
     ms = range(1, M) # TODO move step to params
     values = np.vectorize(getter)(ms)
     return np.column_stack((ms, values))

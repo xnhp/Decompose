@@ -1,10 +1,10 @@
 import numpy as np
 
 from decompose.classifiers import ratio_incorrect_trees, y_drf_xu_chen, normalize_weights
-from decompose.models.standard_rf_classifier import StandardRFClassifier
+from decompose.models.standard_rf import StandardRF
 
 
-class XuChenWeightedBootstrapRFClassifier(StandardRFClassifier):
+class XuChenWeightedBootstrapRFClassifier(StandardRF):
     def _bootstrap_sample_weights(self, data, truth):
         if len(self.estimators_) == 0:
             # first estimator

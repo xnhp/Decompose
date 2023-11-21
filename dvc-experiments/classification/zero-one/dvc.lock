@@ -947,20 +947,30 @@ stages:
   plot_bvd_decomps:
     cmd: python ../../plot_bvd.py
     deps:
+    - path: ../../../decompose/plot_decomp_grid.py
+      hash: md5
+      md5: 26e09129503eb937cc461a6f1cf2d38e
+      size: 2137
     - path: ../../plot_bvd.py
       hash: md5
-      md5: cddee5cd74c5a0a12b5150bf8eefb025
-      size: 815
+      md5: 368d7bd8b9e7a4ede1ea0467384914e8
+      size: 2399
     - path: staged-decomp-values
       hash: md5
-      md5: 4d5a54c2d2e66437d7b3fda788076da5.dir
-      size: 115582
-      nfiles: 271
+      md5: 1a4623c7abd44711273393cbb9824bb5.dir
+      size: 214270
+      nfiles: 295
     outs:
-    - path: plots/bvd-decomps/bvd.png
+    - path: plots/bvd-decomps/plot_bvd_drf
       hash: md5
-      md5: 499df3ce5c6f24bb56cbdd758284e9f9
-      size: 272388
+      md5: 5b8e98447f749504b5778722fa67ee20.dir
+      size: 959152
+      nfiles: 21
+    - path: plots/bvd-decomps/plot_bvd_standard_rf
+      hash: md5
+      md5: 1120e3aa9222e4c5929bcd3eeef343e8.dir
+      size: 300765
+      nfiles: 7
   get_staged_decomp_values@drf-weighted-fit-classifier-qsar-biodeg:
     cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
       --dataset qsar-biodeg
@@ -5246,3 +5256,2623 @@ stages:
       hash: md5
       md5: cbd891dff2ada14fbc0176b617f23bec
       size: 10801303
+  train_small@standard_rf-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model standard_rf --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/standard_rf.py
+      hash: md5
+      md5: bf54533391c45262c72a204121421b32
+      size: 529
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/standard_rf.pkl
+      hash: md5
+      md5: 6fef34f75444b9e4d3822081077775e2
+      size: 488514
+    - path: results/qsar-biodeg/standard_rf.pkl
+      hash: md5
+      md5: 38a6a5a700d65c85c39018e1af6eb158
+      size: 951699
+  train_small@standard_rf-diabetes:
+    cmd: python ../../run_bvd.py --model standard_rf --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/standard_rf.py
+      hash: md5
+      md5: bf54533391c45262c72a204121421b32
+      size: 529
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/standard_rf.pkl
+      hash: md5
+      md5: ef744b249f551006cb5d520cd5410595
+      size: 355451
+    - path: results/diabetes/standard_rf.pkl
+      hash: md5
+      md5: 5c447ebb80b26397276dd61f168d8bb3
+      size: 692495
+  train_small@drf_weighted_bootstrap-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf_weighted_bootstrap --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/drf_weighted_bootstrap.py
+      hash: md5
+      md5: d7eb0e105dd1d345b4285102a70b5fc5
+      size: 923
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 45446ba13bbcbf2dc1a3e92ed404f08e
+      size: 488514
+    - path: results/qsar-biodeg/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: a98dcc89f1aa92b3404031cd3ad378c8
+      size: 951710
+  train_small@drf_weighted_bootstrap-diabetes:
+    cmd: python ../../run_bvd.py --model drf_weighted_bootstrap --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/drf_weighted_bootstrap.py
+      hash: md5
+      md5: d7eb0e105dd1d345b4285102a70b5fc5
+      size: 923
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 56773c685a683493461e7b136f132b6b
+      size: 355451
+    - path: results/diabetes/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: e5cc46b6da6dd3bba39fcfdcb0318074
+      size: 692506
+  train_small@drf_weighted_fit-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit.py
+      hash: md5
+      md5: 16c96e8487446f1cec8043c8ec7bee29
+      size: 580
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf_weighted_fit.pkl
+      hash: md5
+      md5: 67d879b4997549a6fde0f90f993c10b7
+      size: 488514
+    - path: results/qsar-biodeg/drf_weighted_fit.pkl
+      hash: md5
+      md5: c182bb73a924fcf505b6df98dcf09a4e
+      size: 951704
+  train_small@drf_weighted_fit-diabetes:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit.py
+      hash: md5
+      md5: 16c96e8487446f1cec8043c8ec7bee29
+      size: 580
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf_weighted_fit.pkl
+      hash: md5
+      md5: 4c4dfed4d4cfec5130d30308b2db4363
+      size: 355451
+    - path: results/diabetes/drf_weighted_fit.pkl
+      hash: md5
+      md5: eb7f3a19eda43a4e8e9629be928db946
+      size: 692500
+  train_small@xu_chen-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model xu_chen --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/xu_chen.py
+      hash: md5
+      md5: 670a37a60ad22db7690ee1c40412180d
+      size: 612
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/xu_chen.pkl
+      hash: md5
+      md5: e93a8ff7f0d4b47f3c1ae9c2103d9711
+      size: 488514
+    - path: results/qsar-biodeg/xu_chen.pkl
+      hash: md5
+      md5: fb55e610061246454cfd1bdb341081e9
+      size: 951695
+  train_small@xu_chen-diabetes:
+    cmd: python ../../run_bvd.py --model xu_chen --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/xu_chen.py
+      hash: md5
+      md5: 670a37a60ad22db7690ee1c40412180d
+      size: 612
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/xu_chen.pkl
+      hash: md5
+      md5: 3dc337d15f95b2945bb9c60e6b79515d
+      size: 355451
+    - path: results/diabetes/xu_chen.pkl
+      hash: md5
+      md5: 5f47f6271ece95637ab808337d60992d
+      size: 692491
+  train_small@capped_sigmoid-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model capped_sigmoid --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/capped_sigmoid.py
+      hash: md5
+      md5: 936ca9e50fb5a8e729f15acf2e785c05
+      size: 713
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/capped_sigmoid.pkl
+      hash: md5
+      md5: ba24fc7f6877ebd8abf20649251a681b
+      size: 488514
+    - path: results/qsar-biodeg/capped_sigmoid.pkl
+      hash: md5
+      md5: 3ac9c7e131c08a6acfd83b863bbff30e
+      size: 951702
+  train_small@capped_sigmoid-diabetes:
+    cmd: python ../../run_bvd.py --model capped_sigmoid --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/capped_sigmoid.py
+      hash: md5
+      md5: 936ca9e50fb5a8e729f15acf2e785c05
+      size: 713
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/capped_sigmoid.pkl
+      hash: md5
+      md5: 683177be46d3e0afb611694800510994
+      size: 355451
+    - path: results/diabetes/capped_sigmoid.pkl
+      hash: md5
+      md5: 282f253b4afbbbf08a80a5366b2e2cb9
+      size: 692498
+  train_small@capped_lerped_sigmoid-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model capped_lerped_sigmoid --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/capped_lerped_sigmoid.py
+      hash: md5
+      md5: bc1bff6e5259102758c58a005f01ee3a
+      size: 761
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: e61ba2f0d2d540f99042f087e09f5564
+      size: 488514
+    - path: results/qsar-biodeg/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 7fbe73b0480ec65c461b9fab7c921c7f
+      size: 951709
+  train_small@capped_lerped_sigmoid-diabetes:
+    cmd: python ../../run_bvd.py --model capped_lerped_sigmoid --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/capped_lerped_sigmoid.py
+      hash: md5
+      md5: bc1bff6e5259102758c58a005f01ee3a
+      size: 761
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: f619a7b73e80de5f79612d076a9b2e72
+      size: 355451
+    - path: results/diabetes/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 1f121fddaddf68a5ec3cc8d15a6f5696
+      size: 692505
+  train_small@dynamic_threshold-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/dynamic_threshold.pkl
+      hash: md5
+      md5: 08aee5519b675a8904da1b431f386254
+      size: 488514
+    - path: results/qsar-biodeg/dynamic_threshold.pkl
+      hash: md5
+      md5: 6b309fe885aaa467ed8f9139e5d75307
+      size: 951705
+  train_small@dynamic_threshold-diabetes:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/dynamic_threshold.pkl
+      hash: md5
+      md5: dd6405f1bde6bbd753f20e646e763da5
+      size: 355451
+    - path: results/diabetes/dynamic_threshold.pkl
+      hash: md5
+      md5: 57cb249c9b8097d0e13a9571bb9836af
+      size: 692501
+  get_staged_decomp_values_small@standard_rf-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model standard_rf --dataset qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/standard_rf.pkl
+      hash: md5
+      md5: 6fef34f75444b9e4d3822081077775e2
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/standard_rf/
+      hash: md5
+      md5: e77131f3fc560de71eb88b3c3182ef7f.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@standard_rf-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model standard_rf --dataset diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/standard_rf.pkl
+      hash: md5
+      md5: ef744b249f551006cb5d520cd5410595
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/standard_rf/
+      hash: md5
+      md5: f88984bf8ce5311bfb17f5818c035c78.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@drf_weighted_bootstrap-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_bootstrap --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 45446ba13bbcbf2dc1a3e92ed404f08e
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/drf_weighted_bootstrap/
+      hash: md5
+      md5: 86fca00fa08f58a6e72120a30355a61a.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@drf_weighted_bootstrap-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_bootstrap --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 56773c685a683493461e7b136f132b6b
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/drf_weighted_bootstrap/
+      hash: md5
+      md5: fadf34fbeb67c03b718fc4878d02b0a3.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@drf_weighted_fit-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/drf_weighted_fit.pkl
+      hash: md5
+      md5: 67d879b4997549a6fde0f90f993c10b7
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/drf_weighted_fit/
+      hash: md5
+      md5: aa9049b9c13cbbe9fb2c4d2783ab9dea.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@drf_weighted_fit-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/drf_weighted_fit.pkl
+      hash: md5
+      md5: 4c4dfed4d4cfec5130d30308b2db4363
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/drf_weighted_fit/
+      hash: md5
+      md5: 88a7d94eb8fe838d9845cf6e19737484.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@xu_chen-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model xu_chen --dataset qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/xu_chen.pkl
+      hash: md5
+      md5: e93a8ff7f0d4b47f3c1ae9c2103d9711
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/xu_chen/
+      hash: md5
+      md5: a1951d4cab33f51ffe11c48c0964ad46.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@xu_chen-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model xu_chen --dataset diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/xu_chen.pkl
+      hash: md5
+      md5: 3dc337d15f95b2945bb9c60e6b79515d
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/xu_chen/
+      hash: md5
+      md5: 6818279bb7e998d8ac382b63c285102d.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@capped_sigmoid-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model capped_sigmoid --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/capped_sigmoid.pkl
+      hash: md5
+      md5: ba24fc7f6877ebd8abf20649251a681b
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/capped_sigmoid/
+      hash: md5
+      md5: da16423c390e36f7c9c272a9f07fa6b8.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@capped_sigmoid-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model capped_sigmoid --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/capped_sigmoid.pkl
+      hash: md5
+      md5: 683177be46d3e0afb611694800510994
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/capped_sigmoid/
+      hash: md5
+      md5: 2a2b69cdd88e4c062c39c04c7c88993f.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@capped_lerped_sigmoid-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model capped_lerped_sigmoid --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: e61ba2f0d2d540f99042f087e09f5564
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/capped_lerped_sigmoid/
+      hash: md5
+      md5: 964864b5ce673fbb8f7fcbc0a21e72b6.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@capped_lerped_sigmoid-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model capped_lerped_sigmoid --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: f619a7b73e80de5f79612d076a9b2e72
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/capped_lerped_sigmoid/
+      hash: md5
+      md5: a983e3a3d2114612a50dca1c8d810991.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@dynamic_threshold-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/dynamic_threshold.pkl
+      hash: md5
+      md5: 08aee5519b675a8904da1b431f386254
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/dynamic_threshold/
+      hash: md5
+      md5: 55b9f0ad6b45227a78667926437d27a0.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_small@dynamic_threshold-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/dynamic_threshold.pkl
+      hash: md5
+      md5: dd6405f1bde6bbd753f20e646e763da5
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/dynamic_threshold/
+      hash: md5
+      md5: dd962609a1c51e88ce981522ba96592a.dir
+      size: 4512
+      nfiles: 6
+  train_medium@standard_rf-digits:
+    cmd: python ../../run_bvd.py --model standard_rf --dataset digits
+    deps:
+    - path: ../../../decompose/models/standard_rf.py
+      hash: md5
+      md5: bf54533391c45262c72a204121421b32
+      size: 529
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/standard_rf.pkl
+      hash: md5
+      md5: c676f16579e2232bab10a2a16ef4455a
+      size: 832242
+    - path: results/digits/standard_rf.pkl
+      hash: md5
+      md5: 3119299256762293892ab62ee80defbd
+      size: 1621294
+  train_medium@standard_rf-bioresponse:
+    cmd: python ../../run_bvd.py --model standard_rf --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/standard_rf.py
+      hash: md5
+      md5: bf54533391c45262c72a204121421b32
+      size: 529
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/standard_rf.pkl
+      hash: md5
+      md5: 554b77a3dcb1ddad4bbda68682ce9ecf
+      size: 1734066
+    - path: results/bioresponse/standard_rf.pkl
+      hash: md5
+      md5: f2c1d627f15c851558d6bad5bb70b90a
+      size: 3378099
+  train_medium@standard_rf-spambase-openml:
+    cmd: python ../../run_bvd.py --model standard_rf --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/standard_rf.py
+      hash: md5
+      md5: bf54533391c45262c72a204121421b32
+      size: 529
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/standard_rf.pkl
+      hash: md5
+      md5: a006b0b8b1067b9290fc9d9080d59352
+      size: 2127690
+    - path: results/spambase-openml/standard_rf.pkl
+      hash: md5
+      md5: 87d1e331b86d493a13bd8fda3c4ed2db
+      size: 4144903
+  train_medium@drf_weighted_bootstrap-digits:
+    cmd: python ../../run_bvd.py --model drf_weighted_bootstrap --dataset digits
+    deps:
+    - path: ../../../decompose/models/drf_weighted_bootstrap.py
+      hash: md5
+      md5: d7eb0e105dd1d345b4285102a70b5fc5
+      size: 923
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: dde2ee18fa95eeb53e50345c18e65ac8
+      size: 832242
+    - path: results/digits/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 78f8760fc25981078e8b1f20c2b9ac64
+      size: 1621305
+  train_medium@drf_weighted_bootstrap-bioresponse:
+    cmd: python ../../run_bvd.py --model drf_weighted_bootstrap --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/drf_weighted_bootstrap.py
+      hash: md5
+      md5: d7eb0e105dd1d345b4285102a70b5fc5
+      size: 923
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: c144d612e1e5b2bacebb5ccd04f0d33b
+      size: 1734066
+    - path: results/bioresponse/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 56a939a2550dbcfdbc3ae8a88f933801
+      size: 3378110
+  train_medium@drf_weighted_bootstrap-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf_weighted_bootstrap --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/drf_weighted_bootstrap.py
+      hash: md5
+      md5: d7eb0e105dd1d345b4285102a70b5fc5
+      size: 923
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 731e69d4da9c9c1b6a41c7d8d6ffc18e
+      size: 2127690
+    - path: results/spambase-openml/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 859867b0c489a21f7f129815e93547d6
+      size: 4144914
+  train_medium@drf_weighted_fit-digits:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit --dataset digits
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit.py
+      hash: md5
+      md5: 16c96e8487446f1cec8043c8ec7bee29
+      size: 580
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/drf_weighted_fit.pkl
+      hash: md5
+      md5: c826a1332b944cab13e200ba9763792c
+      size: 832242
+    - path: results/digits/drf_weighted_fit.pkl
+      hash: md5
+      md5: 6d87be4ae78f55c61874994887e4d977
+      size: 1621299
+  train_medium@drf_weighted_fit-bioresponse:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit.py
+      hash: md5
+      md5: 16c96e8487446f1cec8043c8ec7bee29
+      size: 580
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/drf_weighted_fit.pkl
+      hash: md5
+      md5: af275dc38ec3180c33fa5af48d55baf5
+      size: 1734066
+    - path: results/bioresponse/drf_weighted_fit.pkl
+      hash: md5
+      md5: c97760853509174189b3784dced94c78
+      size: 3378104
+  train_medium@drf_weighted_fit-spambase-openml:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit.py
+      hash: md5
+      md5: 16c96e8487446f1cec8043c8ec7bee29
+      size: 580
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/drf_weighted_fit.pkl
+      hash: md5
+      md5: 9a3d7d403c5b33b8d4602dc43d4b89bb
+      size: 2127690
+    - path: results/spambase-openml/drf_weighted_fit.pkl
+      hash: md5
+      md5: 14a749efca6b73f879e3d62e3bcbba98
+      size: 4144908
+  train_medium@xu_chen-digits:
+    cmd: python ../../run_bvd.py --model xu_chen --dataset digits
+    deps:
+    - path: ../../../decompose/models/xu_chen.py
+      hash: md5
+      md5: 670a37a60ad22db7690ee1c40412180d
+      size: 612
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/xu_chen.pkl
+      hash: md5
+      md5: 8c2a191c55aa7a58b8844dba68b7eea9
+      size: 832242
+    - path: results/digits/xu_chen.pkl
+      hash: md5
+      md5: d84ee8e5295e88a7c17ca5b5df0a45c1
+      size: 1621290
+  train_medium@xu_chen-bioresponse:
+    cmd: python ../../run_bvd.py --model xu_chen --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/xu_chen.py
+      hash: md5
+      md5: 670a37a60ad22db7690ee1c40412180d
+      size: 612
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/xu_chen.pkl
+      hash: md5
+      md5: a47f42012b2ac94bb26c7412b1810071
+      size: 1734066
+    - path: results/bioresponse/xu_chen.pkl
+      hash: md5
+      md5: 4ab812523735a1fd260a37cec79bb331
+      size: 3378095
+  train_medium@xu_chen-spambase-openml:
+    cmd: python ../../run_bvd.py --model xu_chen --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/xu_chen.py
+      hash: md5
+      md5: 670a37a60ad22db7690ee1c40412180d
+      size: 612
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/xu_chen.pkl
+      hash: md5
+      md5: 5ef9622cfb7c1c778de53dc2519cc5d6
+      size: 2127690
+    - path: results/spambase-openml/xu_chen.pkl
+      hash: md5
+      md5: d3ecb3570b8907bb57c4c43230d092b0
+      size: 4144899
+  train_medium@capped_sigmoid-digits:
+    cmd: python ../../run_bvd.py --model capped_sigmoid --dataset digits
+    deps:
+    - path: ../../../decompose/models/capped_sigmoid.py
+      hash: md5
+      md5: 936ca9e50fb5a8e729f15acf2e785c05
+      size: 713
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/capped_sigmoid.pkl
+      hash: md5
+      md5: b727daa1c3cff8e2f95565ac6e7e02b8
+      size: 832242
+    - path: results/digits/capped_sigmoid.pkl
+      hash: md5
+      md5: ce0fd9ce71737b3c7b093a671ff1a932
+      size: 1621297
+  train_medium@capped_sigmoid-bioresponse:
+    cmd: python ../../run_bvd.py --model capped_sigmoid --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/capped_sigmoid.py
+      hash: md5
+      md5: 936ca9e50fb5a8e729f15acf2e785c05
+      size: 713
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/capped_sigmoid.pkl
+      hash: md5
+      md5: 09d532e1ad120624dc36249ede4cb5a6
+      size: 1734066
+    - path: results/bioresponse/capped_sigmoid.pkl
+      hash: md5
+      md5: 46d95e71aa75833602c25f0c28e97dce
+      size: 3378102
+  train_medium@capped_sigmoid-spambase-openml:
+    cmd: python ../../run_bvd.py --model capped_sigmoid --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/capped_sigmoid.py
+      hash: md5
+      md5: 936ca9e50fb5a8e729f15acf2e785c05
+      size: 713
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/capped_sigmoid.pkl
+      hash: md5
+      md5: c1665c1696c1db85ada10c888e779ec4
+      size: 2127690
+    - path: results/spambase-openml/capped_sigmoid.pkl
+      hash: md5
+      md5: 7038f593bdfe4347232fd8279dbb8c39
+      size: 4144906
+  train_medium@capped_lerped_sigmoid-digits:
+    cmd: python ../../run_bvd.py --model capped_lerped_sigmoid --dataset digits
+    deps:
+    - path: ../../../decompose/models/capped_lerped_sigmoid.py
+      hash: md5
+      md5: bc1bff6e5259102758c58a005f01ee3a
+      size: 761
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: c1126191b46ce18021b421799ec1574a
+      size: 832242
+    - path: results/digits/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: feb1ad92576e65315fc76940d10c4a84
+      size: 1621304
+  train_medium@capped_lerped_sigmoid-bioresponse:
+    cmd: python ../../run_bvd.py --model capped_lerped_sigmoid --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/capped_lerped_sigmoid.py
+      hash: md5
+      md5: bc1bff6e5259102758c58a005f01ee3a
+      size: 761
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 814e38c8441652074a83be08ea84560a
+      size: 1734066
+    - path: results/bioresponse/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: de69e0d9ce738884f0f59cbbf565491e
+      size: 3378109
+  train_medium@capped_lerped_sigmoid-spambase-openml:
+    cmd: python ../../run_bvd.py --model capped_lerped_sigmoid --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/capped_lerped_sigmoid.py
+      hash: md5
+      md5: bc1bff6e5259102758c58a005f01ee3a
+      size: 761
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 40b73b386c77bfbc39060e953bfdc558
+      size: 2127690
+    - path: results/spambase-openml/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 9572b022577f579e6fbce88c42a350ee
+      size: 4144913
+  train_medium@dynamic_threshold-digits:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset digits
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/dynamic_threshold.pkl
+      hash: md5
+      md5: a0e80c058f3369b8ff07e5720faad155
+      size: 832242
+    - path: results/digits/dynamic_threshold.pkl
+      hash: md5
+      md5: fef4ee4082f5b221f539d338f13fb730
+      size: 1621300
+  train_medium@dynamic_threshold-bioresponse:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/dynamic_threshold.pkl
+      hash: md5
+      md5: 38aac3df0ff25cae6ce8ac3654546c10
+      size: 1734066
+    - path: results/bioresponse/dynamic_threshold.pkl
+      hash: md5
+      md5: c33c26eac91a4f21b739b4b0246662bb
+      size: 3378105
+  train_medium@dynamic_threshold-spambase-openml:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/dynamic_threshold.pkl
+      hash: md5
+      md5: 161a094dfccff457396ff643783cfbd3
+      size: 2127690
+    - path: results/spambase-openml/dynamic_threshold.pkl
+      hash: md5
+      md5: 49ee4ce3d44a89c52169d66b41f9bc29
+      size: 4144909
+  get_staged_decomp_values_medium@standard_rf-digits:
+    cmd: python ../../get_staged_decomp_values.py --model standard_rf --dataset digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/standard_rf.pkl
+      hash: md5
+      md5: c676f16579e2232bab10a2a16ef4455a
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/standard_rf/
+      hash: md5
+      md5: 3eabf93c9a1929d5320d65d156902d31.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@standard_rf-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model standard_rf --dataset bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/standard_rf.pkl
+      hash: md5
+      md5: 554b77a3dcb1ddad4bbda68682ce9ecf
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/standard_rf/
+      hash: md5
+      md5: 2555ea91eda68c4af6f6debf76f6a1d6.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@standard_rf-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model standard_rf --dataset spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/standard_rf.pkl
+      hash: md5
+      md5: a006b0b8b1067b9290fc9d9080d59352
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/standard_rf/
+      hash: md5
+      md5: f23c7f8923800d2bc7627552fe5e037d.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@drf_weighted_bootstrap-digits:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_bootstrap --dataset
+      digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: dde2ee18fa95eeb53e50345c18e65ac8
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/drf_weighted_bootstrap/
+      hash: md5
+      md5: 1a679eee7ec8388129b0cf5c8d09e503.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@drf_weighted_bootstrap-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_bootstrap --dataset
+      bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: c144d612e1e5b2bacebb5ccd04f0d33b
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/drf_weighted_bootstrap/
+      hash: md5
+      md5: d97ed6f823242260c73b79ef62a3b05d.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@drf_weighted_bootstrap-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_bootstrap --dataset
+      spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 731e69d4da9c9c1b6a41c7d8d6ffc18e
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/drf_weighted_bootstrap/
+      hash: md5
+      md5: aa096772c7fbf247335aae597e93743a.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@drf_weighted_fit-digits:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit --dataset
+      digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/drf_weighted_fit.pkl
+      hash: md5
+      md5: c826a1332b944cab13e200ba9763792c
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/drf_weighted_fit/
+      hash: md5
+      md5: 74c9d0f233e32b830681e22419142200.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@drf_weighted_fit-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit --dataset
+      bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/drf_weighted_fit.pkl
+      hash: md5
+      md5: af275dc38ec3180c33fa5af48d55baf5
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/drf_weighted_fit/
+      hash: md5
+      md5: 21b6a817a654153c76106df4b13027d0.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@drf_weighted_fit-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit --dataset
+      spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/drf_weighted_fit.pkl
+      hash: md5
+      md5: 9a3d7d403c5b33b8d4602dc43d4b89bb
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/drf_weighted_fit/
+      hash: md5
+      md5: 589319663c862c89da4f7c6885498b2c.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@xu_chen-digits:
+    cmd: python ../../get_staged_decomp_values.py --model xu_chen --dataset digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/xu_chen.pkl
+      hash: md5
+      md5: 8c2a191c55aa7a58b8844dba68b7eea9
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/xu_chen/
+      hash: md5
+      md5: 50ebfc1e573e0a5df7d52214e529a502.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@xu_chen-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model xu_chen --dataset bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/xu_chen.pkl
+      hash: md5
+      md5: a47f42012b2ac94bb26c7412b1810071
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/xu_chen/
+      hash: md5
+      md5: a5cfea8a7425c1d5c1a84e59d2f0e753.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@xu_chen-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model xu_chen --dataset spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/xu_chen.pkl
+      hash: md5
+      md5: 5ef9622cfb7c1c778de53dc2519cc5d6
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/xu_chen/
+      hash: md5
+      md5: 14dff4e4f0bba700302465ad1c1e94e0.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@capped_sigmoid-digits:
+    cmd: python ../../get_staged_decomp_values.py --model capped_sigmoid --dataset
+      digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/capped_sigmoid.pkl
+      hash: md5
+      md5: b727daa1c3cff8e2f95565ac6e7e02b8
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/capped_sigmoid/
+      hash: md5
+      md5: 9d684d20058fbaa1a6f8c1023b125c1a.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@capped_sigmoid-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model capped_sigmoid --dataset
+      bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/capped_sigmoid.pkl
+      hash: md5
+      md5: 09d532e1ad120624dc36249ede4cb5a6
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/capped_sigmoid/
+      hash: md5
+      md5: 6bb0ea4d94d00efc055eb30d39f52567.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@capped_sigmoid-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model capped_sigmoid --dataset
+      spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/capped_sigmoid.pkl
+      hash: md5
+      md5: c1665c1696c1db85ada10c888e779ec4
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/capped_sigmoid/
+      hash: md5
+      md5: d8cf585f6c946ea7cc61e2d6066a4f5e.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@capped_lerped_sigmoid-digits:
+    cmd: python ../../get_staged_decomp_values.py --model capped_lerped_sigmoid --dataset
+      digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: c1126191b46ce18021b421799ec1574a
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/capped_lerped_sigmoid/
+      hash: md5
+      md5: 91611542c026cf5ad86f08bee61af54f.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@capped_lerped_sigmoid-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model capped_lerped_sigmoid --dataset
+      bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 814e38c8441652074a83be08ea84560a
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/capped_lerped_sigmoid/
+      hash: md5
+      md5: 950a3dc52b222c638cfcb3e76f92c4c8.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@capped_lerped_sigmoid-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model capped_lerped_sigmoid --dataset
+      spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 40b73b386c77bfbc39060e953bfdc558
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/capped_lerped_sigmoid/
+      hash: md5
+      md5: e99185ce75e8781c39d158d0b1b88551.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@dynamic_threshold-digits:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/dynamic_threshold.pkl
+      hash: md5
+      md5: a0e80c058f3369b8ff07e5720faad155
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/dynamic_threshold/
+      hash: md5
+      md5: 54f23f3a8d3563d9f105c6c9037883e4.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@dynamic_threshold-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/dynamic_threshold.pkl
+      hash: md5
+      md5: 38aac3df0ff25cae6ce8ac3654546c10
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/dynamic_threshold/
+      hash: md5
+      md5: 9487dc29496526a2c028736ca4f69922.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_medium@dynamic_threshold-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/dynamic_threshold.pkl
+      hash: md5
+      md5: 161a094dfccff457396ff643783cfbd3
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/dynamic_threshold/
+      hash: md5
+      md5: a0f67c966ef7e42cd6cf6f6840a4bdd8.dir
+      size: 4512
+      nfiles: 6
+  train_large@standard_rf-mnist_subset:
+    cmd: python ../../run_bvd.py --model standard_rf --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/standard_rf.py
+      hash: md5
+      md5: bf54533391c45262c72a204121421b32
+      size: 529
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/standard_rf.pkl
+      hash: md5
+      md5: d8602d157765c4eb9b849f805455015c
+      size: 5544651
+    - path: results/mnist_subset/standard_rf.pkl
+      hash: md5
+      md5: 3452120581953be79f21139445df54ac
+      size: 10801300
+  train_large@standard_rf-cover:
+    cmd: python ../../run_bvd.py --model standard_rf --dataset cover
+    deps:
+    - path: ../../../decompose/models/standard_rf.py
+      hash: md5
+      md5: bf54533391c45262c72a204121421b32
+      size: 529
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/standard_rf.pkl
+      hash: md5
+      md5: 42c5b5ae1024ad0ba431bca3e054287b
+      size: 268428254
+    - path: results/cover/standard_rf.pkl
+      hash: md5
+      md5: aa64087ef9bb21b82e486f94e69851c5
+      size: 522912095
+  train_large@drf_weighted_bootstrap-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf_weighted_bootstrap --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/drf_weighted_bootstrap.py
+      hash: md5
+      md5: d7eb0e105dd1d345b4285102a70b5fc5
+      size: 923
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 96f527ead171eed96f58fc255dca202b
+      size: 5544651
+    - path: results/mnist_subset/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 988a9ae0f8cea46bea9317a9ed432dd0
+      size: 10801311
+  train_large@drf_weighted_bootstrap-cover:
+    cmd: python ../../run_bvd.py --model drf_weighted_bootstrap --dataset cover
+    deps:
+    - path: ../../../decompose/models/drf_weighted_bootstrap.py
+      hash: md5
+      md5: d7eb0e105dd1d345b4285102a70b5fc5
+      size: 923
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 7d8b6634a2b88b21b3bb6f6ebc0160c3
+      size: 268428254
+    - path: results/cover/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 2cbd080b8ef1770ba883482cf48e06ac
+      size: 522912106
+  train_large@drf_weighted_fit-mnist_subset:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit.py
+      hash: md5
+      md5: 16c96e8487446f1cec8043c8ec7bee29
+      size: 580
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/drf_weighted_fit.pkl
+      hash: md5
+      md5: 57b37f821fe30c669c00755fa2f15c66
+      size: 5544651
+    - path: results/mnist_subset/drf_weighted_fit.pkl
+      hash: md5
+      md5: 82ec17d14af5de4ecc0bffb044ee22ad
+      size: 10801305
+  train_large@drf_weighted_fit-cover:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit --dataset cover
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit.py
+      hash: md5
+      md5: 16c96e8487446f1cec8043c8ec7bee29
+      size: 580
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/drf_weighted_fit.pkl
+      hash: md5
+      md5: fedf4c852bffda9612f26b75dc68df8e
+      size: 268428254
+    - path: results/cover/drf_weighted_fit.pkl
+      hash: md5
+      md5: 06aa7506d873c8835f32c37deffa9b1c
+      size: 522912100
+  train_large@xu_chen-mnist_subset:
+    cmd: python ../../run_bvd.py --model xu_chen --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/xu_chen.py
+      hash: md5
+      md5: 670a37a60ad22db7690ee1c40412180d
+      size: 612
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/xu_chen.pkl
+      hash: md5
+      md5: bad63008ce51d5f1d359abdf65e023f0
+      size: 5544651
+    - path: results/mnist_subset/xu_chen.pkl
+      hash: md5
+      md5: 9f3f03bd203622a97988e048e39b4031
+      size: 10801296
+  train_large@xu_chen-cover:
+    cmd: python ../../run_bvd.py --model xu_chen --dataset cover
+    deps:
+    - path: ../../../decompose/models/xu_chen.py
+      hash: md5
+      md5: 670a37a60ad22db7690ee1c40412180d
+      size: 612
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/xu_chen.pkl
+      hash: md5
+      md5: 775812f60eb7d4e83267c26f8463635f
+      size: 268428254
+    - path: results/cover/xu_chen.pkl
+      hash: md5
+      md5: bb68238639c5c2ffb1f2bae29e0b1cf5
+      size: 522912091
+  train_large@capped_sigmoid-mnist_subset:
+    cmd: python ../../run_bvd.py --model capped_sigmoid --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/capped_sigmoid.py
+      hash: md5
+      md5: 936ca9e50fb5a8e729f15acf2e785c05
+      size: 713
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/capped_sigmoid.pkl
+      hash: md5
+      md5: 2233e6ba8955f845b85db4c18cc31b2c
+      size: 5544651
+    - path: results/mnist_subset/capped_sigmoid.pkl
+      hash: md5
+      md5: 9712742a2655daf70591704fa11fac6d
+      size: 10801303
+  train_large@capped_sigmoid-cover:
+    cmd: python ../../run_bvd.py --model capped_sigmoid --dataset cover
+    deps:
+    - path: ../../../decompose/models/capped_sigmoid.py
+      hash: md5
+      md5: 936ca9e50fb5a8e729f15acf2e785c05
+      size: 713
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/capped_sigmoid.pkl
+      hash: md5
+      md5: c7ce97f5c93671cbf90810f8b3a86eb1
+      size: 268428254
+    - path: results/cover/capped_sigmoid.pkl
+      hash: md5
+      md5: 2b8ac5262214f20da6e1d5f5377e8832
+      size: 522912098
+  train_large@capped_lerped_sigmoid-mnist_subset:
+    cmd: python ../../run_bvd.py --model capped_lerped_sigmoid --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/capped_lerped_sigmoid.py
+      hash: md5
+      md5: bc1bff6e5259102758c58a005f01ee3a
+      size: 761
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: b91e572f2db9bc8f1b57a1664721babe
+      size: 5544651
+    - path: results/mnist_subset/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: a534102fbfcf594e30a8e1ee9dd2d390
+      size: 10801310
+  train_large@capped_lerped_sigmoid-cover:
+    cmd: python ../../run_bvd.py --model capped_lerped_sigmoid --dataset cover
+    deps:
+    - path: ../../../decompose/models/capped_lerped_sigmoid.py
+      hash: md5
+      md5: bc1bff6e5259102758c58a005f01ee3a
+      size: 761
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 728bf3ef0f0327a140b5da7668e3fc16
+      size: 268428254
+    - path: results/cover/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 4ae71988697f8478f3ae5e9fb2cecbc8
+      size: 522912105
+  train_large@dynamic_threshold-mnist_subset:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/dynamic_threshold.pkl
+      hash: md5
+      md5: b1aedb5eeba4916d3c01eb87af1bb3ca
+      size: 5544651
+    - path: results/mnist_subset/dynamic_threshold.pkl
+      hash: md5
+      md5: befeee04754fbfa795935a449452b35c
+      size: 10801306
+  get_staged_decomp_values_large@standard_rf-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model standard_rf --dataset mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/mnist_subset/standard_rf.pkl
+      hash: md5
+      md5: d8602d157765c4eb9b849f805455015c
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/standard_rf/
+      hash: md5
+      md5: 98a7c85b675224721a29750543a29456.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@standard_rf-cover:
+    cmd: python ../../get_staged_decomp_values.py --model standard_rf --dataset cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/cover/standard_rf.pkl
+      hash: md5
+      md5: 42c5b5ae1024ad0ba431bca3e054287b
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/standard_rf/
+      hash: md5
+      md5: 79cc4db1e2e491086357c1dc59d38317.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@drf_weighted_bootstrap-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_bootstrap --dataset
+      mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/mnist_subset/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 96f527ead171eed96f58fc255dca202b
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/drf_weighted_bootstrap/
+      hash: md5
+      md5: 557250b95329c9992bf01042152aef32.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@drf_weighted_bootstrap-cover:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_bootstrap --dataset
+      cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/cover/drf_weighted_bootstrap.pkl
+      hash: md5
+      md5: 7d8b6634a2b88b21b3bb6f6ebc0160c3
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/drf_weighted_bootstrap/
+      hash: md5
+      md5: b7558389d76668473b6b0704bcf24a56.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@drf_weighted_fit-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit --dataset
+      mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/mnist_subset/drf_weighted_fit.pkl
+      hash: md5
+      md5: 57b37f821fe30c669c00755fa2f15c66
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/drf_weighted_fit/
+      hash: md5
+      md5: 085011f5ca4a5394869467749375ac8f.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@drf_weighted_fit-cover:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit --dataset
+      cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/cover/drf_weighted_fit.pkl
+      hash: md5
+      md5: fedf4c852bffda9612f26b75dc68df8e
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/drf_weighted_fit/
+      hash: md5
+      md5: 0c14acbae387aa8893195bd3415b7885.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@xu_chen-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model xu_chen --dataset mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/mnist_subset/xu_chen.pkl
+      hash: md5
+      md5: bad63008ce51d5f1d359abdf65e023f0
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/xu_chen/
+      hash: md5
+      md5: bb0b5772109aea5eca18bf815581bde2.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@xu_chen-cover:
+    cmd: python ../../get_staged_decomp_values.py --model xu_chen --dataset cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/cover/xu_chen.pkl
+      hash: md5
+      md5: 775812f60eb7d4e83267c26f8463635f
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/xu_chen/
+      hash: md5
+      md5: 2a92c2cce2777a6af0fc268ba97ce98e.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@capped_sigmoid-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model capped_sigmoid --dataset
+      mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/mnist_subset/capped_sigmoid.pkl
+      hash: md5
+      md5: 2233e6ba8955f845b85db4c18cc31b2c
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/capped_sigmoid/
+      hash: md5
+      md5: 857677a2f657d4a994b66366daea3ab7.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@capped_sigmoid-cover:
+    cmd: python ../../get_staged_decomp_values.py --model capped_sigmoid --dataset
+      cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/cover/capped_sigmoid.pkl
+      hash: md5
+      md5: c7ce97f5c93671cbf90810f8b3a86eb1
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/capped_sigmoid/
+      hash: md5
+      md5: 30edfb25c2989f7feabfb19df5517b89.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@capped_lerped_sigmoid-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model capped_lerped_sigmoid --dataset
+      mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/mnist_subset/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: b91e572f2db9bc8f1b57a1664721babe
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/capped_lerped_sigmoid/
+      hash: md5
+      md5: f74a7bff24af36d7df3efe7cbb7ef893.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_large@capped_lerped_sigmoid-cover:
+    cmd: python ../../get_staged_decomp_values.py --model capped_lerped_sigmoid --dataset
+      cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/cover/capped_lerped_sigmoid.pkl
+      hash: md5
+      md5: 728bf3ef0f0327a140b5da7668e3fc16
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/capped_lerped_sigmoid/
+      hash: md5
+      md5: f035b83d6c47fb2b5c588ab432c7b6f2.dir
+      size: 4512
+      nfiles: 6
+  train_slow_small@dynamic_threshold-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/dynamic_threshold.pkl
+      hash: md5
+      md5: 08aee5519b675a8904da1b431f386254
+      size: 488514
+    - path: results/qsar-biodeg/dynamic_threshold.pkl
+      hash: md5
+      md5: 6b309fe885aaa467ed8f9139e5d75307
+      size: 951705
+  train_slow_small@dynamic_threshold-diabetes:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/dynamic_threshold.pkl
+      hash: md5
+      md5: dd6405f1bde6bbd753f20e646e763da5
+      size: 355451
+    - path: results/diabetes/dynamic_threshold.pkl
+      hash: md5
+      md5: 57cb249c9b8097d0e13a9571bb9836af
+      size: 692501
+  train_slow_small@drf_weighted_fit_oob-qsar-biodeg:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit_oob --dataset qsar-biodeg
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit_oob.py
+      hash: md5
+      md5: b8807f6b6fdf4948af63cffaf6e3bebd
+      size: 3911
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/qsar-biodeg/drf_weighted_fit_oob.pkl
+      hash: md5
+      md5: 4004361f39abb6233fdf4c209a7466e5
+      size: 488514
+    - path: results/qsar-biodeg/drf_weighted_fit_oob.pkl
+      hash: md5
+      md5: dfc80c8f75c49851f698f635585dad76
+      size: 951708
+  train_slow_small@drf_weighted_fit_oob-diabetes:
+    cmd: python ../../run_bvd.py --model drf_weighted_fit_oob --dataset diabetes
+    deps:
+    - path: ../../../decompose/models/drf_weighted_fit_oob.py
+      hash: md5
+      md5: b8807f6b6fdf4948af63cffaf6e3bebd
+      size: 3911
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/diabetes/drf_weighted_fit_oob.pkl
+      hash: md5
+      md5: 2bd33b19a4b7953612f6cf94d5058a87
+      size: 355451
+    - path: results/diabetes/drf_weighted_fit_oob.pkl
+      hash: md5
+      md5: 8f395eac7b3527d6172971cc2820b091
+      size: 692504
+  get_staged_decomp_values_slow_small@dynamic_threshold-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/dynamic_threshold.pkl
+      hash: md5
+      md5: 08aee5519b675a8904da1b431f386254
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/dynamic_threshold/
+      hash: md5
+      md5: 55b9f0ad6b45227a78667926437d27a0.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_slow_small@dynamic_threshold-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/dynamic_threshold.pkl
+      hash: md5
+      md5: dd6405f1bde6bbd753f20e646e763da5
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/dynamic_threshold/
+      hash: md5
+      md5: dd962609a1c51e88ce981522ba96592a.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_slow_small@drf_weighted_fit_oob-qsar-biodeg:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit_oob --dataset
+      qsar-biodeg
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/qsar-biodeg/drf_weighted_fit_oob.pkl
+      hash: md5
+      md5: 4004361f39abb6233fdf4c209a7466e5
+      size: 488514
+    outs:
+    - path: staged-decomp-values/qsar-biodeg/drf_weighted_fit_oob/
+      hash: md5
+      md5: a4fbdfc5a5dd296811278e1e396ee39e.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_slow_small@drf_weighted_fit_oob-diabetes:
+    cmd: python ../../get_staged_decomp_values.py --model drf_weighted_fit_oob --dataset
+      diabetes
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/diabetes/drf_weighted_fit_oob.pkl
+      hash: md5
+      md5: 2bd33b19a4b7953612f6cf94d5058a87
+      size: 355451
+    outs:
+    - path: staged-decomp-values/diabetes/drf_weighted_fit_oob/
+      hash: md5
+      md5: 1b98eb1e2e4c136ef69469a0e5179628.dir
+      size: 4512
+      nfiles: 6

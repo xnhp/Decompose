@@ -2,7 +2,8 @@ import pickle
 
 from decompose.data_utils import load_standard_dataset
 from decompose.dvc_utils import cwd_path
-from decompose.utils import plot_decomp_grid, savefigs
+from decompose.utils import savefigs
+from decompose.plot_decomp_grid import plot_decomp_grid
 
 import matplotlib.pyplot as plt
 import numpy as np
