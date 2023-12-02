@@ -1,3 +1,10 @@
+Fork of the framework by Wood & colleagues, additionally 
+- using [DVC](https://dvc.org/) to configure, run and cache experiment pipelines
+- everything in [this thesis](https://github.com/xnhp/rf-model-correlation/)
+original readme below
+
+---
+
 # Decompose: A library for computing bias-variance-diversity and bias-variance decompositions
 
 Welcome to Decompose, a library for estimating components of bias-variance and bias-variance-diversity decompositions, including notebooks for replicating experiments in "_A Unified Theory of Diversity in Ensemble Learning_" (https://arxiv.org/abs/2301.03962 )
