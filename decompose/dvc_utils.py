@@ -132,7 +132,8 @@ def get_model_color(identifier: str):
         'drf_weighted_fit_oob': "brown",
         'drf_weighted_bootstrap': "red",
         'dynamic_threshold': "red",
-        'sigmoid-weighted-bootstrap-classifier': "purple",
+        'capped_sigmoid': "purple",
+        'capped_lerped_sigmoid': "green",
         'xu_chen': "yellow",
         'ensemble-weighted-classifier': "green",
         'ce-nn': "blue"
@@ -161,6 +162,16 @@ def get_fn_color(identifier:str):
         'margin': "green"
     }
     return match_dict_key(colors, identifier)
+
+def get_model_latex(model_id):
+    texs = {
+        'standard_rf': "RF",
+        'drf_weighted_bootstrap': "$w_\\text{DRF}$",
+        'capped_sigmoid': "$w_\\text{sigm}$",
+        'capped_lerped_sigmoid': "$w_\\text{lerp}$",
+        'dynamic_threshold': "$w_\\text{dyn}$"
+    }
+    return texs[model_id]
 
 def match_dict_key(dict, identifier):
     return dict[match(identifier, dict.keys())]

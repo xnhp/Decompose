@@ -20,10 +20,7 @@ def mg_distr_by_example(M, decomp):
     ax.set_title(f"margin distr. by example for M={M}")
     return fig
 
-def plot_margin_distr_by_example(data_info, model_info):
-    _, (dataset_id, _) = data_info
-    _, (model_id, _) = model_info
-
+def plot_margin_distr_by_example(dataset_id, model_id):
     decomp_path = cwd_path("decomps", dataset_id, model_id + ".pkl")
     with open(decomp_path, "rb") as f:
         decomp = pickle.load(f)
@@ -31,8 +28,35 @@ def plot_margin_distr_by_example(data_info, model_info):
     ms = [2, 5, 10, 20, 50, 100, 150]
     for m in ms:
         fig = mg_distr_by_example(m, decomp)
-        fig.savefig(cwd_path("plots", "margins", dataset_id, model_id, f"by-example-{m}.png"))
+        fig.savefig(cwd_path("plots", "margin_hists", dataset_id, model_id, f"by-example-{m}.png"))
 
 
 if __name__ == "__main__":
-    data_model_foreach(cwd_path("decomps"), plot_margin_distr_by_example)
+    # data_model_foreach(cwd_path("decomps"), plot_margin_distr_by_example)
+
+    binary_datasets = [
+        'qsar-biodeg', "diabetes", "bioresponse", "spambase-openml"
+    ]
+    nonbinary_datasets = ['digits', 'mnist_subset', 'cover']
+
+    all_datasets = binary_datasets + nonbinary_datasets
+
+    tasks = [
+        {
+            'out_path': "plots/margin_hists/drf_sigmoid/",
+            'datasets': ["bioresponse"],
+            "models": [
+                'standard_rf',
+                'drf_weighted_bootstrap',
+                'capped_sigmoid',
+                'capped_lerped_sigmoid'
+            ]
+        }
+    ]
+
+    for task in tasks:
+        out = cwd_path(task['out_path'])
+        for dataset_id in task['datasets']:
+            for model_id in task['models']:
+                plot_margin_distr_by_example(dataset_id, model_id)
+

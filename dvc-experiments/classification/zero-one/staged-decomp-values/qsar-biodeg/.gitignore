@@ -3,3 +3,6 @@
 /drf-weighted-fit-classifier
 /drf-weighted-fit-oob-classifier
 /ce-nn
+/sigmoid-weighted-bootstrap-classifier
+/xuchen-weighted-bootstrap-classifier
+/drf-good-weighted-bootstrap-classifier

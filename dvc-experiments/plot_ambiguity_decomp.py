@@ -8,6 +8,7 @@ import pickle
 import numpy as np
 from matplotlib import pyplot as plt
 
+from decompose import ZeroOneLoss
 from decompose.dvc_utils import cwd_path, get_n_classes
 
 
@@ -24,12 +25,19 @@ def main():
 
             pred = decomp.pred # [trials, estimators, examples]
             labels = decomp.labels  # 1D in case of ZeroOneLoss [examples]
+
+            # [trials, estimators]
+            # take first trial
+            predicted_class = np.argmax(decomp.pred[0], axis=0)
+            zero_one_decomp = ZeroOneLoss(predicted_class, labels)
+
             # if I understand correctly, diversity-effect is E_D, i.e. over trials
             # so, averaging over trials below as well
-            models_correct = (pred == labels).mean(axis=(0,1))
+            models_correct = (predicted_class == labels).mean()
+            div_eff = decomp._central_model_difference(1, (), (0,1))
             plt.scatter(
                 1 - models_correct,
-                decomp.diversity_effect,
+                div_eff,
                 c=labels,
                 cmap="Set3",  # needs to have enough values
                 label="examples in test set"
@@ -60,6 +68,7 @@ def main():
             # https://stackoverflow.com/questions/4700614/how-to-put-the-legend-outside-the-plot/43439132#43439132
             plt.tight_layout()
             plt.close()
+
 
     # for subdir, dirs, files in os.walk(cwd_path("decomps")):
     #     for dataset_id in dirs:

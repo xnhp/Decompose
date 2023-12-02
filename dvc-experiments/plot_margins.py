@@ -49,7 +49,29 @@ def empty_save_mean(arr):
 if __name__ == "__main__":
     # mean margins for correct and incorrect examples over M
 
-    gridfig, rowfigs, singlecell_figs = plot_decomp_grid(plot_margin_distr_by_trees)
-    basepath = cwd_path("plots", "margins")
-    kind = "margins"
-    savefigs(basepath, kind, gridfig, rowfigs, singlecell_figs)
+
+    binary_datasets = [
+        'qsar-biodeg', "diabetes", "bioresponse", "spambase-openml"
+    ]
+    nonbinary_datasets = ['digits', 'mnist_subset', 'cover']
+
+    all_datasets = binary_datasets + nonbinary_datasets
+
+    tasks = [
+        {
+            'out_path': "plots/margins/drf_sigmoid/",
+            'datasets': binary_datasets,
+            "models": [
+                'standard_rf',
+                'drf_weighted_bootstrap',
+                'capped_sigmoid',
+                'capped_lerped_sigmoid'
+            ]
+        }
+    ]
+
+    for task in tasks:
+        gridfig, rowfigs, singlecell_figs = plot_decomp_grid(plot_margin_distr_by_trees, task)
+        basepath = cwd_path(task['out_path'])
+        kind = "margins"
+        savefigs(basepath, kind, gridfig, rowfigs, singlecell_figs)

@@ -2,3 +2,6 @@
 /drf-weighted-bootstrap-classifier
 /drf-weighted-fit-classifier
 /drf-weighted-fit-oob-classifier
+/sigmoid-weighted-bootstrap-classifier
+/xuchen-weighted-bootstrap-classifier
+/dynamic_threshold

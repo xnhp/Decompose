@@ -949,27 +949,27 @@ stages:
     deps:
     - path: ../../../decompose/plot_decomp_grid.py
       hash: md5
-      md5: 26e09129503eb937cc461a6f1cf2d38e
+      md5: 0857e50920bbbe4f30637f6a79102a57
       size: 2137
     - path: ../../plot_bvd.py
       hash: md5
-      md5: 368d7bd8b9e7a4ede1ea0467384914e8
-      size: 2399
+      md5: 516401590354078a3a642b9bfdc8b977
+      size: 2401
     - path: staged-decomp-values
       hash: md5
-      md5: 1a4623c7abd44711273393cbb9824bb5.dir
-      size: 214270
-      nfiles: 295
+      md5: aa1287f475396b7ee252b35f806e7f05.dir
+      size: 227906
+      nfiles: 313
     outs:
     - path: plots/bvd-decomps/plot_bvd_drf
       hash: md5
-      md5: 5b8e98447f749504b5778722fa67ee20.dir
-      size: 959152
+      md5: db0538e25d13874b856536261798b51e.dir
+      size: 921024
       nfiles: 21
     - path: plots/bvd-decomps/plot_bvd_standard_rf
       hash: md5
-      md5: 1120e3aa9222e4c5929bcd3eeef343e8.dir
-      size: 300765
+      md5: 042220788c506e3d3193d0ea62c27f8e.dir
+      size: 289665
       nfiles: 7
   get_staged_decomp_values@drf-weighted-fit-classifier-qsar-biodeg:
     cmd: python ../../get_staged_decomp_values.py --model drf-weighted-fit-classifier
@@ -7874,5 +7874,314 @@ stages:
     - path: staged-decomp-values/diabetes/drf_weighted_fit_oob/
       hash: md5
       md5: 1b98eb1e2e4c136ef69469a0e5179628.dir
+      size: 4512
+      nfiles: 6
+  train_slow_medium@dynamic_threshold-digits:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset digits
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/digits/dynamic_threshold.pkl
+      hash: md5
+      md5: a0e80c058f3369b8ff07e5720faad155
+      size: 832242
+    - path: results/digits/dynamic_threshold.pkl
+      hash: md5
+      md5: fef4ee4082f5b221f539d338f13fb730
+      size: 1621300
+  train_slow_medium@dynamic_threshold-bioresponse:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset bioresponse
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/bioresponse/dynamic_threshold.pkl
+      hash: md5
+      md5: 38aac3df0ff25cae6ce8ac3654546c10
+      size: 1734066
+    - path: results/bioresponse/dynamic_threshold.pkl
+      hash: md5
+      md5: c33c26eac91a4f21b739b4b0246662bb
+      size: 3378105
+  train_slow_medium@dynamic_threshold-spambase-openml:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset spambase-openml
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/spambase-openml/dynamic_threshold.pkl
+      hash: md5
+      md5: 161a094dfccff457396ff643783cfbd3
+      size: 2127690
+    - path: results/spambase-openml/dynamic_threshold.pkl
+      hash: md5
+      md5: 49ee4ce3d44a89c52169d66b41f9bc29
+      size: 4144909
+  get_staged_decomp_values_slow_medium@dynamic_threshold-digits:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      digits
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/digits/dynamic_threshold.pkl
+      hash: md5
+      md5: a0e80c058f3369b8ff07e5720faad155
+      size: 832242
+    outs:
+    - path: staged-decomp-values/digits/dynamic_threshold/
+      hash: md5
+      md5: 54f23f3a8d3563d9f105c6c9037883e4.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_slow_medium@dynamic_threshold-bioresponse:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      bioresponse
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/bioresponse/dynamic_threshold.pkl
+      hash: md5
+      md5: 38aac3df0ff25cae6ce8ac3654546c10
+      size: 1734066
+    outs:
+    - path: staged-decomp-values/bioresponse/dynamic_threshold/
+      hash: md5
+      md5: 9487dc29496526a2c028736ca4f69922.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_slow_medium@dynamic_threshold-spambase-openml:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      spambase-openml
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/spambase-openml/dynamic_threshold.pkl
+      hash: md5
+      md5: 161a094dfccff457396ff643783cfbd3
+      size: 2127690
+    outs:
+    - path: staged-decomp-values/spambase-openml/dynamic_threshold/
+      hash: md5
+      md5: a0f67c966ef7e42cd6cf6f6840a4bdd8.dir
+      size: 4512
+      nfiles: 6
+  train_slow_large@dynamic_threshold-mnist_subset:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset mnist_subset
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/mnist_subset/dynamic_threshold.pkl
+      hash: md5
+      md5: b1aedb5eeba4916d3c01eb87af1bb3ca
+      size: 5544651
+    - path: results/mnist_subset/dynamic_threshold.pkl
+      hash: md5
+      md5: befeee04754fbfa795935a449452b35c
+      size: 10801306
+  plot_margin_distr_by_trees:
+    cmd: python ../../plot_margins.py
+    deps:
+    - path: ../../plot_margins.py
+      hash: md5
+      md5: 2a8f491d83f213ecda2fee8a01177f0b
+      size: 2646
+    - path: staged-decomp-values
+      hash: md5
+      md5: aa1287f475396b7ee252b35f806e7f05.dir
+      size: 227906
+      nfiles: 313
+    outs:
+    - path: plots/margins/
+      hash: md5
+      md5: 7663624ca440a62dc97e0e797396da7b.dir
+      size: 833139
+      nfiles: 21
+  plot_margin_hists:
+    cmd: python ../../plot_margin_hists.py
+    deps:
+    - path: ../../plot_margin_hists.py
+      hash: md5
+      md5: 49d81b605657cd3475a6c0c617d48bb7
+      size: 2065
+    - path: staged-decomp-values
+      hash: md5
+      md5: aa1287f475396b7ee252b35f806e7f05.dir
+      size: 227906
+      nfiles: 313
+    outs:
+    - path: plots/margin_hists/
+      hash: md5
+      md5: 30411cfd6e9a10d8daf20d5f8a517a3e.dir
+      size: 471423
+      nfiles: 28
+  plot_compare_models:
+    cmd: python ../../plot_compare_models.py
+    deps:
+    - path: ../../plot_compare_models.py
+      hash: md5
+      md5: 36b44cee6398023df4aece8623c22a43
+      size: 3979
+    - path: staged-decomp-values
+      hash: md5
+      md5: aa1287f475396b7ee252b35f806e7f05.dir
+      size: 227906
+      nfiles: 313
+    outs:
+    - path: plots/compare_models/
+      hash: md5
+      md5: 1f27af21c2c75d82096f175a8d910e93.dir
+      size: 2595348
+      nfiles: 62
+  train_slow_large@dynamic_threshold-cover:
+    cmd: python ../../run_bvd.py --model dynamic_threshold --dataset cover
+    deps:
+    - path: ../../../decompose/models/dynamic_threshold.py
+      hash: md5
+      md5: ea8976c683a9c0b242b782e2f258ae29
+      size: 933
+    - path: ../../run_bvd.py
+      hash: md5
+      md5: 45828dc89efe6ca8ec8308d485b96df0
+      size: 1337
+    params:
+      params.yaml:
+        bvd_config:
+          loss: zero_one
+          parameter_name: n_estimators
+          parameter_values:
+          - 150
+          save_decompositions: true
+          trials_progress_bar: true
+        data:
+          frac_training: 0.75
+        run_experiment_config:
+          n_trials: 3
+    outs:
+    - path: decomps/cover/dynamic_threshold.pkl
+      hash: md5
+      md5: 9ff7c4aa2092521776b9119601fa7a48
+      size: 268428254
+    - path: results/cover/dynamic_threshold.pkl
+      hash: md5
+      md5: d8ba76c61ff90aff1a503712858c9656
+      size: 522912101
+  get_staged_decomp_values_slow_large@dynamic_threshold-mnist_subset:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      mnist_subset
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/mnist_subset/dynamic_threshold.pkl
+      hash: md5
+      md5: b1aedb5eeba4916d3c01eb87af1bb3ca
+      size: 5544651
+    outs:
+    - path: staged-decomp-values/mnist_subset/dynamic_threshold/
+      hash: md5
+      md5: c712f69990299f1acbf548c3d39ed19f.dir
+      size: 4512
+      nfiles: 6
+  get_staged_decomp_values_slow_large@dynamic_threshold-cover:
+    cmd: python ../../get_staged_decomp_values.py --model dynamic_threshold --dataset
+      cover
+    deps:
+    - path: ../../get_staged_decomp_values.py
+      hash: md5
+      md5: 964f3d6d7006993acc9e118945e3494e
+      size: 1535
+    - path: decomps/cover/dynamic_threshold.pkl
+      hash: md5
+      md5: 9ff7c4aa2092521776b9119601fa7a48
+      size: 268428254
+    outs:
+    - path: staged-decomp-values/cover/dynamic_threshold/
+      hash: md5
+      md5: 879bcf68561341a1c4c6cfa429fbde35.dir
       size: 4512
       nfiles: 6

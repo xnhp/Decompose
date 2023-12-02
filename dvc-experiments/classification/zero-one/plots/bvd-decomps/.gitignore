@@ -1,12 +1,2 @@
-/all.png
-/bioresponse/
-/bioresponse
-/spambase-openml
-/mnist_subset
-/cover
-/digits
-/qsar-biodeg/
-/qsar-biodeg
-/bvd.png
-/ens.png
-/diabetes
+/plot_bvd_drf
+/plot_bvd_standard_rf
